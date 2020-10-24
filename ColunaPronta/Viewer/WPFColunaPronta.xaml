@@ -26,10 +26,19 @@
                 <CheckBox x:Name="checkBox_prfsF" Content="P.F" HorizontalAlignment="Left" Margin="168,295.2,0,0" VerticalAlignment="Top" Grid.Row="1" />
                 <CheckBox x:Name="checkBox_prfsG" Content="P.G" HorizontalAlignment="Left" Margin="133,271.2,0,0" VerticalAlignment="Top" Grid.Row="1" />
                 <CheckBox x:Name="checkBox_prfsH" Content="P.H" HorizontalAlignment="Left" Margin="134,190.2,0,0" VerticalAlignment="Top" Grid.Row="1" />
-                <Label x:Name="label_metragem" Content="" Margin="130,410,463,19"/>
-                <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="470,133,0,0" TextWrapping="Wrap" Text="Diametro Chumbador:" VerticalAlignment="Top"/>
-                <TextBox x:Name="textBox_diametro" TextWrapping="Wrap" Text="" Margin="596,129,90,320" BorderBrush="Black" PreviewTextInput="textBox_diametro_PreviewTextInput"/>
+                <Label x:Name="label_metragem" Content="" Margin="503,126,90,301"/>
+                <TextBlock x:Name="textBlock_" HorizontalAlignment="Left" Margin="505,183,0,0" TextWrapping="Wrap" Text="Tipo da Coluna:" VerticalAlignment="Top" RenderTransformOrigin="-0.25,-1.775"/>
+                <ComboBox x:Name="combobox_TpColuna" Margin="596,177,90,272" />
+                <TextBlock x:Name="textBlock_chumbador" HorizontalAlignment="Left" Margin="470,209,0,0" TextWrapping="Wrap" Text="Diâmetro Chumbador:" VerticalAlignment="Top"/>
+                <TextBox x:Name="textBox_diametro" TextWrapping="Wrap" Text="" Margin="596,205,90,244" BorderBrush="Black" PreviewTextInput="textBox_diametro_PreviewTextInput"/>
+                <TextBlock x:Name="textBlock_parafuso" HorizontalAlignment="Left" Margin="486,238,0,0" TextWrapping="Wrap" Text="Diâmetro Parafuso:" VerticalAlignment="Top"/>
+                <TextBox x:Name="textBox_parafuso" TextWrapping="Wrap" Text="" Margin="595,233,91,213" BorderBrush="Black" PreviewTextInput="textBox_diametro_PreviewTextInput"/>
                 <Button x:Name="btn_gerarcoluna" Content="Gerar Coluna" HorizontalAlignment="Left" Margin="680,429,0,0" VerticalAlignment="Top" Width="75" Click="Btn_gerarcoluna_Click"/>
+                <TextBlock x:Name="textBlock_altura" HorizontalAlignment="Left" Margin="497,268,0,0" TextWrapping="Wrap" Text="Altura da Coluna:" VerticalAlignment="Top"/>
+                <TextBox x:Name="textBox_altura" TextWrapping="Wrap" Text="" Margin="595,263,91,183" BorderBrush="Black" PreviewTextInput="textBox_diametro_PreviewTextInput"/>
+                <TextBlock x:Name="textBlock_qtParafuso" HorizontalAlignment="Left" Margin="454,301,0,0" TextWrapping="Wrap" Text="Quantidade de Parafusos:" VerticalAlignment="Top"/>
+                <TextBox x:Name="textBox_qtParafuso" TextWrapping="Wrap" Text="" Margin="595,294,91,151" BorderBrush="Black" PreviewTextInput="textBox_diametro_PreviewTextInput"/>
+
             </Grid>
 
         </StackPanel>

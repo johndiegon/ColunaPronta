@@ -3,6 +3,7 @@ using ColunaPronta.Model;
 using Syncfusion.Windows.Forms.Tools.Win32API;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -27,14 +28,21 @@ namespace ColunaPronta
         {
             InitializeComponent();
             this._coluna = coluna;
-            this.label_metragem.Content = string.Concat(coluna.Comprimento.ToString("N2"), " x ", coluna.Largura.ToString("N2"));
+            this.label_metragem.Content = string.Concat("Coluna ", coluna.Comprimento.ToString("N2"), " x ", coluna.Largura.ToString("N2"), "MM");
+            InicializaComboBoxTpColuna();
+        }
+
+        private void InicializaComboBoxTpColuna()
+        {
+            var tiposColuna = Enum.GetValues(typeof(TipoColuna)).Cast<TipoColuna>();
+            combobox_TpColuna.ItemsSource = tiposColuna.ToList();
         }
 
         private void Btn_gerarcoluna_Click(object sender, RoutedEventArgs e)
         {
             if (diametroChumbadorObrigatorio == true && textBox_diametro.Text.ToString() == "")
             {
-                MessageBox.Show("Atenção!", "Preenchimento do Diâmetro do chumbador é obrigatório quando há sapata para gerar.");
+                MessageBox.Show( "Preenchimento do Diâmetro do chumbador é obrigatório quando há sapata para gerar.", "Atenção!");
                 return;
             }
             if (diametroChumbadorObrigatorio)
@@ -54,7 +62,8 @@ namespace ColunaPronta
             this._coluna.SapataB   = (bool)this.checkBox_sptB.IsChecked;
             this._coluna.SapataC   = (bool)this.checkBox_sptC.IsChecked;
             this._coluna.SapataD   = (bool)this.checkBox_sptD.IsChecked;
-            
+
+            var tipo = combobox_TpColuna.SelectedItem;
 
             this.Close();
             var comando = new ComandoAutocad();
@@ -75,5 +84,7 @@ namespace ColunaPronta
             if ((bool)this.checkBox_sptC.IsChecked) { diametroChumbadorObrigatorio = true; };
             if ((bool)this.checkBox_sptD.IsChecked) { diametroChumbadorObrigatorio = true; };
         }
+
+
     }
 }
