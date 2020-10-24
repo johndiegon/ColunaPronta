@@ -1,0 +1,37 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ColunaPronta"
+        xmlns:syncfusion="http://schemas.syncfusion.com/wpf" 
+        x:Class="ColunaPronta.WPFColunaPronta"
+        mc:Ignorable="d"
+        Title="Coluna Pronta" Height="500" Width="800"
+        WindowStyle="SingleBorderWindow"
+        >
+    <Grid>
+        <StackPanel x:Name="StackPanel_Seleciona" Visibility="Visible" Background="White">
+            <Grid x:Name="grid_seleciona" Height="470" Width="800" Margin="0,0,-6.4,0">
+                <Image x:Name="image" HorizontalAlignment="Left" Height="436" Margin="0,0.2,0,0" VerticalAlignment="Top" Width="483" Source="C:\Autodesk\ColunaPronta\Image\Coluna.png" Grid.Row="1"/>
+                <CheckBox x:Name="checkBox_sptA"  Content="S.A" HorizontalAlignment="Left" Margin="136,79.8,0,0" VerticalAlignment="Top" Grid.Row="1" Checked="checkBox_spt_Checked"/>
+                <CheckBox x:Name="checkBox_sptB"  Content="S.B" HorizontalAlignment="Left" Margin="377,170.2,0,0" VerticalAlignment="Top" Grid.Row="1" Checked="checkBox_spt_Checked"/>
+                <CheckBox x:Name="checkBox_sptC"  Content="S.C" HorizontalAlignment="Left" Margin="136,369.8,0,0" VerticalAlignment="Top" Grid.Row="1" Checked="checkBox_spt_Checked"/>
+                <CheckBox x:Name="checkBox_sptD"  Content="S.D" HorizontalAlignment="Left" Margin="43,170.8,0,0"  VerticalAlignment="Top" Grid.Row="1" Checked="checkBox_spt_Checked"/>
+                <CheckBox x:Name="checkBox_prfsA" Content="P.A" HorizontalAlignment="Left" Margin="164,162.2,0,0" VerticalAlignment="Top" Grid.Row="1" />
+                <CheckBox x:Name="checkBox_prfsB" Content="P.B" HorizontalAlignment="Left" Margin="280,159.2,0,0" VerticalAlignment="Top" Grid.Row="1" />
+                <CheckBox x:Name="checkBox_prfsC" Content="P.C" HorizontalAlignment="Left" Margin="293,192.2,0,0" VerticalAlignment="Top" Grid.Row="1" />
+                <CheckBox x:Name="checkBox_prfsD" Content="P.D" HorizontalAlignment="Left" Margin="291,270.2,0,0" VerticalAlignment="Top" Grid.Row="1" />
+                <CheckBox x:Name="checkBox_prfsE" Content="P.E" HorizontalAlignment="Left" Margin="280,296.2,0,0" VerticalAlignment="Top" Grid.Row="1" />
+                <CheckBox x:Name="checkBox_prfsF" Content="P.F" HorizontalAlignment="Left" Margin="168,295.2,0,0" VerticalAlignment="Top" Grid.Row="1" />
+                <CheckBox x:Name="checkBox_prfsG" Content="P.G" HorizontalAlignment="Left" Margin="133,271.2,0,0" VerticalAlignment="Top" Grid.Row="1" />
+                <CheckBox x:Name="checkBox_prfsH" Content="P.H" HorizontalAlignment="Left" Margin="134,190.2,0,0" VerticalAlignment="Top" Grid.Row="1" />
+                <Label x:Name="label_metragem" Content="" Margin="130,410,463,19"/>
+                <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="470,133,0,0" TextWrapping="Wrap" Text="Diametro Chumbador:" VerticalAlignment="Top"/>
+                <TextBox x:Name="textBox_diametro" TextWrapping="Wrap" Text="" Margin="596,129,90,320" BorderBrush="Black" PreviewTextInput="textBox_diametro_PreviewTextInput"/>
+                <Button x:Name="btn_gerarcoluna" Content="Gerar Coluna" HorizontalAlignment="Left" Margin="680,429,0,0" VerticalAlignment="Top" Width="75" Click="Btn_gerarcoluna_Click"/>
+            </Grid>
+
+        </StackPanel>
+    </Grid>
+</Window>
