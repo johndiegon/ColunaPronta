@@ -1,50 +1,49 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
-using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using ColunaPronta.Model;
-using FormaPronta.Helper;
-using System;
+using ColunaPronta.Helper;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Forms;
-using AcAp = Autodesk.AutoCAD.ApplicationServices.Application;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
+using System.Windows;
+using System.Threading;
 
 namespace ColunaPronta.Commands
 {
-    public class ComandoAutocad : IDisposable
+    public static class IntegraColuna 
     {
-        private bool disposedValue;
+        #region >> Propriedades
+
         const double _escala = 1000;
         const double distancia = 38 / _escala;
+        #endregion
 
-        public Coluna SelecionaColuna()
+        public static Coluna SelecionaColuna()
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            Database db = doc.Database;
-            Editor ed = doc.Editor;
-            var coluna = new Coluna();
+            Document document = Application.DocumentManager.MdiActiveDocument;
+            Database database = document.Database;
+            Editor editor = document.Editor;
+            var coluna = new Coluna() 
+            {
+                NomeArquivo = document.Window.Text
+            };
 
             List<double> ListaY = new List<double>();
             List<double> ListaX = new List<double>();
             double x;
             double y;
 
-            PromptSelectionResult psr = ed.GetSelection();
+            PromptSelectionResult psr = editor.GetSelection();
 
             if (psr.Status == PromptStatus.OK)
             {
-                using (Transaction tr = db.TransactionManager.StartTransaction())
+                using (Transaction tr = database.TransactionManager.StartTransaction())
                 {
-                  
+                
                     SelectionSet selectionSet = psr.Value;
                     ObjectId[] objectIds = selectionSet.GetObjectIds();
-                    
 
                     foreach (ObjectId objectId in objectIds)
                     {
@@ -65,7 +64,6 @@ namespace ColunaPronta.Commands
                             }
                         }
                     }
-
                     tr.Commit();
                 }
             }
@@ -95,8 +93,10 @@ namespace ColunaPronta.Commands
 
             return coluna;
         }
-        public void GeraColuna(Coluna coluna)
+        public static void AddColuna(Coluna coluna)
         {
+            AddTitulo(coluna.PointA, coluna.GetTipoColuna());
+            
             if (coluna.ParafusoA == true ) { AddParafuso("A", coluna);}
             if (coluna.ParafusoB == true ) { AddParafuso("B", coluna);}
             if (coluna.ParafusoC == true ) { AddParafuso("C", coluna);}
@@ -136,7 +136,6 @@ namespace ColunaPronta.Commands
                 var p2 = new Point2d(coluna.PointD.X, coluna.PointD.Y); 
                 AddSapata(p1, p2, p3, p4, tipocoluna, coluna.DiametroSapata / _escala);
             }
-
             if (coluna.SapataD == true)
             {
 
@@ -148,15 +147,16 @@ namespace ColunaPronta.Commands
                 AddSapata(p1, p2, p3, p4, tipocoluna, coluna.DiametroSapata / _escala);
             }
 
+            ArquivoCSV.Registra(coluna);
+
         }
-        public void AddSapata(Point2d p1, Point2d p2, Point2d p3, Point2d p4, string tipocoluna , double diametro)
+        public static void AddSapata(Point2d p1, Point2d p2, Point2d p3, Point2d p4, string tipocoluna, double diametro)
         {
             var raio = diametro / 2;
-            var helper = new Helpers();
+         
             Document document = Application.DocumentManager.MdiActiveDocument;
 
-            helper.AddPolyline(document, p1, p2, p3, p4, tipocoluna);
-
+            Helpers.AddPolyline(document, p1, p2, p3, p4, tipocoluna);
 
             List<double> ListaY = new List<double>();
             List<double> ListaX = new List<double>();
@@ -176,32 +176,30 @@ namespace ColunaPronta.Commands
 
             var centerX = ponto1.GetDistanceTo(ponto2) / 2;
             var centery = ponto2.GetDistanceTo(ponto3) / 2;
-            helper.AddCircle(document, new Point3d(p1.X + centerX, p1.Y - centery, 0), raio);
+        
+            Helpers.AddCircle(document, new Point3d(p1.X + centerX, p1.Y - centery, 0), raio);
 
         }
-     
-        public void AddParafuso(string TpParafuso, Coluna coluna)
+        public static void AddParafuso(string TpParafuso, Coluna coluna)
         {
-            var helper = new Helpers();
-            
             Document document = Application.DocumentManager.MdiActiveDocument;
 
             if (TpParafuso == "A")
             {
                 var pontoA = new Point2d(coluna.PointA.X, coluna.PointA.Y);
-                var p1 = new Point2d(pontoA.X + (20 / _escala), pontoA.Y + (30 / _escala));
+                var p1 = new Point2d(pontoA.X + (10 / _escala), pontoA.Y + (30 / _escala));
                 var p2 = new Point2d(p1.X + (20 / _escala), p1.Y);
                 var p3 = new Point2d(p1.X + (20 / _escala), p1.Y - (10 / _escala));
                 var p4 = new Point2d(p1.X , p1.Y - (10 / _escala));
 
-                helper.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
 
                 var p2v1 = new Point2d(p1.X + (5 / _escala), p1.Y );
                 var p2v2 = new Point2d(p2v1.X , p2v1.Y - (50 / _escala));
                 var p2v3 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y - +(50 / _escala));
                 var p2v4 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y );
 
-                helper.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
             }
             if (TpParafuso == "B")
             {
@@ -211,14 +209,14 @@ namespace ColunaPronta.Commands
                 var p3 = new Point2d(p1.X + (20 / _escala), p1.Y - (10 / _escala));
                 var p4 = new Point2d(p1.X, p1.Y - (10 / _escala));
 
-                helper.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
 
                 var p2v1 = new Point2d(p1.X + (5 / _escala), p1.Y);
                 var p2v2 = new Point2d(p2v1.X, p2v1.Y - (50 / _escala));
                 var p2v3 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y - +(50 / _escala));
                 var p2v4 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y);
 
-                helper.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
             }
             if (TpParafuso == "C")
             {
@@ -228,14 +226,14 @@ namespace ColunaPronta.Commands
                 var p3 = new Point2d(p1.X + (10 / _escala), p1.Y  -(20 / _escala));
                 var p4 = new Point2d(p1.X, p1.Y - (20 / _escala));
 
-                helper.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
 
                 var p2v1 = new Point2d(p2.X, p2.Y - (5 / _escala));
                 var p2v2 = new Point2d(p2v1.X , p2v1.Y - (10 / _escala));
                 var p2v3 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y - (10 / _escala));
                 var p2v4 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y );
 
-                helper.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
             }
             if (TpParafuso == "D")
             {
@@ -245,14 +243,14 @@ namespace ColunaPronta.Commands
                 var p3 = new Point2d(p1.X + (10 / _escala), p1.Y - (20 / _escala));
                 var p4 = new Point2d(p1.X, p1.Y - (20 / _escala));
 
-                helper.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
 
                 var p2v1 = new Point2d(p2.X, p2.Y - (5 / _escala));
                 var p2v2 = new Point2d(p2v1.X, p2v1.Y - (10 / _escala));
                 var p2v3 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y - (10 / _escala));
                 var p2v4 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y);
 
-                helper.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
             }
             if (TpParafuso == "E")
             {
@@ -262,14 +260,14 @@ namespace ColunaPronta.Commands
                 var p3 = new Point2d(p1.X - (20 / _escala), p1.Y - (10 / _escala) );
                 var p4 = new Point2d(p1.X - (20 / _escala), p1.Y );
 
-                helper.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
 
                 var p2v1 = new Point2d(p1.X - ( 5 / _escala), p2.Y );
                 var p2v2 = new Point2d(p2v1.X , p2v1.Y + (50 / _escala));
                 var p2v3 = new Point2d(p2v1.X - (10 / _escala), p2v1.Y + (50 / _escala) );
                 var p2v4 = new Point2d(p2v1.X - (10 / _escala), p2v1.Y );
 
-                helper.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
             }
             if (TpParafuso == "F")
             {
@@ -279,16 +277,15 @@ namespace ColunaPronta.Commands
                 var p3 = new Point2d(p1.X + (20 / _escala), p1.Y - (10 / _escala));
                 var p4 = new Point2d(p1.X + (20 / _escala), p1.Y);
 
-                helper.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
 
                 var p2v1 = new Point2d(p1.X + (5 / _escala), p2.Y);
                 var p2v2 = new Point2d(p2v1.X, p2v1.Y + (50 / _escala));
                 var p2v3 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y + (50 / _escala));
                 var p2v4 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y);
 
-                helper.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
             }
-
             if (TpParafuso == "G")
             {
                 var pontoA = new Point2d(coluna.PointA.X, coluna.PointC.Y);
@@ -297,200 +294,97 @@ namespace ColunaPronta.Commands
                 var p3 = new Point2d(p1.X     + ( 10 / _escala) , p1.Y- ( 20 / _escala) );
                 var p4 = new Point2d(p1.X    , p1.Y- ( 20 / _escala) );
 
-                helper.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
 
                 var p2v1 = new Point2d(p1.X, p1.Y-(5/ _escala));
                 var p2v2 = new Point2d(p2v1.X + ( 50 /_escala ) , p2v1.Y);
                 var p2v3 = new Point2d(p2v1.X + ( 50 / _escala) , p2v1.Y - ( 10/ _escala));
                 var p2v4 = new Point2d(p2v1.X, p2v1.Y - ( 10 / _escala));
 
-                helper.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3 );
+                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3 );
             }
-
             if (TpParafuso == "H")
             {
                 var pontoA = new Point2d(coluna.PointA.X, coluna.PointA.Y);
-                var p1 = new Point2d(pontoA.X - (30 / _escala), pontoA.Y - (25 / _escala));
+                var p1 = new Point2d(pontoA.X - (30 / _escala), pontoA.Y - (15 / _escala));
                 var p2 = new Point2d(p1.X + (10 / _escala), p1.Y);
                 var p3 = new Point2d(p1.X + (10 / _escala), p1.Y - (20 / _escala));
                 var p4 = new Point2d(p1.X, p1.Y - (20 / _escala));
 
-                helper.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
 
                 var p2v1 = new Point2d(p1.X, p1.Y - (5 / _escala));
                 var p2v2 = new Point2d(p2v1.X + (50 / _escala), p2v1.Y);
                 var p2v3 = new Point2d(p2v1.X + (50 / _escala), p2v1.Y - (10 / _escala));
                 var p2v4 = new Point2d(p2v1.X, p2v1.Y - (10 / _escala));
 
-                helper.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
             }
         }
-
-       
-
-        //public void TesteInserBlck()
-        //{
-        //    Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
-        //    PromptPointOptions prPtOpt = new PromptPointOptions("\nIndique o ponto onde será gerado o parafuso: ")
-        //    {
-        //        AllowArbitraryInput = false,
-        //        AllowNone = true
-        //    };
-
-        //    PromptPointResult prPtRes = ed.GetPoint(prPtOpt);
-
-        //    if (prPtRes.Status != PromptStatus.OK) return;
-        //    Point3d point = prPtRes.Value;
-
-        //    InsertBlock(point, "PARAFUSOCOLUNAPRONTA");
-        //}
-        //public void InsertBlock(Point3d insPt, string blockName)
-        //{
-        //    var doc = Application.DocumentManager.MdiActiveDocument;
-        //    var db = doc.Database;
-        //    var ed = doc.Editor;
-        //    Transaction tr = db.TransactionManager.StartTransaction();
-        //    using (DocumentLock documentLock = doc.LockDocument())
-        //    {
-        //        // check if the block table already has the 'blockName'" block
-        //        var bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
-        //        if (!bt.Has(blockName))
-        //        {
-                    
-        //        }
-
-        //        // create a new block reference
-        //        using (var br = new BlockReference(insPt, bt[blockName]))
-        //        {
-                    
-        //            //br.ScaleFactors= new Scale3d(-1, 1, 1);
-        //            var space = (BlockTableRecord)tr.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
-        //            space.AppendEntity(br);
-        //            tr.AddNewlyCreatedDBObject(br, true);
-        //        }
- 
-        //        //Database db = ThisBlockId.Database;
-        //        //using (Transaction tr = db.TransactionManager.StartTransaction())
-        //        //{
-        //        //    BlockTable bt = (BlockTable)tr.GetObject(db.BlockTableId, OpenMode.ForRead);
-        //        //    using (BlockReference br = new BlockReference(Point3d.Origin, bt[Name])
-        //        //    {
-        //        //        ScaleFactors = new Scale3d(Xscale, Yscale, Zscale),
-        //        //        Rotation = Rotation
-        //        //    })
-        //        //    {
-        //        //        BlockTableRecord btr = (BlockTableRecord)tr.GetObject(ThisBlockId, OpenMode.ForWrite);
-        //        //        ObjectId brId = btr.AppendEntity(br);
-        //        //        tr.AddNewlyCreatedDBObject(br, true);
-        //        //        tr.Commit();
-        //        //        return brId;
-        //        //    }
-        //        //}
-        //    }
-        //    tr.Commit();
-
-        //}
-
-
-        public void CopyEnt()
-
+        public static void AddTitulo(Point2d PontoA, TipoColuna tipoColuna)
         {
+            Document document = Application.DocumentManager.MdiActiveDocument;
+            var textTipoColuna = tipoColuna.ToString();
+            var point = new Point3d(PontoA.X - (5 / _escala), PontoA.Y - (5 / _escala), 0);
+            Helpers.AddTexto(document, point, textTipoColuna, ColorIndex.padrao);
+        }
+     
+        public static List<Coluna> GetColunas()
+        {
+            Document document = Application.DocumentManager.MdiActiveDocument;
 
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-
-            Database db = doc.Database;
-
-            Editor ed = doc.Editor;
-
-
-
-            PromptEntityOptions options =
-
-                    new PromptEntityOptions("\nSelect entity to copy");
-
-
-
-            PromptEntityResult acSSPrompt = ed.GetEntity(options);
+            return ArquivoCSV.GetColunas(document.Window.Text);
+        }
 
 
+        public static List<ItemRelatorio> GeraRelatorio()
+        {
+            var colunas = GetColunas();
 
-            if (acSSPrompt.Status != PromptStatus.OK)
+            var colunasPonto = from coluna in colunas
+                                  group coluna by coluna.PointA into  colunaPontoA
+                                 select colunaPontoA.Key;
+            var colunasRelatorio = new List<Coluna>();
 
-                return;
-
-
-
-            ObjectIdCollection collection = new ObjectIdCollection();
-
-            collection.Add(acSSPrompt.ObjectId);
-
-
-
-            //make model space as owner for new entity
-
-            ObjectId ModelSpaceId =
-
-                    SymbolUtilityServices.GetBlockModelSpaceId(db);
-
-
-
-            IdMapping mapping = new IdMapping();
-
-            db.DeepCloneObjects(collection, ModelSpaceId, mapping, false);
-
-
-
-            //now open the new entity and change the color...
-
-            using (Transaction Tx = db.TransactionManager.StartTransaction())
-
+            foreach( Point2d pontoColuna in colunasPonto)
             {
+                var c = (from coluna in colunas
+                         where coluna.PointA == pontoColuna
+                         orderby coluna.dInclusao descending
+                         select new Coluna
+                         {
+                             tipoColuna = coluna.tipoColuna,
+                             DiametroParafuso = coluna.DiametroParafuso,
+                             DiametroSapata = coluna.DiametroSapata,
+                             QuantidadeParafuso = coluna.QuantidadeParafuso,
+                             Comprimento = coluna.Comprimento,
+                             Largura = coluna.Largura,
+                             Altura = coluna.Altura,
+                         }).FirstOrDefault();
 
-                //get the map.
-
-                IdPair pair1 = mapping[acSSPrompt.ObjectId];
-
-
-
-                //new object
-
-                Entity ent = Tx.GetObject(pair1.Value,
-
-                                                OpenMode.ForWrite) as Entity;
-
-
-
-                //change the color to red
-
-                ent.ColorIndex = 1;
-
-
-
-                Tx.Commit();
-
+                colunasRelatorio.Add(c);
             }
-        }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects)
-                }
+            var relatorio = (from coluna in colunasRelatorio
+                            group coluna by new
+                            {
+                                coluna.Altura,
+                                coluna.Comprimento,
+                                coluna.Largura,
+                                coluna.tipoColuna,
+                                coluna.QuantidadeParafuso
 
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
-                disposedValue = true;
-            }
-        }
-
-        void IDisposable.Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+                            } into c
+                            select new ItemRelatorio
+                            {
+                                Altura = c.Key.Altura,
+                                Comprimento = c.Key.Comprimento,
+                                Largura = c.Key.Largura,
+                                tipoColuna = c.Key.tipoColuna,
+                                QtdeParafuso = c.Key.QuantidadeParafuso,
+                                QtdeColuna = c.Count()
+                            }).ToList();
+            return relatorio;
         }
     }
 }

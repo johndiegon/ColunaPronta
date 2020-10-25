@@ -7,22 +7,14 @@ using System.IO;
 using NLog.Config;
 using System;
 using Autodesk.AutoCAD.Colors;
+using ColunaPronta.Model;
 
-namespace FormaPronta.Helper
+namespace ColunaPronta.Helper
 {
-    public class Helpers
+    public static class Helpers
     {
-        public enum ColorIndex
-        {
-            padrao = 999,
-            verde = 3,
-            vermelho = 1
-        }
-        public enum TipoRelatorio
-        {
-            FundoViga
-        }
-        public void AddLinha(Document doc, Point3d point1, Point3d point2, bool trace, ColorIndex color)
+
+        public static void AddLinha(Document doc, Point3d point1, Point3d point2, bool trace, ColorIndex color)
         {
             try
             {
@@ -130,7 +122,7 @@ namespace FormaPronta.Helper
                 }
             }
         }
-        public void AddTexto(Document document, Point3d position, string text, ColorIndex color)
+        public static void AddTexto(Document document, Point3d position, string text, ColorIndex color)
         {
             try
             {
@@ -154,9 +146,8 @@ namespace FormaPronta.Helper
                     using (DBText acText = new DBText())
                     {
                         acText.Position = position;
-                        //acText.Height = 0.2;
                         acText.TextString = text;
-
+                        
                         if (color != ColorIndex.padrao)
                         {
                             acText.ColorIndex = (int)color;
@@ -178,7 +169,7 @@ namespace FormaPronta.Helper
                 Logger.Error(e.ToString());
             }
         }
-        public void AddDimension(Document document, Point3d point1, Point3d point2, Point3d point3)
+        public static void AddDimension(Document document, Point3d point1, Point3d point2, Point3d point3)
         {
             try
             {
@@ -209,7 +200,7 @@ namespace FormaPronta.Helper
                 Logger.Error(e.ToString());
             }
         }
-        public void AddCircle(Document document, Point3d center, double radiusCircle)
+        public static void AddCircle(Document document, Point3d center, double radiusCircle)
         {
             try
             {
@@ -248,15 +239,15 @@ namespace FormaPronta.Helper
                 Logger.Error(e.ToString());
             }
         }
-        public void AddNumeracao(Document document, Point3d point, int i)
+        public static void AddNumeracao(Document document, Point3d point, int i)
         {
-            AddTexto(document, point, i.ToString(), Helpers.ColorIndex.verde);
+            AddTexto(document, point, i.ToString(), ColorIndex.verde);
 
             var pointCircle = new Point3d(point.X, point.Y, 0);
             AddCircle(document, pointCircle, 10);
 
         }
-        public void AddPolyline(Document document, Point2d point1, Point2d point2, Point2d point3, Point2d point4, string nome, int iColor = 0)
+        public static void AddPolyline(Document document, Point2d point1, Point2d point2, Point2d point3, Point2d point4, string nome, int iColor = 0)
         {
             try
             {
@@ -308,7 +299,7 @@ namespace FormaPronta.Helper
                 Logger.Error(e.ToString());
             }
         }
-        public ObjectId GetTableStyle(TipoRelatorio tipoRelatorio)
+        public static ObjectId GetTableStyle(TipoRelatorio tipoRelatorio)
         {
             try
             {
@@ -421,7 +412,7 @@ namespace FormaPronta.Helper
                 return ObjectId.Null;
             }
         }
-        public void TraceBoundaryAndHatch()
+        public static void TraceBoundaryAndHatch()
         {
             Document doc =
               Application.DocumentManager.MdiActiveDocument;

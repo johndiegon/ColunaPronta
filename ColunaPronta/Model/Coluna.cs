@@ -1,4 +1,5 @@
-﻿using Autodesk.AutoCAD.Geometry;
+﻿using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Geometry;
 
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace ColunaPronta.Model
     public class Coluna
     {
         const double _escala = 1000;
+        protected double comprimento = 0, largura =0 , altura=0;
         public Point2d PointA { get; set; }
         public Point2d PointB { get; set; }
         public Point2d PointC { get; set; }
@@ -18,36 +20,58 @@ namespace ColunaPronta.Model
         public double Comprimento 
         {
             get
-            {
-                
-                if ( this.PointA != null && this.PointB != null && this.PointC != null)
+            { 
+                if ( comprimento == 0)
                 {
-                    var lado1 = this.PointA.GetDistanceTo(this.PointB) * _escala;
-                    var lado2 = this.PointA.GetDistanceTo(this.PointC) * _escala;
+                    if (this.PointA != null && this.PointB != null && this.PointC != null)
+                    {
+                        var lado1 = this.PointA.GetDistanceTo(this.PointB) * _escala;
+                        var lado2 = this.PointA.GetDistanceTo(this.PointC) * _escala;
 
-                    return lado1 > lado2 ? lado2 : lado1;
+                        return lado1 > lado2 ? lado2 : lado1;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+
                 }
                 else
                 {
-                    return 0;
+                    return this.comprimento;
                 }
+            }
+            set
+            {
+                this.comprimento = value;
             }
         }
         public double Largura 
         {
             get
             {
-                if (this.PointA != null && this.PointB != null && this.PointC != null)
+                if( largura == 0)
                 {
-                    var lado1 = this.PointA.GetDistanceTo(this.PointB) * _escala;
-                    var lado2 = this.PointA.GetDistanceTo(this.PointC) * _escala;
+                    if (this.PointA != null && this.PointB != null && this.PointC != null)
+                    {
+                        var lado1 = this.PointA.GetDistanceTo(this.PointB) * _escala;
+                        var lado2 = this.PointA.GetDistanceTo(this.PointC) * _escala;
 
-                    return lado1 > lado2 ? lado1 : lado2;
+                        return lado1 > lado2 ? lado1 : lado2;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
                 }
                 else
                 {
-                    return 0;
+                    return this.largura;
                 }
+            }
+            set
+            {
+                this.largura = value;
             }
         }
         public bool ParafusoA { get; set; }
@@ -65,13 +89,36 @@ namespace ColunaPronta.Model
         public double DiametroParafuso { get; set; }
         public double DiametroSapata { get; set; }
         public double Altura { get; set; }
+        public double QuantidadeParafuso { get; set; }
+        public string NomeArquivo { get; set; }
+        public List<long> ObjectIds { get; set; }
 
-        private TipoColuna tipoColuna;
+        public TipoColuna tipoColuna { get; set; }
 
         public TipoColuna GetTipoColuna()
         {
             return tipoColuna;
         }
 
+        public void SetTipoColuna(TipoColuna tipoColuna)
+        {
+            this.tipoColuna = tipoColuna;
+        }
+        public DateTime dInclusao { get; set; }
+        public static Coluna FromCsv(string csvLine)
+        {
+            string[] values = csvLine.Split(';');
+            Coluna coluna = new Coluna();
+            coluna.tipoColuna = (TipoColuna)Convert.ToInt32((values[0]));
+            coluna.PointA= new Point2d(Convert.ToDouble(values[1]), Convert.ToDouble(values[2]));
+            coluna.DiametroSapata = Convert.ToDouble(values[3]);
+            coluna.DiametroParafuso = Convert.ToDouble(values[4]);
+            coluna.QuantidadeParafuso = Convert.ToDouble(values[5]);
+            coluna.Comprimento = Convert.ToDouble(values[6]);
+            coluna.Largura = Convert.ToDouble(values[7]);
+            coluna.Altura = Convert.ToDouble(values[8]);
+            coluna.dInclusao = Convert.ToDateTime(values[9]);
+            return coluna;
+        }
     }
 }

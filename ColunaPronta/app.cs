@@ -1,10 +1,6 @@
 ﻿using Autodesk.AutoCAD.Runtime;
 using ColunaPronta.Commands;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ColunaPronta.Model;
 
 namespace ColunaPronta
 {
@@ -26,19 +22,17 @@ namespace ColunaPronta
         [CommandMethod("GeraColuna")]
         public void GeraColuna()
         {
-
-            ComandoAutocad comando = new ComandoAutocad();
-            var coluna = comando.SelecionaColuna();
+            var coluna = IntegraColuna.SelecionaColuna();
             WPFColunaPronta window = new WPFColunaPronta(coluna);
             window.Show();
         }
 
-        //[CommandMethod("Teste")]
-        //public void teste()
-        //{
-        //    ComandoAutocad comando = new ComandoAutocad();
-        //    comando.TesteInserBlck();
-        //}
+        [CommandMethod("Teste")]
+        public void Teste()
+        {
+            IntegraColuna.GeraRelatorio();
+        }
+
 
     }
 }

@@ -40,15 +40,59 @@ namespace ColunaPronta
 
         private void Btn_gerarcoluna_Click(object sender, RoutedEventArgs e)
         {
+           
+            //Diametro do Chumbador
             if (diametroChumbadorObrigatorio == true && textBox_diametro.Text.ToString() == "")
             {
                 MessageBox.Show( "Preenchimento do Diâmetro do chumbador é obrigatório quando há sapata para gerar.", "Atenção!");
                 return;
             }
+            
             if (diametroChumbadorObrigatorio)
             {
                 this._coluna.DiametroSapata = Convert.ToDouble(textBox_diametro.Text.ToString());
             }
+            
+            //Altura
+            if (textBox_altura.Text.ToString() == "")
+            {
+                MessageBox.Show("Preenchimento da altura da coluna é obrigatório.", "Atenção!");
+                return;
+            }
+            else
+            {
+                this._coluna.Altura = Convert.ToDouble(textBox_altura.Text.ToString());
+            }
+
+            //Quantidade de parafuso
+            if (textBox_qtParafuso.Text.ToString() == "")
+            {
+                MessageBox.Show("Preenchimento da quantidade de parafuso é obrigatório.", "Atenção!");
+                return;
+            }
+            else
+            {
+                this._coluna.QuantidadeParafuso = Convert.ToDouble(textBox_qtParafuso.Text.ToString());
+            }
+
+            //Tipo de coluna.
+            if (combobox_TpColuna.SelectedValue.ToString()=="")
+            {
+                MessageBox.Show("Selecione o tipo de coluna.", "Atenção!");
+                return;
+            }
+
+            //Quantidade de parafuso
+            if (textBox_parafuso.Text.ToString() == "")
+            {
+                MessageBox.Show("Preenchimento do diametro de parafuso é obrigatório.", "Atenção!");
+                return;
+            }
+            else
+            {
+                this._coluna.DiametroParafuso = Convert.ToDouble(textBox_parafuso.Text.ToString());
+            }
+
 
             this._coluna.ParafusoA = (bool)this.checkBox_prfsA.IsChecked;
             this._coluna.ParafusoB = (bool)this.checkBox_prfsB.IsChecked;
@@ -62,15 +106,13 @@ namespace ColunaPronta
             this._coluna.SapataB   = (bool)this.checkBox_sptB.IsChecked;
             this._coluna.SapataC   = (bool)this.checkBox_sptC.IsChecked;
             this._coluna.SapataD   = (bool)this.checkBox_sptD.IsChecked;
-
-            var tipo = combobox_TpColuna.SelectedItem;
+            this._coluna.SetTipoColuna( (TipoColuna)combobox_TpColuna.SelectedItem );
 
             this.Close();
-            var comando = new ComandoAutocad();
-            comando.GeraColuna(_coluna);
+            IntegraColuna.AddColuna(_coluna);
         }
 
-        private void textBox_diametro_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        private void textBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             var textBox = sender as TextBox;
             e.Handled = Regex.IsMatch(e.Text, "[^0-9]+");
