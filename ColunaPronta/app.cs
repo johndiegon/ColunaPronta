@@ -27,12 +27,11 @@ namespace ColunaPronta
             window.Show();
         }
 
-        [CommandMethod("Teste")]
-        public void Teste()
+        [CommandMethod("GeraRelatorio")]
+        public void GeraRelatorio()
         {
             IntegraColuna.GeraRelatorio();
         }
-
 
     }
 }

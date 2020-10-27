@@ -70,9 +70,6 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Syncfusion.Shared.WPF, Version=18.3400.0.35, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL" />
-    <Reference Include="Syncfusion.Tools.Windows, Version=18.3460.0.35, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL" />
-    <Reference Include="Syncfusion.Tools.WPF, Version=18.3460.0.35, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -93,10 +90,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\ArquivoCSV.cs" />
-    <Compile Include="Commands\GeraRelatorio.cs" />
     <Compile Include="Commands\IntegraColuna.cs" />
     <Compile Include="app.cs" />
     <Compile Include="Commands\Plott.cs" />
+    <Compile Include="Commands\ViewPlottColuna.cs" />
     <Compile Include="Helper\Helpers.cs" />
     <Compile Include="Model\ColorIndex.cs" />
     <Compile Include="Model\ItemRelatorio.cs" />

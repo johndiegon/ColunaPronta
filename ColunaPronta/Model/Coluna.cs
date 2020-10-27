@@ -1,16 +1,28 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-
+﻿using Autodesk.AutoCAD.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ColunaPronta.Model
 {
     public class Coluna
     {
+        public Coluna()
+        {
+            ParafusoA = false;
+            ParafusoB = false;
+            ParafusoC = false;
+            ParafusoD = false;
+            ParafusoE = false;
+            ParafusoF = false;
+            ParafusoG = false;
+            ParafusoH = false;
+            SapataA   = false;
+            SapataB   = false;
+            SapataC   = false;
+            SapataD   = false;
+        }
+
         const double _escala = 1000;
         protected double comprimento = 0, largura =0 , altura=0;
         public Point2d PointA { get; set; }
@@ -28,7 +40,7 @@ namespace ColunaPronta.Model
                         var lado1 = this.PointA.GetDistanceTo(this.PointB) * _escala;
                         var lado2 = this.PointA.GetDistanceTo(this.PointC) * _escala;
 
-                        return lado1 > lado2 ? lado2 : lado1;
+                        return lado1 > lado2 ? lado1 : lado2;
                     }
                     else
                     {
@@ -57,7 +69,7 @@ namespace ColunaPronta.Model
                         var lado1 = this.PointA.GetDistanceTo(this.PointB) * _escala;
                         var lado2 = this.PointA.GetDistanceTo(this.PointC) * _escala;
 
-                        return lado1 > lado2 ? lado1 : lado2;
+                        return lado1 > lado2 ? lado2 : lado1;
                     }
                     else
                     {
@@ -92,14 +104,11 @@ namespace ColunaPronta.Model
         public double QuantidadeParafuso { get; set; }
         public string NomeArquivo { get; set; }
         public List<long> ObjectIds { get; set; }
-
         public TipoColuna tipoColuna { get; set; }
-
         public TipoColuna GetTipoColuna()
         {
             return tipoColuna;
         }
-
         public void SetTipoColuna(TipoColuna tipoColuna)
         {
             this.tipoColuna = tipoColuna;
@@ -119,6 +128,42 @@ namespace ColunaPronta.Model
             coluna.Altura = Convert.ToDouble(values[8]);
             coluna.dInclusao = Convert.ToDateTime(values[9]);
             return coluna;
+        }
+        public void SetPontos(Point3dCollection points)
+        {
+            List<double> ListaY = new List<double>();
+            List<double> ListaX = new List<double>();
+            double x;
+            double y;
+
+            foreach (Point3d point in points)
+            {
+                ListaX.Add(point.X);
+                ListaY.Add(point.Y);
+            }
+
+            if (ListaX.Count > 0 && ListaY.Count > 0)
+            {
+                // Ponto A
+                x = ListaX.Min();
+                y = ListaY.Max();
+                this.PointA = new Point2d(x, y);
+
+                // Ponto B
+                x = ListaX.Max();
+                y = ListaY.Max();
+                this.PointB = new Point2d(x, y);
+
+                // Ponto C
+                x = ListaX.Min();
+                y = ListaY.Min();
+                this.PointC = new Point2d(x, y);
+
+                // Ponto D
+                x = ListaX.Max();
+                y = ListaY.Min();
+                this.PointD = new Point2d(x, y);
+            }
         }
     }
 }

@@ -62,7 +62,7 @@ namespace ColunaPronta.Helper
                 Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
                 editor.WriteMessage(e.ToString());
                 NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\FundoViga\NLog.config");
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
                 Logger.Error(e.ToString());
             }
         }
@@ -98,7 +98,7 @@ namespace ColunaPronta.Helper
                 Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
                 editor.WriteMessage(e.ToString());
                 NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\FundoViga\NLog.config");
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
                 Logger.Error(e.ToString());
                 return null;
             }
@@ -147,7 +147,13 @@ namespace ColunaPronta.Helper
                     {
                         acText.Position = position;
                         acText.TextString = text;
-                        
+                        DBText dBText = new DBText
+                        {
+                            Height = 0.03
+                        };
+
+                        acText.Height = dBText.Height;
+
                         if (color != ColorIndex.padrao)
                         {
                             acText.ColorIndex = (int)color;
@@ -165,7 +171,7 @@ namespace ColunaPronta.Helper
                 Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
                 editor.WriteMessage(e.ToString());
                 NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\FundoViga\NLog.config");
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
                 Logger.Error(e.ToString());
             }
         }
@@ -196,7 +202,7 @@ namespace ColunaPronta.Helper
                 Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
                 editor.WriteMessage(e.ToString());
                 NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\FundoViga\NLog.config");
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
                 Logger.Error(e.ToString());
             }
         }
@@ -235,7 +241,7 @@ namespace ColunaPronta.Helper
                 Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
                 editor.WriteMessage(e.ToString());
                 NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\FundoViga\NLog.config");
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
                 Logger.Error(e.ToString());
             }
         }
@@ -295,7 +301,47 @@ namespace ColunaPronta.Helper
                 Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
                 editor.WriteMessage(e.ToString());
                 NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\FundoViga\NLog.config");
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+            }
+        }
+        public static void AddPolyline(Document document, Point2dCollection points, ColorIndex color)
+        {
+            try
+            {
+                Database database = document.Database;
+
+                Transaction transaction = document.TransactionManager.StartTransaction();
+
+                // polyline do fundo de Viga
+                using (DocumentLock documentLock = document.LockDocument())
+                {
+                    BlockTable blockTable = transaction.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
+                    BlockTableRecord blockTableRecord = transaction.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+
+                    var polyline = new Polyline(points.Count);
+
+                    var i = 0;
+                    foreach (var pt in points)
+                    {
+                        polyline.AddVertexAt(i, pt, 0, 0, 0);
+                        i++;
+                    }
+
+                    //polyline.ColorIndex = (int)color;
+
+                    blockTableRecord.AppendEntity(polyline);
+                    transaction.AddNewlyCreatedDBObject(polyline, true);
+
+                    transaction.Commit();
+                }
+            }
+            catch (Exception e)
+            {
+                Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
+                editor.WriteMessage(e.ToString());
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
                 Logger.Error(e.ToString());
             }
         }
@@ -406,7 +452,7 @@ namespace ColunaPronta.Helper
                 Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
                 editor.WriteMessage(e.ToString());
                 NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\FundoViga\NLog.config");
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
                 Logger.Error(e.ToString());
 
                 return ObjectId.Null;

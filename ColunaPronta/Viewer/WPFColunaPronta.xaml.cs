@@ -1,19 +1,11 @@
 ﻿using ColunaPronta.Commands;
 using ColunaPronta.Model;
-using Syncfusion.Windows.Forms.Tools.Win32API;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ColunaPronta
 {
@@ -110,6 +102,9 @@ namespace ColunaPronta
 
             this.Close();
             IntegraColuna.AddColuna(_coluna);
+            ArquivoCSV.Registra(_coluna);
+            IntegraColuna.AddTitulo(_coluna.PointA, _coluna.GetTipoColuna());
+
         }
 
         private void textBox_PreviewTextInput(object sender, TextCompositionEventArgs e)

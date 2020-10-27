@@ -1,5 +1,6 @@
 ﻿using ColunaPronta.Model;
 using Newtonsoft.Json;
+using NLog.Config;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,9 +34,9 @@ namespace ColunaPronta.Commands
                                            , coluna.DiametroSapata, ";"
                                            , coluna.DiametroParafuso, ";"
                                            , coluna.QuantidadeParafuso, ";"
-                                           , coluna.Comprimento.ToString("N2"), ";"
-                                           , coluna.Largura.ToString("N2"), ";"
-                                           , coluna.Altura.ToString("N2"), ";"
+                                           , coluna.Comprimento.ToString(), ";"
+                                           , coluna.Largura.ToString(), ";"
+                                           , coluna.Altura.ToString(), ";"
                                            , DateTime.Now.ToString()
                                            ); 
             writer.WriteLine(linhaColuna);
@@ -44,13 +45,24 @@ namespace ColunaPronta.Commands
 
         public static List<Coluna> GetColunas(string arquivo) 
         {
-            string nomeArquivo = string.Concat("C:\\Autodesk\\ColunaPronta\\Relatorio\\", arquivo, ".csv");
+            try
+            {
+                string nomeArquivo = string.Concat("C:\\Autodesk\\ColunaPronta\\Relatorio\\", arquivo, ".csv");
 
-            List<Coluna> values = File.ReadAllLines(nomeArquivo)
-                                               .Skip(1)
-                                               .Select(v => Coluna.FromCsv(v))
-                                               .ToList();
-            return values;
+                List<Coluna> values = File.ReadAllLines(nomeArquivo)
+                                                   .Skip(1)
+                                                   .Select(v => Coluna.FromCsv(v))
+                                                   .ToList();
+                return values;
+
+            }
+            catch (Exception e)
+            {
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+                return null;
+            }
         }
 
     }

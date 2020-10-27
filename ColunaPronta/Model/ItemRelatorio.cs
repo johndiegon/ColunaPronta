@@ -14,5 +14,6 @@ namespace ColunaPronta.Model
         public TipoColuna tipoColuna { get; set; }
         public double QtdeParafuso { get; set; }
         public double QtdeColuna { get; set; }
+        public double DiametroSapata { get; set; }
     }
 }
