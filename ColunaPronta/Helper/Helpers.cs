@@ -3,7 +3,6 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using System.Collections.Generic;
-using System.IO;
 using NLog.Config;
 using System;
 using Autodesk.AutoCAD.Colors;
@@ -327,8 +326,6 @@ namespace ColunaPronta.Helper
                         polyline.AddVertexAt(i, pt, 0, 0, 0);
                         i++;
                     }
-
-                    //polyline.ColorIndex = (int)color;
 
                     blockTableRecord.AppendEntity(polyline);
                     transaction.AddNewlyCreatedDBObject(polyline, true);

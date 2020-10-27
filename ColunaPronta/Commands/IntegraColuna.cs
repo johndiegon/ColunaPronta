@@ -7,8 +7,6 @@ using ColunaPronta.Helper;
 using System.Collections.Generic;
 using System.Linq;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
-using System.Windows;
-using System.Threading;
 using System;
 using NLog.Config;
 
@@ -371,7 +369,6 @@ namespace ColunaPronta.Commands
             var point = new Point3d(PontoA.X - (20 / _escala), PontoA.Y - (5 / _escala), 0);
             Helpers.AddTexto(document, point, textTipoColuna, ColorIndex.padrao);
         }
-
         public static List<ItemRelatorio> GetDadosRelatorio(string nomeProjeto)
         {
             try
@@ -501,7 +498,6 @@ namespace ColunaPronta.Commands
                 Logger.Error(e.ToString());
             }
         }
-
         public static Coluna GetColunaModelo(TipoColuna tipoColuna)
         {
             var coluna = new Coluna();
