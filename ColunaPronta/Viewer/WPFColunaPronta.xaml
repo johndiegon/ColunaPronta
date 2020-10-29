@@ -3,17 +3,41 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ColunaPronta"
-        xmlns:syncfusion="http://schemas.syncfusion.com/wpf" 
         x:Class="ColunaPronta.WPFColunaPronta"
         mc:Ignorable="d"
         Title="Coluna Pronta" Height="500" Width="800"
         WindowStyle="SingleBorderWindow"
         >
     <Grid>
-        <StackPanel x:Name="StackPanel_Seleciona" Visibility="Visible" Background="White">
-            <Grid x:Name="grid_seleciona" Height="470" Width="800" Margin="0,0,-6.4,0">
-                <Image x:Name="image" HorizontalAlignment="Left" Height="436" Margin="0,0.2,0,0" VerticalAlignment="Top" Width="483" Source="C:\Autodesk\ColunaPronta\Image\Coluna.png" Grid.Row="1"/>
+
+        <StackPanel x:Name="StackPanel_TelaInicial" Visibility="Visible">
+            <Grid Margin="0,0,-0.4,0" Height="470">
+                <TextBlock Text="Defina o tipo de coluna:" Margin="40,24,399,409" FontSize="30" RenderTransformOrigin="0.5,0.5" />
+                <TextBlock Text="Com Parafuso" Margin="159,384,440,46" FontSize="30" RenderTransformOrigin="0.5,0.5" />
+                <TextBlock Text="Com passante" Margin="479,379,123,55" FontSize="30" RenderTransformOrigin="0.5,0.5" />
+
+                <Image x:Name="menu_parafuso" Source="C:\Autodesk\ColunaPronta\Image\menu_parafuso.png" Margin="96,145,343,98" RenderTransformOrigin="0.901,1.662" MouseMove="menu_parafuso_MouseMove" MouseDown="border_parafuso_MouseEnter" />
+                <Image x:Name="menu_passante" Source="C:\Autodesk\ColunaPronta\Image\menu_passante.png" Margin="467,150,90,92" RenderTransformOrigin="0.901,1.662" MouseMove="menu_passante_MouseMove" MouseDown="border_parafuso_MouseEnter" />
+
+                <Border x:Name="border_parafuso" BorderBrush="Blue" BorderThickness="1" HorizontalAlignment="Left" Height="309" Margin="141,122,0,0" VerticalAlignment="Top" Width="222" RenderTransformOrigin="1.532,0.348" Visibility="Visible"/>
+                <Border x:Name="border_passante" BorderBrush="Blue" BorderThickness="1" HorizontalAlignment="Left" Height="309" Margin="464,122,0,0" VerticalAlignment="Top" Width="222" RenderTransformOrigin="1.532,0.348" Visibility="Visible"/>
+
+            </Grid>
+        </StackPanel>
+
+        <StackPanel x:Name="StackPanel_SelecionaColunaNormal" Visibility="Hidden" Background="White">
+            <Grid x:Name="grid_selecionaColunaHorizontal" Height="470" Width="800" Margin="0,0,310,0.4">
+                <Image x:Name="image_colunaNormal_horizontal" HorizontalAlignment="Left" Height="436" Margin="0,0.2,0,0" VerticalAlignment="Top" Width="483" Source="C:\Autodesk\ColunaPronta\Image\Coluna.png" Grid.Row="1" Visibility="Visible"/>
+                <Image x:Name="image_colunaNormal_vertical" HorizontalAlignment="Left" Height="436" Margin="35,27,0,0" VerticalAlignment="Top" Width="483" Source="C:\Autodesk\ColunaPronta\Image\Coluna.png" RenderTransformOrigin="0.5,0.5" Visibility="Hidden">
+                    <Image.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform Angle="90"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Image.RenderTransform>
+                </Image>
                 <CheckBox x:Name="checkBox_sptA"  Content="S.A" HorizontalAlignment="Left" Margin="136,79.8,0,0" VerticalAlignment="Top" Grid.Row="1" Checked="checkBox_spt_Checked"/>
                 <CheckBox x:Name="checkBox_sptB"  Content="S.B" HorizontalAlignment="Left" Margin="377,170.2,0,0" VerticalAlignment="Top" Grid.Row="1" Checked="checkBox_spt_Checked"/>
                 <CheckBox x:Name="checkBox_sptC"  Content="S.C" HorizontalAlignment="Left" Margin="136,369.8,0,0" VerticalAlignment="Top" Grid.Row="1" Checked="checkBox_spt_Checked"/>
@@ -26,21 +50,83 @@
                 <CheckBox x:Name="checkBox_prfsF" Content="P.F" HorizontalAlignment="Left" Margin="168,295.2,0,0" VerticalAlignment="Top" Grid.Row="1" />
                 <CheckBox x:Name="checkBox_prfsG" Content="P.G" HorizontalAlignment="Left" Margin="133,271.2,0,0" VerticalAlignment="Top" Grid.Row="1" />
                 <CheckBox x:Name="checkBox_prfsH" Content="P.H" HorizontalAlignment="Left" Margin="134,190.2,0,0" VerticalAlignment="Top" Grid.Row="1" />
-                <Label x:Name="label_metragem" Content="" Margin="503,126,90,301"/>
-                <TextBlock x:Name="textBlock_" HorizontalAlignment="Left" Margin="505,183,0,0" TextWrapping="Wrap" Text="Tipo da Coluna:" VerticalAlignment="Top" RenderTransformOrigin="-0.25,-1.775"/>
-                <ComboBox x:Name="combobox_TpColuna" Margin="596,177,90,272"></ComboBox>
-                <TextBlock x:Name="textBlock_chumbador" HorizontalAlignment="Left" Margin="470,209,0,0" TextWrapping="Wrap" Text="Diâmetro Chumbador:" VerticalAlignment="Top"/>
-                <TextBox x:Name="textBox_diametro" TextWrapping="Wrap" Text="" Margin="596,202,90,244" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
-                <TextBlock x:Name="textBlock_parafuso" HorizontalAlignment="Left" Margin="486,238,0,0" TextWrapping="Wrap" Text="Diâmetro Parafuso:" VerticalAlignment="Top"/>
-                <TextBox x:Name="textBox_parafuso" TextWrapping="Wrap" Text="" Margin="595,233,91,213" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput" />
-                <Button x:Name="btn_gerarcoluna" Content="Gerar Coluna" HorizontalAlignment="Left" Margin="680,429,0,0" VerticalAlignment="Top" Width="75" Click="Btn_gerarcoluna_Click"/>
-                <TextBlock x:Name="textBlock_altura" HorizontalAlignment="Left" Margin="495,300,0,0" TextWrapping="Wrap" Text="Altura da Coluna:" VerticalAlignment="Top"/>
-                <TextBox x:Name="textBox_altura" TextWrapping="Wrap" Text="" Margin="595,295,91,151" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
-                <TextBlock x:Name="textBlock_qtParafuso" HorizontalAlignment="Left" Margin="451,269,0,0" TextWrapping="Wrap" Text="Quantidade de Parafusos:" VerticalAlignment="Top"/>
-                <TextBox x:Name="textBox_qtParafuso" TextWrapping="Wrap" Text="" Margin="595,264,91,182" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
-
             </Grid>
-
         </StackPanel>
+
+        <StackPanel x:Name="StackPanel_SelecionaColunapassante" Visibility="Hidden">
+            <TabControl x:Name="tabControl" Height="470" Margin="0,0,-0.4,0">
+                <TabItem Header="Sapata">
+                    <Grid Background="White" Margin="0,0,310,0.4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="69*"/>
+                            <ColumnDefinition Width="409*"/>
+                        </Grid.ColumnDefinitions>
+                        <Image x:Name="image_passante_vertical" Source="C:\Autodesk\ColunaPronta\Image\passante_a.png" Visibility="Hidden" Margin="0,0,-0.4,0" Grid.ColumnSpan="2"/>
+                        <Image x:Name="image_passante_horizontal" Source="C:\Autodesk\ColunaPronta\Image\passante_a.png" Visibility="Visible" Margin="365.1,2,-438.4,5" Grid.Column="1">
+                            <Image.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform Angle="90"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </Image.RenderTransform>
+                        </Image>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="passante">
+                    <Grid Background="White" Margin="0,0,310,0.4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="19*"/>
+                            <ColumnDefinition Width="770*"/>
+                        </Grid.ColumnDefinitions>
+                        <Image x:Name="image_passanteb_vertical" Source="C:\Autodesk\ColunaPronta\Image\passante_b.png" Visibility="Hidden" Grid.ColumnSpan="2" Margin="0,-6,-0.4,6"/>
+                        <Image x:Name="image_passanteb_horizontal" Source="C:\Autodesk\ColunaPronta\Image\passante_b.png" Visibility="Visible" Margin="420.8,-7,-443.4,14" Grid.Column="1">
+                            <Image.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform Angle="90"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </Image.RenderTransform>
+                        </Image>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="passante" Margin="-6.6,-4,3.2,2.8">
+                    <Grid Background="White" Margin="0,0,310,0.4">
+                        <Image x:Name="image_passantec_vertical" Source="C:\Autodesk\ColunaPronta\Image\passante_c.png" Visibility="Visible" Grid.ColumnSpan="2" Margin="0,-6,-0.4,6"/>
+                        <Image x:Name="image_passantec_horizontal" Source="C:\Autodesk\ColunaPronta\Image\passante_c.png" Visibility="Hidden" Margin="420.8,-7,-443.4,14" Grid.Column="1">
+                            <Image.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform Angle="90"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </Image.RenderTransform>
+                        </Image>
+
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </StackPanel>
+
+        <Grid x:Name="Grid_Inputs" Visibility="Hidden">
+            <Label x:Name="label_metragem" Content="" Margin="543,130,50.6,297.4"/>
+            <TextBlock x:Name="textBlock_" HorizontalAlignment="Left" Margin="544,187,0,0" TextWrapping="Wrap" Text="Tipo da Coluna:" VerticalAlignment="Top" RenderTransformOrigin="-0.25,-1.775"/>
+            <ComboBox x:Name="combobox_TpColuna" Margin="636,181,50.6,268.4"></ComboBox>
+            <TextBlock x:Name="textBlock_chumbador" HorizontalAlignment="Left" Margin="510,212,0,0" TextWrapping="Wrap" Text="Diâmetro Chumbador:" VerticalAlignment="Top"/>
+            <TextBox x:Name="textBox_diametro" TextWrapping="Wrap" Text="" Margin="636,205,49.6,240.4" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
+            <TextBlock x:Name="textBlock_parafuso" HorizontalAlignment="Left" Margin="526,242,0,0" TextWrapping="Wrap" Text="Diâmetro Parafuso:" VerticalAlignment="Top"/>
+            <TextBox x:Name="textBox_parafuso" TextWrapping="Wrap" Text="" Margin="635,236,50.6,209.4" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput" />
+            <TextBlock x:Name="textBlock_altura" HorizontalAlignment="Left" Margin="535,304,0,0" TextWrapping="Wrap" Text="Altura da Coluna:" VerticalAlignment="Top"/>
+            <TextBox x:Name="textBox_altura" TextWrapping="Wrap" Text="" Margin="635,299,50.6,146.4" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
+            <TextBlock x:Name="textBlock_qtParafuso" HorizontalAlignment="Left" Margin="491,272,0,0" TextWrapping="Wrap" Text="Quantidade de Parafusos:" VerticalAlignment="Top"/>
+            <TextBox x:Name="textBox_qtdeParafuso" TextWrapping="Wrap" Text="" Margin="635,268,50.6,177.4" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"></TextBox>
+            <Button x:Name="btn_gerarcoluna" Content="Gerar Coluna" HorizontalAlignment="Left" Margin="680,437,0,0" VerticalAlignment="Top" Width="75" Click="Btn_gerarcoluna_Click"/>
+            <Button x:Name="button_voltar" Content="Voltar" HorizontalAlignment="Left" Margin="507,437,0,0" VerticalAlignment="Top" Width="75" Click="button_voltar_Click"/>
+        </Grid>
+
     </Grid>
 </Window>

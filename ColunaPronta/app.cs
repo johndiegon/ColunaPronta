@@ -1,6 +1,8 @@
 ﻿using Autodesk.AutoCAD.Runtime;
 using ColunaPronta.Commands;
 using ColunaPronta.Model;
+using System.ServiceModel.Channels;
+using System.Windows;
 
 namespace ColunaPronta
 {
@@ -23,8 +25,16 @@ namespace ColunaPronta
         public void GeraColuna()
         {
             var coluna = IntegraColuna.SelecionaColuna();
-            WPFColunaPronta window = new WPFColunaPronta(coluna);
-            window.Show();
+            if (coluna != null)
+            {
+                WPFColunaPronta window = new WPFColunaPronta(coluna);
+                window.Show();
+            }
+            else
+            {
+                MessageBox.Show("Favor selecionar a coluna!", "Atenção!");
+            }
+            
         }
 
         [CommandMethod("GeraRelatorio")]
@@ -33,5 +43,11 @@ namespace ColunaPronta
             IntegraColuna.GeraRelatorio();
         }
 
+        [CommandMethod("Teste")]
+        public void Teste()
+        {
+            var com = new LayoutCreation.Commands();
+            com.CreateLayout();
+        }
     }
 }

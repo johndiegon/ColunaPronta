@@ -18,6 +18,7 @@ namespace ColunaPronta.Commands
 
         const double _escala = 1000;
         const double distancia = 38 / _escala;
+        const int iLinhasParafuso = 15;
         #endregion
 
         public static Coluna SelecionaColuna()
@@ -25,6 +26,7 @@ namespace ColunaPronta.Commands
             Document document = Application.DocumentManager.MdiActiveDocument;
             Database database = document.Database;
             Editor editor = document.Editor;
+
             var coluna = new Coluna() 
             {
                 NomeArquivo = document.Window.Text
@@ -39,6 +41,7 @@ namespace ColunaPronta.Commands
                 
                     SelectionSet selectionSet = psr.Value;
                     ObjectId[] objectIds = selectionSet.GetObjectIds();
+
                     var points = new Point3dCollection();
                     foreach (ObjectId objectId in objectIds)
                     {
@@ -57,22 +60,20 @@ namespace ColunaPronta.Commands
                     tr.Commit();
                 }
             }
+            else
+            {
+                editor.WriteMessage("\nÉ necessário selecionar a coluna de referência.");
+                return null;
+            }
 
             return coluna;
         }
         public static void AddColuna(Coluna coluna)
         {
             
-            if (coluna.ParafusoA == true ) { AddParafuso("A", coluna);}
-            if (coluna.ParafusoB == true ) { AddParafuso("B", coluna);}
-            if (coluna.ParafusoC == true ) { AddParafuso("C", coluna);}
-            if (coluna.ParafusoD == true ) { AddParafuso("D", coluna);}
-            if (coluna.ParafusoE == true ) { AddParafuso("E", coluna);}
-            if (coluna.ParafusoF == true ) { AddParafuso("F", coluna);}
-            if (coluna.ParafusoG == true ) { AddParafuso("G", coluna);}
-            if (coluna.ParafusoH == true ) { AddParafuso("H", coluna);}
+             AddParafuso(coluna);
 
-            if (coluna.SapataA   == true ) 
+            if (coluna.SapataA == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataD == true && coluna.Posicao == Posicao.Vertical  ) 
             {
                 string tipocoluna = coluna.GetTipoColuna().ToString();
                 var p1 = new Point2d(coluna.PointA.X, coluna.PointA.Y + distancia); 
@@ -83,7 +84,7 @@ namespace ColunaPronta.Commands
                 AddSapata(p1, p2, p3, p4, tipocoluna, coluna.DiametroSapata / _escala);
 
             }
-            if (coluna.SapataB   == true )
+            if (coluna.SapataB == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataA == true && coluna.Posicao == Posicao.Vertical  )
             {
                 string tipocoluna = coluna.GetTipoColuna().ToString();
                 var p1 = new Point2d(coluna.PointB.X            , coluna.PointB.Y);
@@ -93,7 +94,7 @@ namespace ColunaPronta.Commands
                 AddSapata(p1, p2, p3, p4, tipocoluna, coluna.DiametroSapata / _escala);
 
             }
-            if (coluna.SapataC   == true)
+            if (coluna.SapataC == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataB == true && coluna.Posicao == Posicao.Vertical  )
             {
                 string tipocoluna = coluna.GetTipoColuna().ToString();
                 var p4 = new Point2d(coluna.PointC.X, coluna.PointC.Y - distancia); 
@@ -102,7 +103,7 @@ namespace ColunaPronta.Commands
                 var p2 = new Point2d(coluna.PointD.X, coluna.PointD.Y); 
                 AddSapata(p1, p2, p3, p4, tipocoluna, coluna.DiametroSapata / _escala);
             }
-            if (coluna.SapataD == true)
+            if (coluna.SapataD == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataC == true && coluna.Posicao == Posicao.Vertical  )
             {
 
                 string tipocoluna = coluna.GetTipoColuna().ToString();
@@ -221,28 +222,36 @@ namespace ColunaPronta.Commands
             Helpers.AddCircle(document, new Point3d(p1.X + centerX, p1.Y - centery, 0), raio);
 
         }
-        public static void AddParafuso(string TpParafuso, Coluna coluna)
+        public static void AddParafuso(Coluna coluna)
         {
             Document document = Application.DocumentManager.MdiActiveDocument;
 
-            if (TpParafuso == "A")
+            if ((coluna.ParafusoA == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoG == true && coluna.Posicao == Posicao.Vertical))
             {
                 var pontoA = new Point2d(coluna.PointA.X, coluna.PointA.Y);
                 var p1 = new Point2d(pontoA.X + (10 / _escala), pontoA.Y + (30 / _escala));
                 var p2 = new Point2d(p1.X + (20 / _escala), p1.Y);
                 var p3 = new Point2d(p1.X + (20 / _escala), p1.Y - (10 / _escala));
-                var p4 = new Point2d(p1.X , p1.Y - (10 / _escala));
+                var p4 = new Point2d(p1.X, p1.Y - (10 / _escala));
 
                 Helpers.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
 
-                var p2v1 = new Point2d(p1.X + (5 / _escala), p1.Y );
-                var p2v2 = new Point2d(p2v1.X , p2v1.Y - (50 / _escala));
-                var p2v3 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y - +(50 / _escala));
-                var p2v4 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y );
+                var p2v1 = new Point2d(p1.X + (5 / _escala), p1.Y);
+                var p2v2 = new Point2d(p2v1.X, p2v1.Y - (50 / _escala));
+                var p2v3 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y - (50 / _escala));
+                var p2v4 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y);
 
                 Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+
+                for (int i = 1; i < iLinhasParafuso; i++)
+                {
+                    Helpers.AddLinha(document, new Point3d(p2v1.X, p2v1.Y - ((50 - i) / _escala), 0), new Point3d(p2v1.X + (10 / _escala), p2v1.Y - ((50 - i) / _escala), 0), false, ColorIndex.verde);
+                }
+                //var pontoA = new Point2d(coluna.PointA.X, coluna.PointA.Y);
+                //AddParafusoAB(document, pontoA);
+
             }
-            if (TpParafuso == "B")
+            if ((coluna.ParafusoB == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoH == true && coluna.Posicao == Posicao.Vertical))
             {
                 var pontoA = new Point2d(coluna.PointB.X - (30 / _escala), coluna.PointA.Y);
                 var p1 = new Point2d(pontoA.X + (5 / _escala), pontoA.Y + (30 / _escala));
@@ -258,8 +267,17 @@ namespace ColunaPronta.Commands
                 var p2v4 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y);
 
                 Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+
+                for (int i = 1; i < iLinhasParafuso; i++)
+                {
+                    Helpers.AddLinha(document, new Point3d(p2v1.X, p2v1.Y - ((50 - i) / _escala), 0), new Point3d(p2v1.X + (10 / _escala), p2v1.Y - ((50 - i) / _escala), 0), false, ColorIndex.verde);
+                }
+
+                //var pontoA = new Point2d(coluna.PointB.X - (30 / _escala), coluna.PointA.Y);
+                //AddParafusoAB(document, pontoA);
+
             }
-            if (TpParafuso == "C")
+            if ((coluna.ParafusoC == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoA == true && coluna.Posicao == Posicao.Vertical))
             {
                 var pontoA = new Point2d(coluna.PointB.X, coluna.PointB.Y);
                 var p1 = new Point2d(pontoA.X + (20 / _escala), pontoA.Y - (25 / _escala));
@@ -275,8 +293,14 @@ namespace ColunaPronta.Commands
                 var p2v4 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y );
 
                 Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+
+
+                for (int i = 1; i < iLinhasParafuso; i++)
+                {
+                    Helpers.AddLinha(document, new Point3d(p2v1.X - (( 50 - i) / _escala), p2v1.Y - (10 / _escala), 0), new Point3d(p2v1.X - ((50 - i) / _escala), p2v1.Y, 0), false, ColorIndex.verde);
+                }
             }
-            if (TpParafuso == "D")
+            if ((coluna.ParafusoD == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoB == true && coluna.Posicao == Posicao.Vertical))
             {
                 var pontoA = new Point2d(coluna.PointB.X, coluna.PointC.Y);
                 var p1 = new Point2d(pontoA.X + (20 / _escala), pontoA.Y + (40 / _escala));
@@ -292,8 +316,13 @@ namespace ColunaPronta.Commands
                 var p2v4 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y);
 
                 Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+
+                for (int i = 1; i < iLinhasParafuso; i++)
+                {
+                    Helpers.AddLinha(document, new Point3d(p2v1.X - ((50 - i) / _escala), p2v1.Y - (10 / _escala), 0), new Point3d(p2v1.X - ((50 - i) / _escala), p2v1.Y, 0), false, ColorIndex.verde);
+                }
             }
-            if (TpParafuso == "E")
+            if ((coluna.ParafusoE == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoC == true && coluna.Posicao == Posicao.Vertical))
             {
                 var pontoA = new Point2d(coluna.PointD.X , coluna.PointC.Y);
                 var p1 = new Point2d(pontoA.X - (5 / _escala), pontoA.Y - (20 / _escala));
@@ -309,8 +338,14 @@ namespace ColunaPronta.Commands
                 var p2v4 = new Point2d(p2v1.X - (10 / _escala), p2v1.Y );
 
                 Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+
+                for (int i = 1; i < iLinhasParafuso; i++)
+                {
+                    Helpers.AddLinha(document, new Point3d(p2v1.X, p2v1.Y + ((50 - i) / _escala), 0),
+                                               new Point3d(p2v1.X - (10 / _escala), p2v1.Y + ((50 - i) / _escala), 0), false, ColorIndex.verde);
+                }
             }
-            if (TpParafuso == "F")
+            if ((coluna.ParafusoF == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoD == true && coluna.Posicao == Posicao.Vertical))
             {
                 var pontoA = new Point2d(coluna.PointC.X, coluna.PointC.Y);
                 var p1 = new Point2d(pontoA.X + (5 / _escala), pontoA.Y - (20 / _escala));
@@ -326,8 +361,14 @@ namespace ColunaPronta.Commands
                 var p2v4 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y);
 
                 Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+
+                for (int i = 1; i < iLinhasParafuso; i++)
+                {
+                    Helpers.AddLinha(document, new Point3d(p2v1.X, p2v1.Y + (( 50 -i) / _escala), 0),
+                                               new Point3d(p2v1.X + (10 / _escala), p2v1.Y + ((50 - i) / _escala), 0), false, ColorIndex.verde);
+                }
             }
-            if (TpParafuso == "G")
+            if ((coluna.ParafusoG == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoE == true && coluna.Posicao == Posicao.Vertical))
             {
                 var pontoA = new Point2d(coluna.PointA.X, coluna.PointC.Y);
                 var p1 = new Point2d(pontoA.X - (30 / _escala), pontoA.Y + ( 45 / _escala));
@@ -343,8 +384,14 @@ namespace ColunaPronta.Commands
                 var p2v4 = new Point2d(p2v1.X, p2v1.Y - ( 10 / _escala));
 
                 Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3 );
+
+                for (int i = 1; i < iLinhasParafuso; i++)
+                {
+                    Helpers.AddLinha(document, new Point3d(p2v1.X + ((50 - i) / _escala), p2v1.Y - (10 / _escala), 0),
+                                             new Point3d(p2v1.X + ((50 - i) / _escala), p2v1.Y, 0), false, ColorIndex.verde);
+                }
             }
-            if (TpParafuso == "H")
+            if ((coluna.ParafusoH == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoF == true && coluna.Posicao == Posicao.Vertical))
             {
                 var pontoA = new Point2d(coluna.PointA.X, coluna.PointA.Y);
                 var p1 = new Point2d(pontoA.X - (30 / _escala), pontoA.Y - (15 / _escala));
@@ -360,67 +407,82 @@ namespace ColunaPronta.Commands
                 var p2v4 = new Point2d(p2v1.X, p2v1.Y - (10 / _escala));
 
                 Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+
+                for (int i = 1; i < iLinhasParafuso; i++)
+                {
+                    Helpers.AddLinha(document, new Point3d(p2v1.X + ((50 - i) / _escala), p2v1.Y - (10 / _escala), 0),
+                                               new Point3d(p2v1.X + ((50 - i) / _escala), p2v1.Y, 0), false, ColorIndex.verde);
+                }
             }
         }
-        public static void AddTitulo(Point2d PontoA, TipoColuna tipoColuna)
-        {
-            Document document = Application.DocumentManager.MdiActiveDocument;
-            var textTipoColuna = tipoColuna.ToString();
-            var point = new Point3d(PontoA.X - (20 / _escala), PontoA.Y - (5 / _escala), 0);
-            Helpers.AddTexto(document, point, textTipoColuna, ColorIndex.padrao);
-        }
+      
+        //public static void AddTitulo(Point2d PontoA, TipoColuna tipoColuna)
+        //{
+        //    Document document = Application.DocumentManager.MdiActiveDocument;
+        //    var textTipoColuna = tipoColuna.ToString();
+        //    var point = new Point3d(PontoA.X - (60 / _escala), PontoA.Y + (5 / _escala), 0);
+        //    Helpers.AddTexto(document, point, textTipoColuna, ColorIndex.padrao);
+        //}
         public static List<ItemRelatorio> GetDadosRelatorio(string nomeProjeto)
         {
             try
             {
                 var colunas = ArquivoCSV.GetColunas(nomeProjeto);
 
-                var colunasPonto = from coluna in colunas
-                                   group coluna by coluna.PointA into colunaPontoA
-                                   select colunaPontoA.Key;
-                var colunasRelatorio = new List<Coluna>();
-
-                foreach (Point2d pontoColuna in colunasPonto)
+                if (colunas != null)
                 {
-                    var c = (from coluna in colunas
-                             where coluna.PointA == pontoColuna
-                             orderby coluna.dInclusao descending
-                             select new Coluna
-                             {
-                                 tipoColuna = coluna.tipoColuna,
-                                 DiametroParafuso = coluna.DiametroParafuso,
-                                 DiametroSapata = coluna.DiametroSapata,
-                                 QuantidadeParafuso = coluna.QuantidadeParafuso,
-                                 Comprimento = coluna.Comprimento,
-                                 Largura = coluna.Largura,
-                                 Altura = coluna.Altura,
-                             }).FirstOrDefault();
+                    var colunasPonto = from coluna in colunas
+                                       group coluna by coluna.PointA into colunaPontoA
+                                       select colunaPontoA.Key;
+                    var colunasRelatorio = new List<Coluna>();
 
-                    colunasRelatorio.Add(c);
+                    foreach (Point2d pontoColuna in colunasPonto)
+                    {
+                        var c = (from coluna in colunas
+                                 where coluna.PointA == pontoColuna
+                                 orderby coluna.dInclusao descending
+                                 select new Coluna
+                                 {
+                                     tipoColuna = coluna.tipoColuna,
+                                     DiametroParafuso = coluna.DiametroParafuso,
+                                     DiametroSapata = coluna.DiametroSapata,
+                                     QuantidadeParafuso = coluna.QuantidadeParafuso,
+                                     Comprimento = coluna.Comprimento,
+                                     Largura = coluna.Largura,
+                                     Altura = coluna.Altura,
+                                 }).FirstOrDefault();
+
+                        colunasRelatorio.Add(c);
+                    }
+
+                    var relatorio = (from coluna in colunasRelatorio
+                                     group coluna by new
+                                     {
+                                         coluna.Altura,
+                                         coluna.Comprimento,
+                                         coluna.Largura,
+                                         coluna.tipoColuna,
+                                         coluna.QuantidadeParafuso,
+                                         coluna.DiametroSapata
+
+                                     } into c
+                                     select new ItemRelatorio
+                                     {
+                                         Altura = c.Key.Altura,
+                                         Comprimento = c.Key.Comprimento,
+                                         Largura = c.Key.Largura,
+                                         tipoColuna = c.Key.tipoColuna,
+                                         QtdeParafuso = c.Key.QuantidadeParafuso,
+                                         DiametroSapata = c.Key.DiametroSapata,
+                                         QtdeColuna = c.Count()
+                                     }).ToList();
+                    return relatorio;
+                }
+                else
+                {
+                   return null;
                 }
 
-                var relatorio = (from coluna in colunasRelatorio
-                                 group coluna by new
-                                 {
-                                     coluna.Altura,
-                                     coluna.Comprimento,
-                                     coluna.Largura,
-                                     coluna.tipoColuna,
-                                     coluna.QuantidadeParafuso,
-                                     coluna.DiametroSapata
-
-                                 } into c
-                                 select new ItemRelatorio
-                                 {
-                                     Altura = c.Key.Altura,
-                                     Comprimento = c.Key.Comprimento,
-                                     Largura = c.Key.Largura,
-                                     tipoColuna = c.Key.tipoColuna,
-                                     QtdeParafuso = c.Key.QuantidadeParafuso,
-                                     DiametroSapata = c.Key.DiametroSapata,
-                                     QtdeColuna = c.Count()
-                                 }).ToList();
-                return relatorio;
             }
             catch (Exception e)
             {
@@ -442,6 +504,12 @@ namespace ColunaPronta.Commands
 
                 var dadosRelatorio = GetDadosRelatorio(nomeProjeto);
 
+                if ( dadosRelatorio == null)
+                {
+                    editor.WriteMessage("\nNão possui dados para gerar o relatório ou o nome de um dos arquivos (.csv ou .dwg) foram renomeados ");
+                    return;
+                }
+
                 PromptPointOptions prPtOpt = new PromptPointOptions("\nIndique o ponto onde será gerado o relatório (EndPoint ): ")
                 {
                     AllowArbitraryInput = false,
@@ -460,7 +528,7 @@ namespace ColunaPronta.Commands
                 
                     foreach (ItemRelatorio item in dadosRelatorio)
                     {
-                        var coluna = GetColunaModelo(item.tipoColuna);
+                        var coluna = item.tipoColuna.Layout;
                         coluna.Largura = item.Largura;
                         coluna.Comprimento = item.Comprimento;
                         coluna.Altura = item.Altura;
@@ -498,66 +566,66 @@ namespace ColunaPronta.Commands
                 Logger.Error(e.ToString());
             }
         }
-        public static Coluna GetColunaModelo(TipoColuna tipoColuna)
-        {
-            var coluna = new Coluna();
+        //public static Coluna GetColunaModelo(TipoColuna tipoColuna)
+        //{
+        //    var coluna = new Coluna();
 
-            switch(tipoColuna)
-            {
-                case TipoColuna.C1:
-                    coluna.SapataB = true;
-                    coluna.ParafusoB = true;
-                    coluna.ParafusoH = true;
-                    break;
-                case TipoColuna.C2:
-                    coluna.SapataB = true;
-                    coluna.ParafusoE = true;
-                    coluna.ParafusoG = true;
-                    break;
-                case TipoColuna.C3:
-                    coluna.SapataB = true;
-                    coluna.ParafusoB = true;
-                    coluna.ParafusoE = true;
-                    coluna.ParafusoG = true;
-                    coluna.ParafusoH = true;
-                    break;
-                case TipoColuna.C4:
-                    coluna.SapataB = true;
-                    coluna.ParafusoA = true;
-                    coluna.ParafusoC = true;
-                    coluna.ParafusoD = true;
-                    coluna.ParafusoF = true;
-                    break;
-                case TipoColuna.C5:
-                    coluna.SapataB = true;
-                    coluna.ParafusoB = true;
-                    coluna.ParafusoG = true;
-                    break;
-                case TipoColuna.C6:
-                    coluna.SapataB = true;
-                    coluna.ParafusoE = true;
-                    coluna.ParafusoH = true;
-                    break;
-                case TipoColuna.C8:
-                    coluna.SapataB = true;
-                    coluna.ParafusoA = true;
-                    coluna.ParafusoB = true;
-                    break;
-                case TipoColuna.C9:
-                    coluna.SapataB = true;
-                    break;
-                case TipoColuna.C12:
-                    coluna.SapataC = true;
-                    coluna.ParafusoE = true;
-                    break;
-                case TipoColuna.C13:
-                    coluna.SapataC = true;
-                    coluna.ParafusoF = true;
-                    break;
-                default: 
-                    return coluna;
-            }
-            return coluna;
-        }
+        //    switch(tipoColuna)
+        //    {
+        //        case TipoColuna.C1:
+        //            coluna.SapataB = true;
+        //            coluna.ParafusoB = true;
+        //            coluna.ParafusoH = true;
+        //            break;
+        //        case TipoColuna.C2:
+        //            coluna.SapataB = true;
+        //            coluna.ParafusoE = true;
+        //            coluna.ParafusoG = true;
+        //            break;
+        //        case TipoColuna.C3:
+        //            coluna.SapataB = true;
+        //            coluna.ParafusoB = true;
+        //            coluna.ParafusoE = true;
+        //            coluna.ParafusoG = true;
+        //            coluna.ParafusoH = true;
+        //            break;
+        //        case TipoColuna.C4:
+        //            coluna.SapataB = true;
+        //            coluna.ParafusoA = true;
+        //            coluna.ParafusoC = true;
+        //            coluna.ParafusoD = true;
+        //            coluna.ParafusoF = true;
+        //            break;
+        //        case TipoColuna.C5:
+        //            coluna.SapataB = true;
+        //            coluna.ParafusoB = true;
+        //            coluna.ParafusoG = true;
+        //            break;
+        //        case TipoColuna.C6:
+        //            coluna.SapataB = true;
+        //            coluna.ParafusoE = true;
+        //            coluna.ParafusoH = true;
+        //            break;
+        //        case TipoColuna.C8:
+        //            coluna.SapataB = true;
+        //            coluna.ParafusoA = true;
+        //            coluna.ParafusoB = true;
+        //            break;
+        //        case TipoColuna.C9:
+        //            coluna.SapataB = true;
+        //            break;
+        //        case TipoColuna.C12:
+        //            coluna.SapataC = true;
+        //            coluna.ParafusoE = true;
+        //            break;
+        //        case TipoColuna.C13:
+        //            coluna.SapataC = true;
+        //            coluna.ParafusoF = true;
+        //            break;
+        //        default: 
+        //            return coluna;
+        //    }
+        //    return coluna;
+        //}
     }
 }

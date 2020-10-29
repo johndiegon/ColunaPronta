@@ -33,25 +33,25 @@ namespace ColunaPronta.Model
         {
             get
             { 
-                if ( comprimento == 0)
-                {
-                    if (this.PointA != null && this.PointB != null && this.PointC != null)
-                    {
-                        var lado1 = this.PointA.GetDistanceTo(this.PointB) * _escala;
-                        var lado2 = this.PointA.GetDistanceTo(this.PointC) * _escala;
+                //if ( comprimento == 0)
+                //{
+                //    if (this.PointA != null && this.PointB != null && this.PointC != null)
+                //    {
+                //        var lado1 = this.PointA.GetDistanceTo(this.PointB) * _escala;
+                //        var lado2 = this.PointA.GetDistanceTo(this.PointC) * _escala;
 
-                        return lado1 > lado2 ? lado1 : lado2;
-                    }
-                    else
-                    {
-                        return 0;
-                    }
+                //        return lado1 > lado2 ? lado1 : lado2;
+                //    }
+                //    else
+                //    {
+                //        return 0;
+                //    }
 
-                }
-                else
-                {
+                //}
+                //else
+                //{
                     return this.comprimento;
-                }
+                //}
             }
             set
             {
@@ -62,24 +62,24 @@ namespace ColunaPronta.Model
         {
             get
             {
-                if( largura == 0)
-                {
-                    if (this.PointA != null && this.PointB != null && this.PointC != null)
-                    {
-                        var lado1 = this.PointA.GetDistanceTo(this.PointB) * _escala;
-                        var lado2 = this.PointA.GetDistanceTo(this.PointC) * _escala;
+                //if( largura == 0)
+                //{
+                //    if (this.PointA != null && this.PointB != null && this.PointC != null)
+                //    {
+                //        var lado1 = this.PointA.GetDistanceTo(this.PointB) * _escala;
+                //        var lado2 = this.PointA.GetDistanceTo(this.PointC) * _escala;
 
-                        return lado1 > lado2 ? lado2 : lado1;
-                    }
-                    else
-                    {
-                        return 0;
-                    }
-                }
-                else
-                {
+                //        return lado1 > lado2 ? lado2 : lado1;
+                //    }
+                //    else
+                //    {
+                //        return 0;
+                //    }
+                //}
+                //else
+                //{
                     return this.largura;
-                }
+                //}
             }
             set
             {
@@ -118,7 +118,7 @@ namespace ColunaPronta.Model
         {
             string[] values = csvLine.Split(';');
             Coluna coluna = new Coluna();
-            coluna.tipoColuna = (TipoColuna)Convert.ToInt32((values[0]));
+            //coluna.tipoColuna = (TipoColuna)Convert.ToInt32((values[0]));
             coluna.PointA= new Point2d(Convert.ToDouble(values[1]), Convert.ToDouble(values[2]));
             coluna.DiametroSapata = Convert.ToDouble(values[3]);
             coluna.DiametroParafuso = Convert.ToDouble(values[4]);
@@ -164,6 +164,16 @@ namespace ColunaPronta.Model
                 y = ListaY.Min();
                 this.PointD = new Point2d(x, y);
             }
+
+            var lado1 = this.PointA.GetDistanceTo(this.PointB) * _escala;
+            var lado2 = this.PointA.GetDistanceTo(this.PointC) * _escala;
+
+            this.comprimento = lado1 > lado2 ? lado1 : lado2;
+            this.largura =  lado1 > lado2 ? lado2 : lado1;
+            this.Posicao = lado1 > lado2 ? Posicao.Horizontal : Posicao.Vertical;
+
         }
+
+        public Posicao Posicao { get; set; }
     }
 }

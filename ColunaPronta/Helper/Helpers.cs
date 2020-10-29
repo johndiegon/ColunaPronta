@@ -42,13 +42,13 @@ namespace ColunaPronta.Helper
                         ObjectId ltId = lt.Add(ltr);
                         line.LinetypeId = ltId;
 
-                        if (color != ColorIndex.padrao)
-                        {
-                            line.ColorIndex = (int)color;
-                        }
-
                         transaction.AddNewlyCreatedDBObject(ltr, true);
 
+                    }
+
+                    if (color != ColorIndex.padrao)
+                    {
+                        line.ColorIndex = (int)color;
                     }
 
                     blockTableRecord.AppendEntity(line);
@@ -209,17 +209,14 @@ namespace ColunaPronta.Helper
         {
             try
             {
-                // Get the current document and database
                 Database database = document.Database;
-
-                // Start a transaction
                 Transaction transaction = database.TransactionManager.StartTransaction();
+                
                 using (DocumentLock documentLock = document.LockDocument())
                 {
                     BlockTable blockTable = transaction.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
                     BlockTableRecord blockTableRecord = transaction.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
-                    // Create a circle that is at 2,3 with a radius of 4.25
                     Circle acCirc = new Circle()
                     {
                         Center = center,
@@ -227,12 +224,10 @@ namespace ColunaPronta.Helper
                         ColorIndex = (int)ColorIndex.vermelho //vermelho
                     };
 
-                    // Add the new object to the block table record and the transaction
                     blockTableRecord.AppendEntity(acCirc);
                     transaction.AddNewlyCreatedDBObject(acCirc, true);
                 }
 
-                // Save the new object to the database
                 transaction.Commit();
             }
             catch (Exception e)
@@ -257,10 +252,8 @@ namespace ColunaPronta.Helper
             try
             {
                 Database database = document.Database;
-
                 Transaction transaction = document.TransactionManager.StartTransaction();
 
-                // polyline do fundo de Viga
                 using (DocumentLock documentLock = document.LockDocument())
                 {
                     BlockTable blockTable = transaction.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;

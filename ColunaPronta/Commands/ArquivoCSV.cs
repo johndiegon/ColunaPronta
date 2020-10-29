@@ -27,8 +27,8 @@ namespace ColunaPronta.Commands
                     writer.WriteLine("TipoColuna;PontoA_X;PontoA_Y;DiametroChumbador;DiametroParafauso;QtdeParafuso;Comprimento;Largura;Altura;dAlteracao");
                 }
 
-                var linhaColuna = string.Concat((int)coluna.GetTipoColuna(), ";"
-                                               , coluna.PointA.X.ToString(), ";"
+                var linhaColuna = string.Concat( //(int)coluna.GetTipoColuna(), ";"
+                                                coluna.PointA.X.ToString(), ";"
                                                , coluna.PointA.Y.ToString(), ";"
                                                , coluna.DiametroSapata, ";"
                                                , coluna.DiametroParafuso, ";"
@@ -55,11 +55,20 @@ namespace ColunaPronta.Commands
             {
                 string nomeArquivo = string.Concat("C:\\Autodesk\\ColunaPronta\\Relatorio\\", arquivo, ".csv");
 
-                List<Coluna> values = File.ReadAllLines(nomeArquivo)
-                                                   .Skip(1)
-                                                   .Select(v => Coluna.FromCsv(v))
-                                                   .ToList();
-                return values;
+                if (File.Exists(nomeArquivo))
+                {
+
+                    List<Coluna> values = File.ReadAllLines(nomeArquivo)
+                                                       .Skip(1)
+                                                       .Select(v => Coluna.FromCsv(v))
+                                                       .ToList();
+                    return values;
+                }
+                else
+                {
+                    return null;
+                }
+
 
             }
             catch (Exception e)
