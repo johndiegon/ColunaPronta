@@ -76,33 +76,31 @@ namespace ColunaPronta
             }
 
             this._coluna.ParafusoA   = (bool)this.checkBox_prfsA.IsChecked;
-            this._coluna.ParafusoB   = (bool)this.checkBox_prfsB.IsChecked;
-            this._coluna.ParafusoC   = (bool)this.checkBox_prfsC.IsChecked;
-            this._coluna.ParafusoD   = (bool)this.checkBox_prfsD.IsChecked;
-            this._coluna.ParafusoE   = (bool)this.checkBox_prfsE.IsChecked;
-            this._coluna.ParafusoF   = (bool)this.checkBox_prfsF.IsChecked;
-            this._coluna.ParafusoG   = (bool)this.checkBox_prfsG.IsChecked;
-            this._coluna.ParafusoH   = (bool)this.checkBox_prfsH.IsChecked;
-            this._coluna.SapataA     = bColunaNormal == true ? (bool)this.checkBox_sptA.IsChecked : (bool)this.checkBox_passante_sptA.IsChecked;
-            this._coluna.SapataB     = bColunaNormal == true ? (bool)this.checkBox_sptB.IsChecked : (bool)this.checkBox_passante_sptB.IsChecked;
-            this._coluna.SapataC     = bColunaNormal == true ? (bool)this.checkBox_sptC.IsChecked : (bool)this.checkBox_passante_sptC.IsChecked;
-            this._coluna.SapataD     = bColunaNormal == true ? (bool)this.checkBox_sptD.IsChecked : (bool)this.checkBox_passante_sptD.IsChecked;
-            this._coluna.PassanteA   = (bool)this.checkBox_passanteA.IsChecked;
-            this._coluna.PassanteB   = (bool)this.checkBox_passanteB.IsChecked;
-            this._coluna.PassanteC   = (bool)this.checkBox_passanteC.IsChecked;
-            this._coluna.PassanteD   = (bool)this.checkBox_passanteD.IsChecked;
-            this._coluna.eleAmarelo  = bColunaNormal == true ? false : (bool)this.checkBox_lAM.IsChecked;
-            this._coluna.eleAzul     = bColunaNormal == true ? false : (bool)this.checkBox_lA.IsChecked;
-            this._coluna.eleCinza    = bColunaNormal == true ? false : (bool)this.checkBox_lC.IsChecked;
-            this._coluna.eleVermelho = bColunaNormal == true ? false : (bool)this.checkBox_lV.IsChecked;
+            _coluna.ParafusoB   = (bool)this.checkBox_prfsB.IsChecked;
+            _coluna.ParafusoC   = (bool)this.checkBox_prfsC.IsChecked;
+            _coluna.ParafusoD   = (bool)this.checkBox_prfsD.IsChecked;
+            _coluna.ParafusoE   = (bool)this.checkBox_prfsE.IsChecked;
+            _coluna.ParafusoF   = (bool)this.checkBox_prfsF.IsChecked;
+            _coluna.ParafusoG   = (bool)this.checkBox_prfsG.IsChecked;
+            _coluna.ParafusoH   = (bool)this.checkBox_prfsH.IsChecked;
+            _coluna.SapataA     = bColunaNormal == true ? (bool)this.checkBox_sptA.IsChecked : (bool)this.checkBox_passante_sptA.IsChecked;
+            _coluna.SapataB     = bColunaNormal == true ? (bool)this.checkBox_sptB.IsChecked : (bool)this.checkBox_passante_sptB.IsChecked;
+            _coluna.SapataC     = bColunaNormal == true ? (bool)this.checkBox_sptC.IsChecked : (bool)this.checkBox_passante_sptC.IsChecked;
+            _coluna.SapataD     = bColunaNormal == true ? (bool)this.checkBox_sptD.IsChecked : (bool)this.checkBox_passante_sptD.IsChecked;
+            _coluna.PassanteA   = (bool)this.checkBox_passanteA.IsChecked;
+            _coluna.PassanteB   = (bool)this.checkBox_passanteB.IsChecked;
+            _coluna.PassanteC   = (bool)this.checkBox_passanteC.IsChecked;
+            _coluna.PassanteD   = (bool)this.checkBox_passanteD.IsChecked;
+            _coluna.eleAmarelo  = bColunaNormal == true ? false : (bool)this.checkBox_lAM.IsChecked;
+            _coluna.eleAzul     = bColunaNormal == true ? false : (bool)this.checkBox_lA.IsChecked;
+            _coluna.eleCinza    = bColunaNormal == true ? false : (bool)this.checkBox_lC.IsChecked;
+            _coluna.eleVermelho = bColunaNormal == true ? false : (bool)this.checkBox_lV.IsChecked;
             
-            this.Close();
             _coluna.SetIdColuna();
-            IntegraColuna.AddColuna(_coluna);
-            ArquivoCSV.Registra(_coluna);
-            IntegraColuna.AddTitulo(_coluna.PointA, _coluna.iColuna);
+            IntegraColuna.AddColuna(_coluna, true);
+            this.Close();
         }
-     
+
         private void textBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             var textBox = sender as TextBox;
@@ -116,7 +114,10 @@ namespace ColunaPronta
             if ((bool)this.checkBox_sptB.IsChecked) { diametroChumbadorObrigatorio = true; };
             if ((bool)this.checkBox_sptC.IsChecked) { diametroChumbadorObrigatorio = true; };
             if ((bool)this.checkBox_sptD.IsChecked) { diametroChumbadorObrigatorio = true; };
-
+            if ((bool)this.checkBox_passante_sptA.IsChecked) { diametroChumbadorObrigatorio = true; };
+            if ((bool)this.checkBox_passante_sptB.IsChecked) { diametroChumbadorObrigatorio = true; };
+            if ((bool)this.checkBox_passante_sptC.IsChecked) { diametroChumbadorObrigatorio = true; };
+            if ((bool)this.checkBox_passante_sptD.IsChecked) { diametroChumbadorObrigatorio = true; };
         }
    
         private void menu_parafuso_MouseMove(object sender, MouseEventArgs e)

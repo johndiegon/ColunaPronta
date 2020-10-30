@@ -70,55 +70,56 @@ namespace ColunaPronta.Commands
             return coluna;
         }
     
-        public static void AddColuna(Coluna coluna)
-        {
-            
+        public static void AddColuna(Coluna coluna, bool registra)
+        {       
              AddParafuso(coluna);
              AddPassante(coluna);
              AddEle(coluna);
 
             if (coluna.SapataA == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataD == true && coluna.Posicao == Posicao.Vertical  ) 
             {
-                string tipocoluna = coluna.GetTipoColuna().ToString();
                 var p1 = new Point2d(coluna.PointA.X, coluna.PointA.Y + distancia); 
                 var p2 = new Point2d(coluna.PointB.X, coluna.PointB.Y + distancia);
                 var p3 = new Point2d(coluna.PointB.X, coluna.PointB.Y);
                 var p4 = new Point2d(coluna.PointA.X, coluna.PointA.Y);
 
-                AddSapata(p1, p2, p3, p4, "c1", coluna.DiametroSapata / _escala);
+                AddSapata(p1, p2, p3, p4, coluna.DiametroSapata / _escala);
             }
             if (coluna.SapataB == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataA == true && coluna.Posicao == Posicao.Vertical  )
             {
-                string tipocoluna = coluna.GetTipoColuna().ToString();
                 var p1 = new Point2d(coluna.PointB.X            , coluna.PointB.Y);
                 var p2 = new Point2d(coluna.PointB.X + distancia, coluna.PointB.Y);
                 var p3 = new Point2d(coluna.PointB.X + distancia, coluna.PointC.Y);
                 var p4 = new Point2d(coluna.PointB.X, coluna.PointC.Y);
-                AddSapata(p1, p2, p3, p4, tipocoluna, coluna.DiametroSapata / _escala);
+                AddSapata(p1, p2, p3, p4, coluna.DiametroSapata / _escala);
 
             }
             if (coluna.SapataC == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataB == true && coluna.Posicao == Posicao.Vertical  )
             {
-                string tipocoluna = coluna.GetTipoColuna().ToString();
                 var p4 = new Point2d(coluna.PointC.X, coluna.PointC.Y - distancia); 
                 var p3 = new Point2d(coluna.PointD.X, coluna.PointD.Y - distancia);                 
                 var p1 = new Point2d(coluna.PointC.X, coluna.PointC.Y);
                 var p2 = new Point2d(coluna.PointD.X, coluna.PointD.Y); 
-                AddSapata(p1, p2, p3, p4, tipocoluna, coluna.DiametroSapata / _escala);
+                AddSapata(p1, p2, p3, p4, coluna.DiametroSapata / _escala);
             }
             if (coluna.SapataD == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataC == true && coluna.Posicao == Posicao.Vertical  )
             {
 
-                string tipocoluna = coluna.GetTipoColuna().ToString();
                 var p1 = new Point2d(coluna.PointA.X - distancia, coluna.PointA.Y);
                 var p2 = new Point2d(coluna.PointA.X            , coluna.PointA.Y);
                 var p3 = new Point2d(coluna.PointA.X            , coluna.PointD.Y);
                 var p4 = new Point2d(coluna.PointA.X - distancia, coluna.PointD.Y);
-                AddSapata(p1, p2, p3, p4, tipocoluna, coluna.DiametroSapata / _escala);
+                AddSapata(p1, p2, p3, p4, coluna.DiametroSapata / _escala);
             }
 
+            if (registra)
+            {
+                ArquivoCSV.Registra(coluna);
+                AddTitulo(coluna.PointA, coluna.iColuna);
+            }
+            IntegraLayout.SetUltimaColuna(coluna.iColuna);
         }
-        
+
         public static Point3dCollection AddEstruturaColuna(Document document, Point2d startPoint, double largura, double comprimento)
         {
             var pontosColuna = new Point3dCollection();
@@ -197,13 +198,13 @@ namespace ColunaPronta.Commands
             return pontosColuna;
         }
         
-        public static void AddSapata(Point2d p1, Point2d p2, Point2d p3, Point2d p4, string tipocoluna, double diametro)
+        public static void AddSapata(Point2d p1, Point2d p2, Point2d p3, Point2d p4,  double diametro)
         {
             var raio = diametro / 2;
          
             Document document = Application.DocumentManager.MdiActiveDocument;
 
-            Helpers.AddPolyline(document, p1, p2, p3, p4, tipocoluna);
+            Helpers.AddPolyline(document, p1, p2, p3, p4);
 
             List<double> ListaY = new List<double>();
             List<double> ListaX = new List<double>();
@@ -240,14 +241,14 @@ namespace ColunaPronta.Commands
                 var p3 = new Point2d(p1.X + (20 / _escala), p1.Y - (10 / _escala));
                 var p4 = new Point2d(p1.X, p1.Y - (10 / _escala));
 
-                Helpers.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p1, p2, p3, p4,  3);
 
                 var p2v1 = new Point2d(p1.X + (5 / _escala), p1.Y);
                 var p2v2 = new Point2d(p2v1.X, p2v1.Y - (50 / _escala));
                 var p2v3 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y - (50 / _escala));
                 var p2v4 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y);
 
-                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, 3);
 
                 for (int i = 1; i < iLinhasParafuso; i++)
                 {
@@ -265,14 +266,14 @@ namespace ColunaPronta.Commands
                 var p3 = new Point2d(p1.X + (20 / _escala), p1.Y - (10 / _escala));
                 var p4 = new Point2d(p1.X, p1.Y - (10 / _escala));
 
-                Helpers.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p1, p2, p3, p4,  3);
 
                 var p2v1 = new Point2d(p1.X + (5 / _escala), p1.Y);
                 var p2v2 = new Point2d(p2v1.X, p2v1.Y - (50 / _escala));
                 var p2v3 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y - +(50 / _escala));
                 var p2v4 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y);
 
-                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4,  3);
 
                 for (int i = 1; i < iLinhasParafuso; i++)
                 {
@@ -291,14 +292,14 @@ namespace ColunaPronta.Commands
                 var p3 = new Point2d(p1.X + (10 / _escala), p1.Y  -(20 / _escala));
                 var p4 = new Point2d(p1.X, p1.Y - (20 / _escala));
 
-                Helpers.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p1, p2, p3, p4,  3);
 
                 var p2v1 = new Point2d(p2.X, p2.Y - (5 / _escala));
                 var p2v2 = new Point2d(p2v1.X , p2v1.Y - (10 / _escala));
                 var p2v3 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y - (10 / _escala));
                 var p2v4 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y );
 
-                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4,  3);
 
 
                 for (int i = 1; i < iLinhasParafuso; i++)
@@ -314,14 +315,14 @@ namespace ColunaPronta.Commands
                 var p3 = new Point2d(p1.X + (10 / _escala), p1.Y - (20 / _escala));
                 var p4 = new Point2d(p1.X, p1.Y - (20 / _escala));
 
-                Helpers.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p1, p2, p3, p4,  3);
 
                 var p2v1 = new Point2d(p2.X, p2.Y - (5 / _escala));
                 var p2v2 = new Point2d(p2v1.X, p2v1.Y - (10 / _escala));
                 var p2v3 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y - (10 / _escala));
                 var p2v4 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y);
 
-                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4,  3);
 
                 for (int i = 1; i < iLinhasParafuso; i++)
                 {
@@ -336,14 +337,14 @@ namespace ColunaPronta.Commands
                 var p3 = new Point2d(p1.X - (20 / _escala), p1.Y - (10 / _escala) );
                 var p4 = new Point2d(p1.X - (20 / _escala), p1.Y );
 
-                Helpers.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p1, p2, p3, p4,  3);
 
                 var p2v1 = new Point2d(p1.X - ( 5 / _escala), p2.Y );
                 var p2v2 = new Point2d(p2v1.X , p2v1.Y + (50 / _escala));
                 var p2v3 = new Point2d(p2v1.X - (10 / _escala), p2v1.Y + (50 / _escala) );
                 var p2v4 = new Point2d(p2v1.X - (10 / _escala), p2v1.Y );
 
-                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4,  3);
 
                 for (int i = 1; i < iLinhasParafuso; i++)
                 {
@@ -359,14 +360,14 @@ namespace ColunaPronta.Commands
                 var p3 = new Point2d(p1.X + (20 / _escala), p1.Y - (10 / _escala));
                 var p4 = new Point2d(p1.X + (20 / _escala), p1.Y);
 
-                Helpers.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p1, p2, p3, p4,  3);
 
                 var p2v1 = new Point2d(p1.X + (5 / _escala), p2.Y);
                 var p2v2 = new Point2d(p2v1.X, p2v1.Y + (50 / _escala));
                 var p2v3 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y + (50 / _escala));
                 var p2v4 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y);
 
-                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4,  3);
 
                 for (int i = 1; i < iLinhasParafuso; i++)
                 {
@@ -382,14 +383,14 @@ namespace ColunaPronta.Commands
                 var p3 = new Point2d(p1.X     + ( 10 / _escala) , p1.Y- ( 20 / _escala) );
                 var p4 = new Point2d(p1.X    , p1.Y- ( 20 / _escala) );
 
-                Helpers.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p1, p2, p3, p4,  3);
 
                 var p2v1 = new Point2d(p1.X, p1.Y-(5/ _escala));
                 var p2v2 = new Point2d(p2v1.X + ( 50 /_escala ) , p2v1.Y);
                 var p2v3 = new Point2d(p2v1.X + ( 50 / _escala) , p2v1.Y - ( 10/ _escala));
                 var p2v4 = new Point2d(p2v1.X, p2v1.Y - ( 10 / _escala));
 
-                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3 );
+                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4,  3 );
 
                 for (int i = 1; i < iLinhasParafuso; i++)
                 {
@@ -405,14 +406,14 @@ namespace ColunaPronta.Commands
                 var p3 = new Point2d(p1.X + (10 / _escala), p1.Y - (20 / _escala));
                 var p4 = new Point2d(p1.X, p1.Y - (20 / _escala));
 
-                Helpers.AddPolyline(document, p1, p2, p3, p4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p1, p2, p3, p4,  3);
 
                 var p2v1 = new Point2d(p1.X, p1.Y - (5 / _escala));
                 var p2v2 = new Point2d(p2v1.X + (50 / _escala), p2v1.Y);
                 var p2v3 = new Point2d(p2v1.X + (50 / _escala), p2v1.Y - (10 / _escala));
                 var p2v4 = new Point2d(p2v1.X, p2v1.Y - (10 / _escala));
 
-                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, "Parafuso", 3);
+                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4,  3);
 
                 for (int i = 1; i < iLinhasParafuso; i++)
                 {
@@ -711,7 +712,7 @@ namespace ColunaPronta.Commands
 
                         coluna.SetPontos(pontosColuna);
 
-                        AddColuna(coluna);
+                        AddColuna(coluna, false);
 
                         var textoDescricao = string.Concat( "C", coluna.iColuna.ToString(), " - "
                                                           , coluna.Comprimento.ToString("N2"),"x"

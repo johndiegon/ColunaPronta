@@ -247,7 +247,7 @@ namespace ColunaPronta.Helper
             AddCircle(document, pointCircle, 10);
 
         }
-        public static void AddPolyline(Document document, Point2d point1, Point2d point2, Point2d point3, Point2d point4, string nome, int iColor = 0)
+        public static void AddPolyline(Document document, Point2d point1, Point2d point2, Point2d point3, Point2d point4, int iColor = 0)
         {
             try
             {
@@ -260,9 +260,6 @@ namespace ColunaPronta.Helper
                     BlockTableRecord blockTableRecord = transaction.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
                     var polyline = new Polyline(5);
-
-                    var newField = new Field(nome = "TipoColuna");
-                    polyline.SetField(nome, newField);
 
                     Point2dCollection pts = new Point2dCollection();
 

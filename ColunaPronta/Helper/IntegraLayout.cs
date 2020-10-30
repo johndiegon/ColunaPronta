@@ -1,4 +1,5 @@
-﻿using ColunaPronta.Model;
+﻿using Autodesk.AutoCAD.Geometry;
+using ColunaPronta.Model;
 using Newtonsoft.Json;
 using NLog.Config;
 using System;
@@ -13,6 +14,7 @@ namespace ColunaPronta.Helper
     public static class IntegraLayout
     {
         const string caminhoJson = "C:\\Autodesk\\ColunaPronta\\TipoColuna\\layoutsColuna.json";
+        const string ultimaColunaJson = "C:\\Autodesk\\ColunaPronta\\TipoColuna\\ultimaColuna.json";
 
         public static int GetIColuna(Coluna coluna)
         {
@@ -26,7 +28,7 @@ namespace ColunaPronta.Helper
 
                     foreach (Coluna layout in layouts)
                     {
-                        if (coluna.Comprimento == layout.Comprimento
+                        if (   coluna.Comprimento == layout.Comprimento
                             && coluna.Largura == layout.Largura
                             && coluna.Altura == layout.Altura
                             && coluna.DiametroParafuso == layout.DiametroParafuso
@@ -58,9 +60,20 @@ namespace ColunaPronta.Helper
                         }
                     }
                 }
+                int novoLayout = 1;
+                if (layouts.Count() > 0)
+                {
+                    novoLayout = layouts.Max(x => x.iColuna) + 1;
+                }
 
-                var novoLayout = layouts.Max().iColuna + 1;
                 coluna.iColuna = novoLayout;
+
+                //var layoutNovo = coluna;
+                //layoutNovo.PointA = new Point2d(0,0);
+                //layoutNovo.PointB = new Point2d(0,0);
+                //layoutNovo.PointC = new Point2d(0,0);
+                //layoutNovo.PointD = new Point2d(0,0);
+
                 layouts.Add(coluna);
 
                 AddLayout(layouts);
@@ -70,12 +83,11 @@ namespace ColunaPronta.Helper
             catch (Exception e)
             {
                 NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\FundoViga\NLog.config");
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
                 Logger.Error(e.ToString());
                 return 0;
             }
         }
-
         public static Coluna GetLayout(int iColuna)
         {
             try
@@ -100,18 +112,19 @@ namespace ColunaPronta.Helper
             catch (Exception e)
             {
                 NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\FundoViga\NLog.config");
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
                 Logger.Error(e.ToString());
                 return null;
             }
         }
-
         private static void AddLayout(List<Coluna> layouts)
         {
-            if (File.Exists(caminhoJson))
+            try
             {
-                File.Delete(caminhoJson);
-
+                if (File.Exists(caminhoJson))
+                {
+                    File.Delete(caminhoJson);
+                }
                 var ArquivoLayouts = JsonConvert.SerializeObject(layouts);
 
                 using (FileStream fs = File.Create(caminhoJson))
@@ -120,6 +133,71 @@ namespace ColunaPronta.Helper
                     fs.Write(info, 0, info.Length);
                 }
             }
+            catch (Exception e)
+            {
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+            }
         }
+
+        public static Coluna GetUltimaColuna()
+        {
+            try
+            {
+                if (File.Exists(ultimaColunaJson))
+                {
+                    var jsonLayout = File.ReadAllText(ultimaColunaJson);
+                    var ultimaColuna = JsonConvert.DeserializeObject<UltimaColuna>(jsonLayout);
+
+                    return GetLayout(ultimaColuna.iColuna);
+                }
+                return null;
+            }
+            catch (Exception e)
+            {
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+                return null;
+            }
+        }
+
+        public static void SetUltimaColuna(int iColuna)
+        {
+            try
+            {
+
+                if (File.Exists(ultimaColunaJson))
+                {
+                    File.Delete(ultimaColunaJson);
+                }
+
+                var ultimaColuna = new UltimaColuna
+                {
+                    iColuna = iColuna
+                };
+
+                var arquivo = JsonConvert.SerializeObject(ultimaColuna);
+
+                using (FileStream fs = File.Create(ultimaColunaJson))
+                {
+                    byte[] info = new UTF8Encoding(true).GetBytes(arquivo);
+                    fs.Write(info, 0, info.Length);
+                }
+            }
+            catch (Exception e)
+            {
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+            }
+        }
+
+        private class UltimaColuna
+        {
+            public int iColuna { get; set; }
+        }
+
     }
 }

@@ -143,7 +143,7 @@ namespace ColunaPronta.Model
 
         }
 
-        public string NomeAqruivo { get; set; }
+        public string NomeArquivo { get; set; }
 
         #region >> Parafuso
         public double DiametroParafuso { get; set; }
@@ -188,35 +188,35 @@ namespace ColunaPronta.Model
         {
             string[] values = csvLine.Split(';');
             Coluna coluna = new Coluna();
-            coluna.iColuna            = Convert.ToInt32(values[1]);
-            coluna.PointA             = new Point2d(Convert.ToDouble(values[2]), Convert.ToDouble(values[3]));
-            coluna.Comprimento        = Convert.ToDouble(values[4]);    
-            coluna.Largura            = Convert.ToDouble(values[5]);    
-            coluna.Altura             = Convert.ToDouble(values[6]);    
-            coluna.DiametroParafuso   = Convert.ToDouble(values[7]);    
-            coluna.DiametroSapata     = Convert.ToDouble(values[8]);    
-            coluna.QuantidadeParafuso = Convert.ToDouble(values[9]);    
-            coluna.ParafusoA          = Convert.ToBoolean(values[10]);    
-            coluna.ParafusoB          = Convert.ToBoolean(values[11]);    
-            coluna.ParafusoC          = Convert.ToBoolean(values[12]);    
-            coluna.ParafusoD          = Convert.ToBoolean(values[13]);    
-            coluna.ParafusoE          = Convert.ToBoolean(values[14]);    
-            coluna.ParafusoF          = Convert.ToBoolean(values[15]);    
-            coluna.ParafusoG          = Convert.ToBoolean(values[16]);    
-            coluna.ParafusoH          = Convert.ToBoolean(values[17]);    
-            coluna.SapataA            = Convert.ToBoolean(values[18]);    
-            coluna.SapataB            = Convert.ToBoolean(values[19]);    
-            coluna.SapataC            = Convert.ToBoolean(values[20]);    
-            coluna.SapataD            = Convert.ToBoolean(values[21]);    
-            coluna.PassanteA          = Convert.ToBoolean(values[22]);    
-            coluna.PassanteB          = Convert.ToBoolean(values[23]);    
-            coluna.PassanteC          = Convert.ToBoolean(values[24]);    
-            coluna.PassanteD          = Convert.ToBoolean(values[25]);    
-            coluna.eleAmarelo         = Convert.ToBoolean(values[26]);    
-            coluna.eleVermelho        = Convert.ToBoolean(values[27]);    
-            coluna.eleAzul            = Convert.ToBoolean(values[28]);    
-            coluna.eleCinza           = Convert.ToBoolean(values[29]);    
-            coluna.dInclusao          = Convert.ToDateTime(values[30]);
+            coluna.iColuna            = Convert.ToInt32(values[0]);
+            coluna.PointA             = new Point2d(Convert.ToDouble(values[1]), Convert.ToDouble(values[2]));
+            coluna.Comprimento        = Convert.ToDouble(values[3]);    
+            coluna.Largura            = Convert.ToDouble(values[4]);    
+            coluna.Altura             = Convert.ToDouble(values[5]);    
+            coluna.DiametroParafuso   = Convert.ToDouble(values[6]);    
+            coluna.DiametroSapata     = Convert.ToDouble(values[7]);    
+            coluna.QuantidadeParafuso = Convert.ToDouble(values[8]);    
+            coluna.ParafusoA           = Convert.ToBoolean(values[9] =="0" ? false : true);    
+            coluna.ParafusoB           = Convert.ToBoolean(values[10]=="0" ? false : true);    
+            coluna.ParafusoC           = Convert.ToBoolean(values[11]=="0" ? false : true);    
+            coluna.ParafusoD           = Convert.ToBoolean(values[12]=="0" ? false : true);    
+            coluna.ParafusoE           = Convert.ToBoolean(values[13]=="0" ? false : true);    
+            coluna.ParafusoF           = Convert.ToBoolean(values[14]=="0" ? false : true);    
+            coluna.ParafusoG           = Convert.ToBoolean(values[15]=="0" ? false : true);    
+            coluna.ParafusoH           = Convert.ToBoolean(values[16]=="0" ? false : true);    
+            coluna.SapataA             = Convert.ToBoolean(values[17]=="0" ? false : true);    
+            coluna.SapataB             = Convert.ToBoolean(values[18]=="0" ? false : true);    
+            coluna.SapataC             = Convert.ToBoolean(values[19]=="0" ? false : true);    
+            coluna.SapataD             = Convert.ToBoolean(values[20]=="0" ? false : true);    
+            coluna.PassanteA           = Convert.ToBoolean(values[21]=="0" ? false : true);    
+            coluna.PassanteB           = Convert.ToBoolean(values[22]=="0" ? false : true);    
+            coluna.PassanteC           = Convert.ToBoolean(values[23]=="0" ? false : true);    
+            coluna.PassanteD           = Convert.ToBoolean(values[24]=="0" ? false : true);    
+            coluna.eleAmarelo          = Convert.ToBoolean(values[25]=="0" ? false : true);    
+            coluna.eleVermelho         = Convert.ToBoolean(values[26]=="0" ? false : true);    
+            coluna.eleAzul             = Convert.ToBoolean(values[27]=="0" ? false : true);    
+            coluna.eleCinza            = Convert.ToBoolean(values[28]=="0" ? false : true);    
+            coluna.dInclusao          = Convert.ToDateTime(values[29]);
             return coluna;
         }
     }
