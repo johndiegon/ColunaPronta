@@ -19,6 +19,7 @@ namespace ColunaPronta.Commands
         const double _escala = 1000;
         const double distancia = 38 / _escala;
         const int iLinhasParafuso = 15;
+        const int ladoEle = 20;
         #endregion
 
         public static Coluna SelecionaColuna()
@@ -68,11 +69,13 @@ namespace ColunaPronta.Commands
 
             return coluna;
         }
+    
         public static void AddColuna(Coluna coluna)
         {
             
              AddParafuso(coluna);
              AddPassante(coluna);
+             AddEle(coluna);
 
             if (coluna.SapataA == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataD == true && coluna.Posicao == Posicao.Vertical  ) 
             {
@@ -115,6 +118,7 @@ namespace ColunaPronta.Commands
             }
 
         }
+        
         public static Point3dCollection AddEstruturaColuna(Document document, Point2d startPoint, double largura, double comprimento)
         {
             var pontosColuna = new Point3dCollection();
@@ -192,6 +196,7 @@ namespace ColunaPronta.Commands
 
             return pontosColuna;
         }
+        
         public static void AddSapata(Point2d p1, Point2d p2, Point2d p3, Point2d p4, string tipocoluna, double diametro)
         {
             var raio = diametro / 2;
@@ -222,6 +227,7 @@ namespace ColunaPronta.Commands
             Helpers.AddCircle(document, new Point3d(p1.X + centerX, p1.Y - centery, 0), raio);
 
         }
+        
         public static void AddParafuso(Coluna coluna)
         {
             Document document = Application.DocumentManager.MdiActiveDocument;
@@ -485,21 +491,108 @@ namespace ColunaPronta.Commands
                           
         }
 
-
         public static void AddEle(Coluna coluna)
         {
-           if((coluna.eleVermelho == true && coluna.Posicao == Posicao.Horizontal) || (coluna.eleCinza    == true && coluna.Posicao == Posicao.Vertical)){}
-           if((coluna.eleAmarelo == true && coluna.Posicao == Posicao.Horizontal) || (coluna.eleVermelho  == true && coluna.Posicao == Posicao.Vertical)){}
-           if((coluna.eleAzul     == true && coluna.Posicao == Posicao.Horizontal) || (coluna.eleAmarelo  == true && coluna.Posicao == Posicao.Vertical)){}
-           if((coluna.eleCinza == true && coluna.Posicao == Posicao.Horizontal)    || (coluna.eleAzul     == true && coluna.Posicao == Posicao.Vertical)){}
+           if( (coluna.eleVermelho == true && coluna.Posicao == Posicao.Horizontal) || 
+               (coluna.eleCinza    == true && coluna.Posicao == Posicao.Vertical) )
+            {
+                AddElePolyline(new Point2d(coluna.PointA.X + (ladoEle / _escala), coluna.PointA.Y + (ladoEle / _escala)), Posicao.BaixoDireita, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointC.X , coluna.PointC.Y), Posicao.CimaDireita, ladoEle);
+            }
+           if( (coluna.eleAmarelo   == true && coluna.Posicao == Posicao.Horizontal) || 
+               (coluna.eleVermelho  == true && coluna.Posicao == Posicao.Vertical))
+            {
+                AddElePolyline(new Point2d(coluna.PointA.X, coluna.PointA.Y), Posicao.BaixoDireita, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointB.X , coluna.PointB.Y), Posicao.BaixoEsquerda, ladoEle);
+           
+            }
+            if ( (coluna.eleAzul     == true && coluna.Posicao == Posicao.Horizontal) || 
+               (coluna.eleAmarelo  == true && coluna.Posicao == Posicao.Vertical))
+            {
+                AddElePolyline(new Point2d(coluna.PointB.X - (ladoEle / _escala), coluna.PointB.Y + (ladoEle / _escala)), Posicao.BaixoEsquerda, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointD.X - (ladoEle / _escala), coluna.PointD.Y), Posicao.CimaEsquerda, ladoEle);
+            }
+            if ( (coluna.eleCinza == true && coluna.Posicao == Posicao.Horizontal) || 
+               (coluna.eleAzul  == true && coluna.Posicao == Posicao.Vertical))
+            {
+                AddElePolyline(new Point2d(coluna.PointC.X - (ladoEle / _escala), coluna.PointC.Y + (ladoEle / _escala)), Posicao.CimaDireita, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointD.X , coluna.PointD.Y + (ladoEle / _escala)), Posicao.CimaEsquerda, ladoEle);
+            }
         }
-        //public static void AddTitulo(Point2d PontoA, TipoColuna tipoColuna)
-        //{
-        //    Document document = Application.DocumentManager.MdiActiveDocument;
-        //    var textTipoColuna = tipoColuna.ToString();
-        //    var point = new Point3d(PontoA.X - (60 / _escala), PontoA.Y + (5 / _escala), 0);
-        //    Helpers.AddTexto(document, point, textTipoColuna, ColorIndex.padrao);
-        //}
+
+        public static void AddElePolyline(Point2d PontoA, Posicao posicao, double lado)
+        {
+            Point2d p1, p2, p3, p4, p5, p6 = new Point2d();
+            var collection = new Point2dCollection();
+            bool bPosicaoInvalida = false;
+
+            switch(posicao)
+            {
+                case Posicao.BaixoDireita:
+                    p1 = new Point2d(PontoA.X, PontoA.Y);
+                    p2 = new Point2d(PontoA.X, PontoA.Y - (lado / _escala));
+                    p3 = new Point2d(PontoA.X - (lado/ _escala), PontoA.Y - (lado / _escala));
+                    p4 = new Point2d(PontoA.X - (lado / _escala), PontoA.Y - ( (lado -2) / _escala));
+                    p5 = new Point2d(PontoA.X - (2 / _escala), PontoA.Y - ((lado - 2) / _escala));
+                    p6 = new Point2d(PontoA.X - (2 / _escala), PontoA.Y);
+                    break;
+                case Posicao.BaixoEsquerda:
+                    p1 = new Point2d(PontoA.X, PontoA.Y);
+                    p2 = new Point2d(PontoA.X, PontoA.Y - (lado / _escala));
+                    p3 = new Point2d(PontoA.X + (lado / _escala), PontoA.Y - (lado / _escala));
+                    p4 = new Point2d(PontoA.X + (lado / _escala), PontoA.Y - ((lado - 2) / _escala));
+                    p5 = new Point2d(PontoA.X + (2 / _escala), PontoA.Y - ((lado - 2) / _escala));
+                    p6 = new Point2d(PontoA.X + (2 / _escala), PontoA.Y);
+                    break;
+                case Posicao.CimaDireita:
+                    p1 = new Point2d(PontoA.X, PontoA.Y);
+                    p2 = new Point2d(PontoA.X + (lado / _escala), PontoA.Y );
+                    p3 = new Point2d(PontoA.X + (lado / _escala), PontoA.Y - (lado / _escala));
+                    p4 = new Point2d(PontoA.X + ( (lado - 2) / _escala ), PontoA.Y - ((lado) / _escala));
+                    p5 = new Point2d(PontoA.X + ( (lado - 2) / _escala ), PontoA.Y - ( 2 / _escala));
+                    p6 = new Point2d(PontoA.X , PontoA.Y - (2 / _escala));
+                    break;
+                case Posicao.CimaEsquerda:
+                    p1 = new Point2d(PontoA.X, PontoA.Y);
+                    p2 = new Point2d(PontoA.X, PontoA.Y - (lado / _escala));
+                    p3 = new Point2d(PontoA.X + (2 / _escala), PontoA.Y - (lado / _escala));
+                    p4 = new Point2d(PontoA.X + (2 / _escala), PontoA.Y - ( 2 / _escala));
+                    p5 = new Point2d(PontoA.X + (lado / _escala), PontoA.Y - ( 2 / _escala));
+                    p6 = new Point2d(PontoA.X + (lado / _escala), PontoA.Y);
+                    break;
+                default: 
+                    bPosicaoInvalida = true;
+                    p1 = new Point2d(0, 0);
+                    p2 = new Point2d(0,0);
+                    p3 = new Point2d(0,0);
+                    p4 = new Point2d(0,0);
+                    p5 = new Point2d(0,0);
+                    p6 = new Point2d(0,0);
+                    break;
+            }
+
+            if(!bPosicaoInvalida)
+            {
+                collection.Add(p1);
+                collection.Add(p2);
+                collection.Add(p3);
+                collection.Add(p4);
+                collection.Add(p5);
+                collection.Add(p6);
+                collection.Add(p1);
+
+                Document document = Application.DocumentManager.MdiActiveDocument;
+                Helpers.AddPolyline(document, collection, ColorIndex.padrao);
+            }
+        }
+
+        public static void AddTitulo(Point2d PontoA, int iColuna)
+        {
+            Document document = Application.DocumentManager.MdiActiveDocument;
+            var textTipoColuna = string.Concat("C", iColuna);
+            var point = new Point3d(PontoA.X - (60 / _escala), PontoA.Y + (5 / _escala), 0);
+            Helpers.AddTexto(document, point, textTipoColuna, ColorIndex.padrao);
+        }
         public static List<ItemRelatorio> GetDadosRelatorio(string nomeProjeto)
         {
             try
@@ -520,7 +613,7 @@ namespace ColunaPronta.Commands
                                  orderby coluna.dInclusao descending
                                  select new Coluna
                                  {
-                                     tipoColuna = coluna.tipoColuna,
+                                     iColuna = coluna.iColuna,
                                      DiametroParafuso = coluna.DiametroParafuso,
                                      DiametroSapata = coluna.DiametroSapata,
                                      QuantidadeParafuso = coluna.QuantidadeParafuso,
@@ -538,9 +631,10 @@ namespace ColunaPronta.Commands
                                          coluna.Altura,
                                          coluna.Comprimento,
                                          coluna.Largura,
-                                         coluna.tipoColuna,
+                                         coluna.iColuna,
                                          coluna.QuantidadeParafuso,
-                                         coluna.DiametroSapata
+                                         coluna.DiametroSapata,
+                                         coluna.DiametroParafuso
 
                                      } into c
                                      select new ItemRelatorio
@@ -548,9 +642,10 @@ namespace ColunaPronta.Commands
                                          Altura = c.Key.Altura,
                                          Comprimento = c.Key.Comprimento,
                                          Largura = c.Key.Largura,
-                                         tipoColuna = c.Key.tipoColuna,
+                                         iColuna = c.Key.iColuna,
                                          QtdeParafuso = c.Key.QuantidadeParafuso,
                                          DiametroSapata = c.Key.DiametroSapata,
+                                         DiametroParafuso = c.Key.DiametroParafuso,
                                          QtdeColuna = c.Count()
                                      }).ToList();
                     return relatorio;
@@ -569,6 +664,7 @@ namespace ColunaPronta.Commands
                 return null;
             }
         }
+
         public static void GeraRelatorio()
         {
             try
@@ -605,19 +701,19 @@ namespace ColunaPronta.Commands
                 
                     foreach (ItemRelatorio item in dadosRelatorio)
                     {
-                        var coluna = item.tipoColuna.Layout;
+                        var coluna = IntegraLayout.GetLayout(item.iColuna) ;
                         coluna.Largura = item.Largura;
                         coluna.Comprimento = item.Comprimento;
                         coluna.Altura = item.Altura;
                         coluna.DiametroSapata = item.DiametroSapata;
-                        coluna.tipoColuna = item.tipoColuna;
+                        coluna.DiametroParafuso = item.DiametroParafuso;
                         var pontosColuna = AddEstruturaColuna(document, new Point2d(startX, startY - (distancia / _escala)), item.Largura, item.Comprimento);
 
                         coluna.SetPontos(pontosColuna);
 
                         AddColuna(coluna);
 
-                        var textoDescricao = string.Concat( coluna.tipoColuna.ToString(), " - "
+                        var textoDescricao = string.Concat( "C", coluna.iColuna.ToString(), " - "
                                                           , coluna.Comprimento.ToString("N2"),"x"
                                                           , coluna.Largura.ToString("N2"), "x"
                                                           , coluna.Altura.ToString("N2"), "mm - "
@@ -643,66 +739,6 @@ namespace ColunaPronta.Commands
                 Logger.Error(e.ToString());
             }
         }
-        //public static Coluna GetColunaModelo(TipoColuna tipoColuna)
-        //{
-        //    var coluna = new Coluna();
-
-        //    switch(tipoColuna)
-        //    {
-        //        case TipoColuna.C1:
-        //            coluna.SapataB = true;
-        //            coluna.ParafusoB = true;
-        //            coluna.ParafusoH = true;
-        //            break;
-        //        case TipoColuna.C2:
-        //            coluna.SapataB = true;
-        //            coluna.ParafusoE = true;
-        //            coluna.ParafusoG = true;
-        //            break;
-        //        case TipoColuna.C3:
-        //            coluna.SapataB = true;
-        //            coluna.ParafusoB = true;
-        //            coluna.ParafusoE = true;
-        //            coluna.ParafusoG = true;
-        //            coluna.ParafusoH = true;
-        //            break;
-        //        case TipoColuna.C4:
-        //            coluna.SapataB = true;
-        //            coluna.ParafusoA = true;
-        //            coluna.ParafusoC = true;
-        //            coluna.ParafusoD = true;
-        //            coluna.ParafusoF = true;
-        //            break;
-        //        case TipoColuna.C5:
-        //            coluna.SapataB = true;
-        //            coluna.ParafusoB = true;
-        //            coluna.ParafusoG = true;
-        //            break;
-        //        case TipoColuna.C6:
-        //            coluna.SapataB = true;
-        //            coluna.ParafusoE = true;
-        //            coluna.ParafusoH = true;
-        //            break;
-        //        case TipoColuna.C8:
-        //            coluna.SapataB = true;
-        //            coluna.ParafusoA = true;
-        //            coluna.ParafusoB = true;
-        //            break;
-        //        case TipoColuna.C9:
-        //            coluna.SapataB = true;
-        //            break;
-        //        case TipoColuna.C12:
-        //            coluna.SapataC = true;
-        //            coluna.ParafusoE = true;
-        //            break;
-        //        case TipoColuna.C13:
-        //            coluna.SapataC = true;
-        //            coluna.ParafusoF = true;
-        //            break;
-        //        default: 
-        //            return coluna;
-        //    }
-        //    return coluna;
-        //}
+       
     }
 }

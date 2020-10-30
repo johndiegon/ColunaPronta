@@ -100,12 +100,12 @@
     <Compile Include="Commands\teste\PlottingApplication.cs" />
     <Compile Include="Commands\teste\ViewPlottColuna.cs" />
     <Compile Include="Helper\Helpers.cs" />
+    <Compile Include="Helper\IntegraLayout.cs" />
     <Compile Include="Model\ColorIndex.cs" />
     <Compile Include="Model\ItemRelatorio.cs" />
     <Compile Include="Model\Posicao.cs" />
     <Compile Include="Model\Sapata.cs" />
     <Compile Include="Model\Coluna.cs" />
-    <Compile Include="Helper\TipoColuna.cs" />
     <Compile Include="Model\TipoColuna.cs" />
     <Compile Include="Model\TipoRelatorio.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

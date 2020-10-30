@@ -11,9 +11,11 @@ namespace ColunaPronta.Model
         public double Comprimento { get; set; }
         public double Largura { get; set; }
         public double Altura { get; set; }
-        public TipoColuna tipoColuna { get; set; }
+        public int iColuna { get; set; }
         public double QtdeParafuso { get; set; }
         public double QtdeColuna { get; set; }
         public double DiametroSapata { get; set; }
+        public double DiametroParafuso { get; set; }
+        
     }
 }

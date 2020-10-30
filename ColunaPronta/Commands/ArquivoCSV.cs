@@ -24,20 +24,40 @@ namespace ColunaPronta.Commands
                 else
                 {
                     writer = File.CreateText(nomeArquivo);
-                    writer.WriteLine("TipoColuna;PontoA_X;PontoA_Y;DiametroChumbador;DiametroParafauso;QtdeParafuso;Comprimento;Largura;Altura;dAlteracao");
+                    writer.WriteLine("iColuna;PontoA_X;PontoA_Y;Comprimento;Largura;Altura;DiametroParafuso;DiametroSapata;QuantidadeParafuso;ParafusoA;ParafusoB;ParafusoC;ParafusoD;ParafusoE;ParafusoF;ParafusoG;ParafusoH;SapataA;SapataB;SapataC;SapataD;PassanteA;PassanteB;PassanteC;PassanteD;eleAmarelo;eleVermelho;eleAzul;eleCinza;dAlteracao");
                 }
 
-                var linhaColuna = string.Concat( //(int)coluna.GetTipoColuna(), ";"
-                                                coluna.PointA.X.ToString(), ";"
+                var linhaColuna = string.Concat( coluna.iColuna.ToString() , ";"
+                                               , coluna.PointA.X.ToString(), ";"
                                                , coluna.PointA.Y.ToString(), ";"
-                                               , coluna.DiametroSapata, ";"
+                                               , coluna.Comprimento, ";"
+                                               , coluna.Largura, ";"
+                                               , coluna.Altura, ";"
                                                , coluna.DiametroParafuso, ";"
+                                               , coluna.DiametroSapata, ";"
                                                , coluna.QuantidadeParafuso, ";"
-                                               , coluna.Comprimento.ToString(), ";"
-                                               , coluna.Largura.ToString(), ";"
-                                               , coluna.Altura.ToString(), ";"
+                                               , coluna.ParafusoA == false ? 0 : 1, ";"
+                                               , coluna.ParafusoB == false ? 0 : 1, ";"
+                                               , coluna.ParafusoC == false ? 0 : 1, ";"
+                                               , coluna.ParafusoD == false ? 0 : 1, ";"
+                                               , coluna.ParafusoE == false ? 0 : 1, ";"
+                                               , coluna.ParafusoF == false ? 0 : 1, ";"
+                                               , coluna.ParafusoG == false ? 0 : 1, ";"
+                                               , coluna.ParafusoH == false ? 0 : 1, ";"
+                                               , coluna.SapataA == false ? 0 : 1, ";"
+                                               , coluna.SapataB == false ? 0 : 1, ";"
+                                               , coluna.SapataC == false ? 0 : 1, ";"
+                                               , coluna.SapataD == false ? 0 : 1, ";"
+                                               , coluna.PassanteA == false ? 0 : 1, ";"
+                                               , coluna.PassanteB == false ? 0 : 1, ";"
+                                               , coluna.PassanteC == false ? 0 : 1, ";"
+                                               , coluna.PassanteD == false ? 0 : 1, ";"
+                                               , coluna.eleAmarelo == false ? 0 : 1, ";"
+                                               , coluna.eleVermelho == false ? 0 : 1, ";"
+                                               , coluna.eleAzul == false ? 0 : 1, ";"
+                                               , coluna.eleCinza == false ? 0 : 1, ";"
                                                , DateTime.Now.ToString()
-                                               );
+                                               ); ;
                 writer.WriteLine(linhaColuna);
                 writer.Close();
             }

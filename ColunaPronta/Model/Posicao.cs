@@ -3,6 +3,10 @@
     public enum Posicao
     {
         Horizontal,
-        Vertical
+        Vertical,
+        BaixoEsquerda,
+        CimaEsquerda, 
+        BaixoDireita, 
+        CimaDireita
     }
 }

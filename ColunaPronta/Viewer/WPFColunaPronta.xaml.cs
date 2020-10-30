@@ -20,17 +20,12 @@ namespace ColunaPronta
         public WPFColunaPronta(Coluna coluna)
         {
             InitializeComponent();
+          
             this._coluna = coluna;
       
             SetTelaInicial();
             SetVisualizacao(coluna.Posicao);
         }
-
-        //private void InicializaComboBoxTpColuna()
-        //{
-        //    var tiposColuna = Enum.GetValues(typeof(TipoColuna)).Cast<TipoColuna>();
-        //    combobox_TpColuna.ItemsSource = tiposColuna;
-        //}
 
         private void Btn_gerarcoluna_Click(object sender, RoutedEventArgs e)
         {
@@ -69,13 +64,6 @@ namespace ColunaPronta
                 this._coluna.QuantidadeParafuso = Convert.ToDouble(textBox_qtdeParafuso.Text.ToString());
             }
 
-            //Tipo de coluna.
-            //if (combobox_TpColuna.SelectedValue.ToString() == "")
-            //{
-            //    MessageBox.Show("Selecione o tipo de coluna.", "Atenção!");
-            //    return;
-            //}
-
             //Quantidade de parafuso
             if (textBox_parafuso.Text.ToString() == "")
             {
@@ -86,7 +74,6 @@ namespace ColunaPronta
             {
                 this._coluna.DiametroParafuso = Convert.ToDouble(textBox_parafuso.Text.ToString());
             }
-
 
             this._coluna.ParafusoA   = (bool)this.checkBox_prfsA.IsChecked;
             this._coluna.ParafusoB   = (bool)this.checkBox_prfsB.IsChecked;
@@ -104,15 +91,16 @@ namespace ColunaPronta
             this._coluna.PassanteB   = (bool)this.checkBox_passanteB.IsChecked;
             this._coluna.PassanteC   = (bool)this.checkBox_passanteC.IsChecked;
             this._coluna.PassanteD   = (bool)this.checkBox_passanteD.IsChecked;
-            this._coluna.eleAmarelo  = (bool)this.checkBox_lAM.IsChecked;
-            this._coluna.eleAzul     = (bool)this.checkBox_lA.IsChecked;
-            this._coluna.eleCinza    = (bool)this.checkBox_lC.IsChecked;
-            this._coluna.eleVermelho = (bool)this.checkBox_lV.IsChecked;
+            this._coluna.eleAmarelo  = bColunaNormal == true ? false : (bool)this.checkBox_lAM.IsChecked;
+            this._coluna.eleAzul     = bColunaNormal == true ? false : (bool)this.checkBox_lA.IsChecked;
+            this._coluna.eleCinza    = bColunaNormal == true ? false : (bool)this.checkBox_lC.IsChecked;
+            this._coluna.eleVermelho = bColunaNormal == true ? false : (bool)this.checkBox_lV.IsChecked;
             
             this.Close();
+            _coluna.SetIdColuna();
             IntegraColuna.AddColuna(_coluna);
             ArquivoCSV.Registra(_coluna);
-            //IntegraColuna.AddTitulo(_coluna.PointA, _coluna.GetTipoColuna());
+            IntegraColuna.AddTitulo(_coluna.PointA, _coluna.iColuna);
         }
      
         private void textBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -136,6 +124,7 @@ namespace ColunaPronta
             border_parafuso.Visibility = Visibility.Visible;
             border_passante.Visibility = Visibility.Hidden;
         }
+ 
         private void menu_passante_MouseMove(object sender, MouseEventArgs e)
         {
             border_parafuso.Visibility = Visibility.Hidden;
@@ -227,8 +216,8 @@ namespace ColunaPronta
             #region >> Aba L
             this.checkBox_lV.Margin = posicao == Posicao.Horizontal ?  new Thickness(117,110,0,0)    : new Thickness(23,194,0,0    );
             this.checkBox_lC.Margin  = posicao == Posicao.Horizontal ? new Thickness(52,264,0,0 )    : new Thickness(113,114,0,0   );
-            this.checkBox_lA.Margin  = posicao == Posicao.Horizontal ? new Thickness(44,180,0,0 )    : new Thickness(246,110,0,0   );
-            this.checkBox_lAM.Margin = posicao == Posicao.Horizontal ? new Thickness(289, 112, 0, 0) : new Thickness(26, 306, 0, 0);
+            this.checkBox_lA.Margin = posicao == Posicao.Horizontal ? new Thickness(289, 112, 0, 0) : new Thickness(26, 306, 0, 0); 
+            this.checkBox_lAM.Margin = posicao == Posicao.Horizontal ? new Thickness(44, 180, 0, 0) : new Thickness(246, 110, 0, 0);
             #endregion
 
             #endregion
