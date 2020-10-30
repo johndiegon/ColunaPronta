@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         x:Class="ColunaPronta.WPFColunaPronta"
         mc:Ignorable="d"
-        Title="Coluna Pronta" Height="500" Width="800"
+        Title="Coluna Pronta" Height="515" Width="800"
         WindowStyle="SingleBorderWindow"
         >
     <Grid>
 
-        <StackPanel x:Name="StackPanel_TelaInicial" Visibility="Visible">
+        <StackPanel x:Name="StackPanel_TelaInicial" Visibility="Hidden">
             <Grid Margin="0,0,-0.4,0" Height="470">
                 <TextBlock Text="Defina o tipo de coluna:" Margin="40,24,399,409" FontSize="30" RenderTransformOrigin="0.5,0.5" />
                 <TextBlock Text="Com Parafuso" Margin="159,384,440,46" FontSize="30" RenderTransformOrigin="0.5,0.5" />
@@ -53,16 +53,12 @@
             </Grid>
         </StackPanel>
 
-        <StackPanel x:Name="StackPanel_SelecionaColunapassante" Visibility="Hidden">
-            <TabControl x:Name="tabControl" Height="470" Margin="0,0,-0.4,0">
+        <StackPanel x:Name="StackPanel_SelecionaColunapassante" Visibility="Visible" Margin="0,0,-0.4,17.6">
+            <TabControl x:Name="tabControl" Height="470" Margin="0,0,-0.4,0" >
                 <TabItem Header="Sapata">
-                    <Grid Background="White" Margin="0,0,310,0.4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="69*"/>
-                            <ColumnDefinition Width="409*"/>
-                        </Grid.ColumnDefinitions>
-                        <Image x:Name="image_passante_vertical" Source="C:\Autodesk\ColunaPronta\Image\passante_a.png" Visibility="Hidden" Margin="0,0,-0.4,0" Grid.ColumnSpan="2"/>
-                        <Image x:Name="image_passante_horizontal" Source="C:\Autodesk\ColunaPronta\Image\passante_a.png" Visibility="Visible" Margin="365.1,2,-438.4,5" Grid.Column="1">
+                    <Grid Background="White" Margin="2,0,310,6">
+                        <Image x:Name="image_passante_horizontal" Source="C:\Autodesk\ColunaPronta\Image\passante_a.png" Visibility="Hidden" Margin="0,4,0,-4.4" Grid.ColumnSpan="4"/>
+                        <Image x:Name="image_passante_vertical" Source="C:\Autodesk\ColunaPronta\Image\passante_a.png" Visibility="Visible" Margin="350,26,-418,-13.4" Grid.Column="3">
                             <Image.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform/>
@@ -72,16 +68,16 @@
                                 </TransformGroup>
                             </Image.RenderTransform>
                         </Image>
+                        <CheckBox x:Name="checkBox_passante_sptA"  Content="S.A" HorizontalAlignment="Left" Margin="117, 78, 0,0" VerticalAlignment="Top" Checked="checkBox_spt_Checked"/>
+                        <CheckBox x:Name="checkBox_passante_sptB"  Content="S.B" HorizontalAlignment="Left" Margin="306, 175,0,0" VerticalAlignment="Top"  Checked="checkBox_spt_Checked"/>
+                        <CheckBox x:Name="checkBox_passante_sptC"  Content="S.C" HorizontalAlignment="Left" Margin="115, 403,0,0" VerticalAlignment="Top" Checked="checkBox_spt_Checked" />
+                        <CheckBox x:Name="checkBox_passante_sptD"  Content="S.D" HorizontalAlignment="Left" Margin="28, 183, 0,0" VerticalAlignment="Top" Checked="checkBox_spt_Checked" />
                     </Grid>
                 </TabItem>
                 <TabItem Header="passante">
                     <Grid Background="White" Margin="0,0,310,0.4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="19*"/>
-                            <ColumnDefinition Width="770*"/>
-                        </Grid.ColumnDefinitions>
-                        <Image x:Name="image_passanteb_vertical" Source="C:\Autodesk\ColunaPronta\Image\passante_b.png" Visibility="Hidden" Grid.ColumnSpan="2" Margin="0,-6,-0.4,6"/>
-                        <Image x:Name="image_passanteb_horizontal" Source="C:\Autodesk\ColunaPronta\Image\passante_b.png" Visibility="Visible" Margin="420.8,-7,-443.4,14" Grid.Column="1">
+                        <Image x:Name="image_passanteb_horizontal" Source="C:\Autodesk\ColunaPronta\Image\passante_b.png" Visibility="Visible" Grid.ColumnSpan="5" Margin="-4,9,4,-9.4"/>
+                        <Image x:Name="image_passanteb_vertical" Source="C:\Autodesk\ColunaPronta\Image\passante_b.png" Visibility="Hidden" Margin="340,32,-486,-25.4">
                             <Image.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform/>
@@ -91,12 +87,16 @@
                                 </TransformGroup>
                             </Image.RenderTransform>
                         </Image>
+                        <CheckBox x:Name="checkBox_passanteA" Content="P.A" HorizontalAlignment="Left" Margin="186,93,0,0"  VerticalAlignment="Top"/>
+                        <CheckBox x:Name="checkBox_passanteB" Content="P.B" HorizontalAlignment="Left" Margin="402,209,0,0"  VerticalAlignment="Top"/>
+                        <CheckBox x:Name="checkBox_passanteC" Content="P.C" HorizontalAlignment="Left" Margin="184,380,0,0"  VerticalAlignment="Top" />
+                        <CheckBox x:Name="checkBox_passanteD" Content="P.D" HorizontalAlignment="Left" Margin="36,210,0,0"  VerticalAlignment="Top"/>
                     </Grid>
                 </TabItem>
-                <TabItem Header="passante" Margin="-6.6,-4,3.2,2.8">
+                <TabItem Header="passante">
                     <Grid Background="White" Margin="0,0,310,0.4">
-                        <Image x:Name="image_passantec_vertical" Source="C:\Autodesk\ColunaPronta\Image\passante_c.png" Visibility="Visible" Grid.ColumnSpan="2" Margin="0,-6,-0.4,6"/>
-                        <Image x:Name="image_passantec_horizontal" Source="C:\Autodesk\ColunaPronta\Image\passante_c.png" Visibility="Hidden" Margin="420.8,-7,-443.4,14" Grid.Column="1">
+                        <Image x:Name="image_passantec_horizontal" Source="C:\Autodesk\ColunaPronta\Image\passante_c.png" Visibility="Hidden" Margin="10,9,0,6" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
+                        <Image x:Name="image_passantec_vertical" Source="C:\Autodesk\ColunaPronta\Image\passante_c.png" Visibility="Visible" Margin="376,40,-479,-34.4">
                             <Image.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform/>
@@ -106,26 +106,27 @@
                                 </TransformGroup>
                             </Image.RenderTransform>
                         </Image>
-
+                        <CheckBox x:Name="checkBox_lV" Content="L.Vermelho" HorizontalAlignment="Left"  Margin="23,194,0,0"  VerticalAlignment="Top"/>
+                        <CheckBox x:Name="checkBox_lC"    Content="L.Cinza" HorizontalAlignment="Left"  Margin="113,114,0,0" VerticalAlignment="Top"/>
+                        <CheckBox x:Name="checkBox_lA"  Content="L.Amarelo" HorizontalAlignment="Left"  Margin="246,110,0,0"  VerticalAlignment="Top"/>
+                        <CheckBox x:Name="checkBox_lAM"     Content="L.Azul" HorizontalAlignment="Left" Margin="26,306,0,0" VerticalAlignment="Top"/>
                     </Grid>
                 </TabItem>
             </TabControl>
         </StackPanel>
 
-        <Grid x:Name="Grid_Inputs" Visibility="Hidden">
-            <Label x:Name="label_metragem" Content="" Margin="543,130,50.6,297.4"/>
-            <TextBlock x:Name="textBlock_" HorizontalAlignment="Left" Margin="544,187,0,0" TextWrapping="Wrap" Text="Tipo da Coluna:" VerticalAlignment="Top" RenderTransformOrigin="-0.25,-1.775"/>
-            <ComboBox x:Name="combobox_TpColuna" Margin="636,181,50.6,268.4"></ComboBox>
-            <TextBlock x:Name="textBlock_chumbador" HorizontalAlignment="Left" Margin="510,212,0,0" TextWrapping="Wrap" Text="Diâmetro Chumbador:" VerticalAlignment="Top"/>
-            <TextBox x:Name="textBox_diametro" TextWrapping="Wrap" Text="" Margin="636,205,49.6,240.4" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
-            <TextBlock x:Name="textBlock_parafuso" HorizontalAlignment="Left" Margin="526,242,0,0" TextWrapping="Wrap" Text="Diâmetro Parafuso:" VerticalAlignment="Top"/>
-            <TextBox x:Name="textBox_parafuso" TextWrapping="Wrap" Text="" Margin="635,236,50.6,209.4" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput" />
-            <TextBlock x:Name="textBlock_altura" HorizontalAlignment="Left" Margin="535,304,0,0" TextWrapping="Wrap" Text="Altura da Coluna:" VerticalAlignment="Top"/>
-            <TextBox x:Name="textBox_altura" TextWrapping="Wrap" Text="" Margin="635,299,50.6,146.4" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
-            <TextBlock x:Name="textBlock_qtParafuso" HorizontalAlignment="Left" Margin="491,272,0,0" TextWrapping="Wrap" Text="Quantidade de Parafusos:" VerticalAlignment="Top"/>
-            <TextBox x:Name="textBox_qtdeParafuso" TextWrapping="Wrap" Text="" Margin="635,268,50.6,177.4" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"></TextBox>
-            <Button x:Name="btn_gerarcoluna" Content="Gerar Coluna" HorizontalAlignment="Left" Margin="680,437,0,0" VerticalAlignment="Top" Width="75" Click="Btn_gerarcoluna_Click"/>
-            <Button x:Name="button_voltar" Content="Voltar" HorizontalAlignment="Left" Margin="507,437,0,0" VerticalAlignment="Top" Width="75" Click="button_voltar_Click"/>
+        <Grid x:Name="Grid_Inputs" Visibility="Visible">
+            <Label x:Name="label_metragem" Content="" Margin="546,110,48.4,317.4"/>
+            <TextBlock x:Name="textBlock_chumbador" HorizontalAlignment="Left" Margin="519,165,0,0" TextWrapping="Wrap" Text="Diâmetro Chumbador:" VerticalAlignment="Top"/>
+            <TextBox x:Name="textBox_diametro" TextWrapping="Wrap" Text="" Margin="642,151,44,302" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
+            <TextBlock x:Name="textBlock_parafuso" HorizontalAlignment="Left" Margin="533,205,0,0" TextWrapping="Wrap" Text="Diâmetro Parafuso:" VerticalAlignment="Top"/>
+            <TextBox x:Name="textBox_parafuso" TextWrapping="Wrap" Text="" Margin="642,191,44,261" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput" />
+            <TextBlock x:Name="textBlock_altura" HorizontalAlignment="Left" Margin="542,290,0,0" TextWrapping="Wrap" Text="Altura da Coluna:" VerticalAlignment="Top"/>
+            <TextBox x:Name="textBox_altura" TextWrapping="Wrap" Text="" Margin="642,274,44,178" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
+            <TextBlock x:Name="textBlock_qtParafuso" HorizontalAlignment="Left" Margin="498,246,0,0" TextWrapping="Wrap" Text="Quantidade de Parafusos:" VerticalAlignment="Top"/>
+            <TextBox x:Name="textBox_qtdeParafuso" TextWrapping="Wrap" Text="" Margin="642,231,44,221" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"></TextBox>
+            <Button x:Name="btn_gerarcoluna" Content="Gerar Coluna" HorizontalAlignment="Left" Margin="680,420,0,0" VerticalAlignment="Top" Width="75" Click="Btn_gerarcoluna_Click" Height="36"/>
+            <Button x:Name="button_voltar" Content="Voltar" HorizontalAlignment="Left" Margin="601,420,0,-0.6" VerticalAlignment="Top" Width="75" Click="button_voltar_Click" Height="36"/>
         </Grid>
 
     </Grid>

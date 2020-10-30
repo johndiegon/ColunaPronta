@@ -98,6 +98,15 @@ namespace ColunaPronta.Model
         public bool SapataB { get; set; }
         public bool SapataC { get; set; }
         public bool SapataD { get; set; }
+        public bool PassanteA { get; set; }
+        public bool PassanteB { get; set; }
+        public bool PassanteC { get; set; }
+        public bool PassanteD { get; set; }
+        public bool eleAmarelo { get; set; }
+        public bool eleVermelho { get; set; }
+        public bool eleAzul { get; set; }
+        public bool eleCinza { get; set; }
+
         public double DiametroParafuso { get; set; }
         public double DiametroSapata { get; set; }
         public double Altura { get; set; }

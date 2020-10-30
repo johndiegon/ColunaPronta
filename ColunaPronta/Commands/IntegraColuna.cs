@@ -72,6 +72,7 @@ namespace ColunaPronta.Commands
         {
             
              AddParafuso(coluna);
+             AddPassante(coluna);
 
             if (coluna.SapataA == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataD == true && coluna.Posicao == Posicao.Vertical  ) 
             {
@@ -81,8 +82,7 @@ namespace ColunaPronta.Commands
                 var p3 = new Point2d(coluna.PointB.X, coluna.PointB.Y);
                 var p4 = new Point2d(coluna.PointA.X, coluna.PointA.Y);
 
-                AddSapata(p1, p2, p3, p4, tipocoluna, coluna.DiametroSapata / _escala);
-
+                AddSapata(p1, p2, p3, p4, "c1", coluna.DiametroSapata / _escala);
             }
             if (coluna.SapataB == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataA == true && coluna.Posicao == Posicao.Vertical  )
             {
@@ -414,8 +414,85 @@ namespace ColunaPronta.Commands
                                                new Point3d(p2v1.X + ((50 - i) / _escala), p2v1.Y, 0), false, ColorIndex.verde);
                 }
             }
+      
         }
       
+        public static void AddPassante(Coluna coluna)
+        {
+           if(     (coluna.PassanteA == true && coluna.Posicao == Posicao.Horizontal) 
+                || (coluna.PassanteD == true && coluna.Posicao == Posicao.Vertical)
+             ) 
+            {
+
+                var PontoA = new Point2d(coluna.PointA.X , coluna.PointA.Y );
+                AddRetangulo(PontoA, Posicao.Horizontal, 40 , coluna.Largura);
+            }
+
+           if(     (coluna.PassanteB == true && coluna.Posicao == Posicao.Horizontal) || 
+                   (coluna.PassanteA == true && coluna.Posicao == Posicao.Vertical)
+             )
+            {
+                var PontoA = new Point2d(coluna.PointB.X - (40/_escala) , coluna.PointB.Y);
+                AddRetangulo(PontoA,  Posicao.Vertical, 40 , coluna.Comprimento);
+            }
+
+           if(     (coluna.PassanteC == true && coluna.Posicao == Posicao.Horizontal) || 
+                   (coluna.PassanteB == true && coluna.Posicao == Posicao.Vertical)
+             ) 
+            {
+                var PontoA = new Point2d(coluna.PointC.X , coluna.PointC.Y + (40 / _escala));
+                AddRetangulo(PontoA,  Posicao.Horizontal, 40 , coluna.Largura);
+            }
+
+           if(     (coluna.PassanteD == true && coluna.Posicao == Posicao.Horizontal) || 
+                   (coluna.PassanteC == true && coluna.Posicao == Posicao.Vertical)
+             ) 
+            {
+                
+                var PontoA = new Point2d(coluna.PointA.X, coluna.PointA.Y);
+                AddRetangulo(PontoA, Posicao.Vertical, 40 , coluna.Comprimento);
+            }
+        }
+
+        public static void AddRetangulo(Point2d PontoA, Posicao posicao, double largura, double comprimento)
+        {
+            Point2d p1, p2, p3, p4 = new Point2d();
+            var collection = new Point2dCollection();
+
+            if ( posicao == Posicao.Vertical)
+            {
+                p1 = new Point2d(PontoA.X, PontoA.Y);
+                p2 = new Point2d(PontoA.X + ( largura / _escala ), PontoA.Y);
+                p3 = new Point2d(PontoA.X + (largura / _escala)  , PontoA.Y - (comprimento / _escala) );
+                p4 = new Point2d(PontoA.X, PontoA.Y - (comprimento / _escala));
+            }
+            else
+            {
+                p1 = new Point2d(PontoA.X, PontoA.Y);
+                p2 = new Point2d(PontoA.X + (comprimento / _escala), PontoA.Y);
+                p3 = new Point2d(PontoA.X + (comprimento / _escala), PontoA.Y - (largura / _escala));
+                p4 = new Point2d(PontoA.X, PontoA.Y - (largura / _escala));
+            }
+
+            collection.Add(p1);
+            collection.Add(p2);
+            collection.Add(p3);
+            collection.Add(p4);
+            collection.Add(p1);
+
+            Document document = Application.DocumentManager.MdiActiveDocument;
+            Helpers.AddPolyline(document, collection, ColorIndex.padrao);
+                          
+        }
+
+
+        public static void AddEle(Coluna coluna)
+        {
+           if((coluna.eleVermelho == true && coluna.Posicao == Posicao.Horizontal) || (coluna.eleCinza    == true && coluna.Posicao == Posicao.Vertical)){}
+           if((coluna.eleAmarelo == true && coluna.Posicao == Posicao.Horizontal) || (coluna.eleVermelho  == true && coluna.Posicao == Posicao.Vertical)){}
+           if((coluna.eleAzul     == true && coluna.Posicao == Posicao.Horizontal) || (coluna.eleAmarelo  == true && coluna.Posicao == Posicao.Vertical)){}
+           if((coluna.eleCinza == true && coluna.Posicao == Posicao.Horizontal)    || (coluna.eleAzul     == true && coluna.Posicao == Posicao.Vertical)){}
+        }
         //public static void AddTitulo(Point2d PontoA, TipoColuna tipoColuna)
         //{
         //    Document document = Application.DocumentManager.MdiActiveDocument;
