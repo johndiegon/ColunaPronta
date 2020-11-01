@@ -69,7 +69,31 @@ namespace ColunaPronta.Commands
 
             return coluna;
         }
-    
+
+        public static int GetLayoutIdentificado()
+        {
+            Document document = Application.DocumentManager.MdiActiveDocument;
+            Editor editor = document.Editor;
+
+            int id = 0;
+            PromptStringOptions opt = new PromptStringOptions( "\nInforme o tipo de coluna:");
+            PromptResult promptResult =  editor.GetString(opt);
+
+            if (promptResult.Status == PromptStatus.OK)
+            {
+                var teste = promptResult.StringResult.ToString().ToUpper();
+                var txtId = teste.Replace("C", "");
+                id = Convert.ToInt32(txtId);
+            }
+            else
+            {
+                editor.WriteMessage("\nÉ necessário informar o tipo de coluna para ser gerado.");
+                return 0;
+            }
+
+            return id;
+        }
+
         public static void AddColuna(Coluna coluna, bool registra)
         {       
              AddParafuso(coluna);
@@ -118,6 +142,37 @@ namespace ColunaPronta.Commands
                 AddTitulo(coluna.PointA, coluna.iColuna);
             }
             IntegraLayout.SetUltimaColuna(coluna.iColuna);
+        }
+
+        public static void AddColunaLayout(Coluna coluna, Coluna layout)
+        {
+            coluna.iColuna = layout.iColuna;
+            coluna.Altura = layout.Altura;
+            coluna.DiametroParafuso = layout.DiametroParafuso;
+            coluna.DiametroSapata = layout.DiametroSapata;
+            coluna.QuantidadeParafuso = layout.QuantidadeParafuso;
+            coluna.ParafusoA = layout.ParafusoA;
+            coluna.ParafusoB = layout.ParafusoB;
+            coluna.ParafusoC = layout.ParafusoC;
+            coluna.ParafusoD = layout.ParafusoD;
+            coluna.ParafusoE = layout.ParafusoE;
+            coluna.ParafusoF = layout.ParafusoF;
+            coluna.ParafusoG = layout.ParafusoG;
+            coluna.ParafusoH = layout.ParafusoH;
+            coluna.SapataA = layout.SapataA;
+            coluna.SapataB = layout.SapataB;
+            coluna.SapataC = layout.SapataC;
+            coluna.SapataD = layout.SapataD;
+            coluna.PassanteA = layout.PassanteA;
+            coluna.PassanteB = layout.PassanteB;
+            coluna.PassanteC = layout.PassanteC;
+            coluna.PassanteD = layout.PassanteD;
+            coluna.eleAmarelo = layout.eleAmarelo;
+            coluna.eleVermelho = layout.eleVermelho;
+            coluna.eleAzul = layout.eleAzul;
+            coluna.eleCinza = layout.eleCinza;
+
+            AddColuna(coluna, true);
         }
 
         public static Point3dCollection AddEstruturaColuna(Document document, Point2d startPoint, double largura, double comprimento)
@@ -719,7 +774,9 @@ namespace ColunaPronta.Commands
                                                           , coluna.Largura.ToString("N2"), "x"
                                                           , coluna.Altura.ToString("N2"), "mm - "
                                                           , item.QtdeColuna.ToString(), " "
-                                                          , item.QtdeColuna == 1 ? "unidade." : "unidades."
+                                                          , "\n Diametro do Parafuso :" , item.DiametroParafuso.ToString(),""
+                                                          , "\n Diametro do Sapata :", item.DiametroSapata.ToString(),""
+                                                          , "\n", item.QtdeColuna == 1 ? "unidade." : "unidades."
                                                           );
 
                         Helpers.AddTexto( document

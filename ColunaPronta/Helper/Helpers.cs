@@ -73,10 +73,6 @@ namespace ColunaPronta.Helper
 
                 Editor ed = doc.Editor;
 
-                // Build a filter list so that only entities
-
-                // on the specified layer are selected
-
                 TypedValue[] tvs = new TypedValue[1] { new TypedValue((int)DxfCode.LayerName, layerName) };
 
                 SelectionFilter sf = new SelectionFilter(tvs);

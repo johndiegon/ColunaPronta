@@ -68,13 +68,8 @@ namespace ColunaPronta.Helper
 
                 coluna.iColuna = novoLayout;
 
-                //var layoutNovo = coluna;
-                //layoutNovo.PointA = new Point2d(0,0);
-                //layoutNovo.PointB = new Point2d(0,0);
-                //layoutNovo.PointC = new Point2d(0,0);
-                //layoutNovo.PointD = new Point2d(0,0);
-
                 layouts.Add(coluna);
+                layouts.Add(GetLayoutInverso(coluna));
 
                 AddLayout(layouts);
 
@@ -88,6 +83,43 @@ namespace ColunaPronta.Helper
                 return 0;
             }
         }
+
+        private static Coluna GetLayoutInverso(Coluna coluna)
+        {
+            var layoutInverso = new Coluna()
+            {
+                iColuna = coluna.iColuna,
+                Comprimento = coluna.Comprimento ,
+                Largura = coluna.Largura ,
+                Altura = coluna.Altura,
+                DiametroParafuso = coluna.DiametroParafuso,
+                DiametroSapata = coluna.DiametroSapata,
+                QuantidadeParafuso = coluna.QuantidadeParafuso,
+                ParafusoA = coluna.ParafusoE,
+                ParafusoB = coluna.ParafusoF,
+                ParafusoC = coluna.ParafusoG,
+                ParafusoD = coluna.ParafusoH,
+                ParafusoE = coluna.ParafusoA,
+                ParafusoF = coluna.ParafusoB,
+                ParafusoG = coluna.ParafusoC,
+                ParafusoH = coluna.ParafusoD,
+                SapataA = coluna.SapataC,
+                SapataB = coluna.SapataD,
+                SapataC = coluna.SapataA,
+                SapataD = coluna.SapataB,
+                PassanteA = coluna.PassanteC,
+                PassanteB = coluna.PassanteD,
+                PassanteC = coluna.PassanteA,
+                PassanteD = coluna.PassanteB,
+                eleAmarelo = coluna.eleCinza,
+                eleVermelho = coluna.eleAzul,
+                eleAzul = coluna.eleVermelho,
+                eleCinza = coluna.eleAmarelo
+            };
+
+            return layoutInverso;
+        }
+
         public static Coluna GetLayout(int iColuna)
         {
             try
@@ -140,7 +172,6 @@ namespace ColunaPronta.Helper
                 Logger.Error(e.ToString());
             }
         }
-
         public static Coluna GetUltimaColuna()
         {
             try
@@ -162,7 +193,6 @@ namespace ColunaPronta.Helper
                 return null;
             }
         }
-
         public static void SetUltimaColuna(int iColuna)
         {
             try
@@ -193,7 +223,6 @@ namespace ColunaPronta.Helper
                 Logger.Error(e.ToString());
             }
         }
-
         private class UltimaColuna
         {
             public int iColuna { get; set; }

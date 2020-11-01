@@ -72,24 +72,7 @@ namespace ColunaPronta.Model
         {
             get
             {
-                //if( largura == 0)
-                //{
-                //    if (this.PointA != null && this.PointB != null && this.PointC != null)
-                //    {
-                //        var lado1 = this.PointA.GetDistanceTo(this.PointB) * _escala;
-                //        var lado2 = this.PointA.GetDistanceTo(this.PointC) * _escala;
-
-                //        return lado1 > lado2 ? lado2 : lado1;
-                //    }
-                //    else
-                //    {
-                //        return 0;
-                //    }
-                //}
-                //else
-                //{
-                    return this.largura;
-                //}
+               return this.largura;
             }
             set
             {
@@ -142,9 +125,8 @@ namespace ColunaPronta.Model
             this.Posicao = lado1 > lado2 ? Posicao.Horizontal : Posicao.Vertical;
 
         }
-
         public string NomeArquivo { get; set; }
-
+        public bool LayoutInverto { get; set; }
         #region >> Parafuso
         public double DiametroParafuso { get; set; }
         public double QuantidadeParafuso { get; set; }
