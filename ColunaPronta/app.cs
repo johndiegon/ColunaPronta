@@ -41,6 +41,13 @@ namespace ColunaPronta
         public void GeraUltimaColunaPronta()
         {
             var coluna = IntegraColuna.SelecionaColuna();
+
+            if(coluna == null)
+            {
+                MessageBox.Show("Favor selecionar a coluna novamente !", "Atenção!");
+                return;
+            }
+
             var layout = IntegraLayout.GetUltimaColuna();
             if (layout != null)
             {
@@ -57,6 +64,13 @@ namespace ColunaPronta
         {
             var id = IntegraColuna.GetLayoutIdentificado();
             var coluna = IntegraColuna.SelecionaColuna();
+
+            if (coluna == null)
+            {
+                MessageBox.Show("Favor selecionar a coluna novamente !", "Atenção!");
+                return;
+            }
+
             var layout = IntegraLayout.GetLayout(id);
 
             if (layout != null)
@@ -76,11 +90,11 @@ namespace ColunaPronta
             IntegraColuna.GeraRelatorio();
         }
 
-        [CommandMethod("Teste")]
-        public void Teste()
-        {
-            var com = new LayoutCreation.Commands();
-            com.CreateLayout();
-        }
+        //[CommandMethod("Teste")]
+        //public void Teste()
+        //{
+        //    var com = new LayoutCreation.Commands();
+        //    com.CreateLayout();
+        //}
     }
 }

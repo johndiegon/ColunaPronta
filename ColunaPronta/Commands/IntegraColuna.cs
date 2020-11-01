@@ -481,38 +481,42 @@ namespace ColunaPronta.Commands
       
         public static void AddPassante(Coluna coluna)
         {
-           if(     (coluna.PassanteA == true && coluna.Posicao == Posicao.Horizontal) 
+    
+            if (     (coluna.PassanteA == true && coluna.Posicao == Posicao.Horizontal) 
                 || (coluna.PassanteD == true && coluna.Posicao == Posicao.Vertical)
              ) 
             {
-
+                var comprimento = Posicao.Horizontal == coluna.Posicao ? coluna.Comprimento : coluna.Largura;
                 var PontoA = new Point2d(coluna.PointA.X , coluna.PointA.Y );
-                AddRetangulo(PontoA, Posicao.Horizontal, 40 , coluna.Largura);
+                AddRetangulo(PontoA, Posicao.Horizontal, 40 , comprimento);
             }
 
            if(     (coluna.PassanteB == true && coluna.Posicao == Posicao.Horizontal) || 
                    (coluna.PassanteA == true && coluna.Posicao == Posicao.Vertical)
              )
             {
+                var comprimento = Posicao.Vertical == coluna.Posicao ? coluna.Comprimento : coluna.Largura;
+
                 var PontoA = new Point2d(coluna.PointB.X - (40/_escala) , coluna.PointB.Y);
-                AddRetangulo(PontoA,  Posicao.Vertical, 40 , coluna.Comprimento);
+                AddRetangulo(PontoA,  Posicao.Vertical, 40 , comprimento);
             }
 
            if(     (coluna.PassanteC == true && coluna.Posicao == Posicao.Horizontal) || 
                    (coluna.PassanteB == true && coluna.Posicao == Posicao.Vertical)
              ) 
             {
+                var comprimento = Posicao.Horizontal == coluna.Posicao ? coluna.Comprimento : coluna.Largura;
                 var PontoA = new Point2d(coluna.PointC.X , coluna.PointC.Y + (40 / _escala));
-                AddRetangulo(PontoA,  Posicao.Horizontal, 40 , coluna.Largura);
+                AddRetangulo(PontoA,  Posicao.Horizontal, 40 , comprimento);
             }
 
            if(     (coluna.PassanteD == true && coluna.Posicao == Posicao.Horizontal) || 
                    (coluna.PassanteC == true && coluna.Posicao == Posicao.Vertical)
              ) 
             {
-                
+                var comprimento = Posicao.Vertical == coluna.Posicao ? coluna.Comprimento : coluna.Largura;
                 var PontoA = new Point2d(coluna.PointA.X, coluna.PointA.Y);
-                AddRetangulo(PontoA, Posicao.Vertical, 40 , coluna.Comprimento);
+                AddRetangulo(PontoA, Posicao.Vertical, 40 , comprimento);
             }
         }
 
@@ -649,6 +653,7 @@ namespace ColunaPronta.Commands
             var point = new Point3d(PontoA.X - (60 / _escala), PontoA.Y + (5 / _escala), 0);
             Helpers.AddTexto(document, point, textTipoColuna, ColorIndex.padrao);
         }
+    
         public static List<ItemRelatorio> GetDadosRelatorio(string nomeProjeto)
         {
             try
@@ -773,10 +778,11 @@ namespace ColunaPronta.Commands
                                                           , coluna.Comprimento.ToString("N2"),"x"
                                                           , coluna.Largura.ToString("N2"), "x"
                                                           , coluna.Altura.ToString("N2"), "mm - "
-                                                          , item.QtdeColuna.ToString(), " "
-                                                          , "\n Diametro do Parafuso :" , item.DiametroParafuso.ToString(),""
-                                                          , "\n Diametro do Sapata :", item.DiametroSapata.ToString(),""
-                                                          , "\n", item.QtdeColuna == 1 ? "unidade." : "unidades."
+                                                          , "\n Diametro do Parafuso: " , item.DiametroParafuso.ToString(),""
+                                                          , "\n Diametro do Sapata: ", item.DiametroSapata.ToString()," - "
+                                                          , "\n "
+                                                          , item.QtdeColuna.ToString(), ""
+                                                          , item.QtdeColuna == 1 ? " unidade." : "unidades."
                                                           );
 
                         Helpers.AddTexto( document
