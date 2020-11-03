@@ -7,6 +7,10 @@
         BaixoEsquerda,
         CimaEsquerda, 
         BaixoDireita, 
-        CimaDireita
+        CimaDireita,
+        VoltadoBaixo, 
+        VoltadoCima,
+        VoltadoEsqueda,
+        VoltadoDireita,
     }
 }

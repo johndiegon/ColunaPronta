@@ -19,7 +19,7 @@ namespace ColunaPronta.Commands
         const double _escala = 1000;
         const double distancia = 38 / _escala;
         const int iLinhasParafuso = 15;
-        const int ladoEle = 20;
+        const int ladoEle = 38;
         #endregion
 
         public static Coluna SelecionaColuna()
@@ -107,6 +107,9 @@ namespace ColunaPronta.Commands
                 var p3 = new Point2d(coluna.PointB.X, coluna.PointB.Y);
                 var p4 = new Point2d(coluna.PointA.X, coluna.PointA.Y);
 
+                Document document = Application.DocumentManager.MdiActiveDocument;
+                Helpers.AddLinha(document, new Point3d(p1.X , coluna.PointA.Y + (3 / _escala), 0), new Point3d(p2.X , coluna.PointA.Y + (3 / _escala), 0), true, ColorIndex.vermelho);
+
                 AddSapata(p1, p2, p3, p4, coluna.DiametroSapata / _escala);
             }
             if (coluna.SapataB == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataA == true && coluna.Posicao == Posicao.Vertical  )
@@ -115,15 +118,22 @@ namespace ColunaPronta.Commands
                 var p2 = new Point2d(coluna.PointB.X + distancia, coluna.PointB.Y);
                 var p3 = new Point2d(coluna.PointB.X + distancia, coluna.PointC.Y);
                 var p4 = new Point2d(coluna.PointB.X, coluna.PointC.Y);
-                AddSapata(p1, p2, p3, p4, coluna.DiametroSapata / _escala);
 
+                Document document = Application.DocumentManager.MdiActiveDocument;
+                Helpers.AddLinha(document, new Point3d(p1.X + (3 / _escala) , p1.Y , 0), new Point3d(p1.X + (3 / _escala), coluna.PointC.Y , 0), true, ColorIndex.vermelho);
+
+                AddSapata(p1, p2, p3, p4, coluna.DiametroSapata / _escala);
             }
             if (coluna.SapataC == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataB == true && coluna.Posicao == Posicao.Vertical  )
             {
                 var p4 = new Point2d(coluna.PointC.X, coluna.PointC.Y - distancia); 
                 var p3 = new Point2d(coluna.PointD.X, coluna.PointD.Y - distancia);                 
                 var p1 = new Point2d(coluna.PointC.X, coluna.PointC.Y);
-                var p2 = new Point2d(coluna.PointD.X, coluna.PointD.Y); 
+                var p2 = new Point2d(coluna.PointD.X, coluna.PointD.Y);
+
+                Document document = Application.DocumentManager.MdiActiveDocument;
+                Helpers.AddLinha(document, new Point3d(p1.X, p1.Y - (3 / _escala), 0), new Point3d(p2.X, p1.Y - (3 / _escala), 0), true, ColorIndex.vermelho);
+
                 AddSapata(p1, p2, p3, p4, coluna.DiametroSapata / _escala);
             }
             if (coluna.SapataD == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataC == true && coluna.Posicao == Posicao.Vertical  )
@@ -133,6 +143,10 @@ namespace ColunaPronta.Commands
                 var p2 = new Point2d(coluna.PointA.X            , coluna.PointA.Y);
                 var p3 = new Point2d(coluna.PointA.X            , coluna.PointD.Y);
                 var p4 = new Point2d(coluna.PointA.X - distancia, coluna.PointD.Y);
+
+                Document document = Application.DocumentManager.MdiActiveDocument;
+                Helpers.AddLinha(document, new Point3d(p2.X - (3 / _escala), p1.Y , 0), new Point3d(p2.X - (3 / _escala), p3.Y, 0), true, ColorIndex.vermelho);
+
                 AddSapata(p1, p2, p3, p4, coluna.DiametroSapata / _escala);
             }
 
@@ -279,7 +293,7 @@ namespace ColunaPronta.Commands
 
             var centerX = ponto1.GetDistanceTo(ponto2) / 2;
             var centery = ponto2.GetDistanceTo(ponto3) / 2;
-        
+
             Helpers.AddCircle(document, new Point3d(p1.X + centerX, p1.Y - centery, 0), raio);
 
         }
@@ -290,195 +304,128 @@ namespace ColunaPronta.Commands
 
             if ((coluna.ParafusoA == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoG == true && coluna.Posicao == Posicao.Vertical))
             {
-                var pontoA = new Point2d(coluna.PointA.X, coluna.PointA.Y);
-                var p1 = new Point2d(pontoA.X + (10 / _escala), pontoA.Y + (30 / _escala));
-                var p2 = new Point2d(p1.X + (20 / _escala), p1.Y);
-                var p3 = new Point2d(p1.X + (20 / _escala), p1.Y - (10 / _escala));
-                var p4 = new Point2d(p1.X, p1.Y - (10 / _escala));
-
-                Helpers.AddPolyline(document, p1, p2, p3, p4,  3);
-
-                var p2v1 = new Point2d(p1.X + (5 / _escala), p1.Y);
-                var p2v2 = new Point2d(p2v1.X, p2v1.Y - (50 / _escala));
-                var p2v3 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y - (50 / _escala));
-                var p2v4 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y);
-
-                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, 3);
-
-                for (int i = 1; i < iLinhasParafuso; i++)
-                {
-                    Helpers.AddLinha(document, new Point3d(p2v1.X, p2v1.Y - ((50 - i) / _escala), 0), new Point3d(p2v1.X + (10 / _escala), p2v1.Y - ((50 - i) / _escala), 0), false, ColorIndex.verde);
-                }
-                //var pontoA = new Point2d(coluna.PointA.X, coluna.PointA.Y);
-                //AddParafusoAB(document, pontoA);
-
+                AddParafuso(document, Posicao.VoltadoBaixo, coluna.PointA);
             }
             if ((coluna.ParafusoB == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoH == true && coluna.Posicao == Posicao.Vertical))
             {
-                var pontoA = new Point2d(coluna.PointB.X - (30 / _escala), coluna.PointA.Y);
-                var p1 = new Point2d(pontoA.X + (5 / _escala), pontoA.Y + (30 / _escala));
-                var p2 = new Point2d(p1.X + (20 / _escala), p1.Y);
-                var p3 = new Point2d(p1.X + (20 / _escala), p1.Y - (10 / _escala));
-                var p4 = new Point2d(p1.X, p1.Y - (10 / _escala));
-
-                Helpers.AddPolyline(document, p1, p2, p3, p4,  3);
-
-                var p2v1 = new Point2d(p1.X + (5 / _escala), p1.Y);
-                var p2v2 = new Point2d(p2v1.X, p2v1.Y - (50 / _escala));
-                var p2v3 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y - +(50 / _escala));
-                var p2v4 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y);
-
-                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4,  3);
-
-                for (int i = 1; i < iLinhasParafuso; i++)
-                {
-                    Helpers.AddLinha(document, new Point3d(p2v1.X, p2v1.Y - ((50 - i) / _escala), 0), new Point3d(p2v1.X + (10 / _escala), p2v1.Y - ((50 - i) / _escala), 0), false, ColorIndex.verde);
-                }
-
-                //var pontoA = new Point2d(coluna.PointB.X - (30 / _escala), coluna.PointA.Y);
-                //AddParafusoAB(document, pontoA);
-
+                AddParafuso(document, Posicao.VoltadoBaixo, new Point2d(coluna.PointB.X - (40 / _escala), coluna.PointA.Y));
             }
             if ((coluna.ParafusoC == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoA == true && coluna.Posicao == Posicao.Vertical))
             {
-                var pontoA = new Point2d(coluna.PointB.X, coluna.PointB.Y);
-                var p1 = new Point2d(pontoA.X + (20 / _escala), pontoA.Y - (25 / _escala));
-                var p2 = new Point2d(p1.X + (10 / _escala), p1.Y);
-                var p3 = new Point2d(p1.X + (10 / _escala), p1.Y  -(20 / _escala));
-                var p4 = new Point2d(p1.X, p1.Y - (20 / _escala));
-
-                Helpers.AddPolyline(document, p1, p2, p3, p4,  3);
-
-                var p2v1 = new Point2d(p2.X, p2.Y - (5 / _escala));
-                var p2v2 = new Point2d(p2v1.X , p2v1.Y - (10 / _escala));
-                var p2v3 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y - (10 / _escala));
-                var p2v4 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y );
-
-                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4,  3);
-
-
-                for (int i = 1; i < iLinhasParafuso; i++)
-                {
-                    Helpers.AddLinha(document, new Point3d(p2v1.X - (( 50 - i) / _escala), p2v1.Y - (10 / _escala), 0), new Point3d(p2v1.X - ((50 - i) / _escala), p2v1.Y, 0), false, ColorIndex.verde);
-                }
+                AddParafuso(document, Posicao.VoltadoEsqueda, new Point2d(coluna.PointB.X, coluna.PointB.Y + (15 / _escala)));
             }
             if ((coluna.ParafusoD == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoB == true && coluna.Posicao == Posicao.Vertical))
             {
-                var pontoA = new Point2d(coluna.PointB.X, coluna.PointC.Y);
-                var p1 = new Point2d(pontoA.X + (20 / _escala), pontoA.Y + (40 / _escala));
-                var p2 = new Point2d(p1.X + (10 / _escala), p1.Y);
-                var p3 = new Point2d(p1.X + (10 / _escala), p1.Y - (20 / _escala));
-                var p4 = new Point2d(p1.X, p1.Y - (20 / _escala));
-
-                Helpers.AddPolyline(document, p1, p2, p3, p4,  3);
-
-                var p2v1 = new Point2d(p2.X, p2.Y - (5 / _escala));
-                var p2v2 = new Point2d(p2v1.X, p2v1.Y - (10 / _escala));
-                var p2v3 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y - (10 / _escala));
-                var p2v4 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y);
-
-                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4,  3);
-
-                for (int i = 1; i < iLinhasParafuso; i++)
-                {
-                    Helpers.AddLinha(document, new Point3d(p2v1.X - ((50 - i) / _escala), p2v1.Y - (10 / _escala), 0), new Point3d(p2v1.X - ((50 - i) / _escala), p2v1.Y, 0), false, ColorIndex.verde);
-                }
+                AddParafuso(document, Posicao.VoltadoEsqueda, new Point2d(coluna.PointD.X - ( 5 /_escala) , coluna.PointD.Y + (55 / _escala)));
             }
             if ((coluna.ParafusoE == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoC == true && coluna.Posicao == Posicao.Vertical))
             {
-                var pontoA = new Point2d(coluna.PointD.X , coluna.PointC.Y);
-                var p1 = new Point2d(pontoA.X - (5 / _escala), pontoA.Y - (20 / _escala));
-                var p2 = new Point2d(p1.X , p1.Y - (10 / _escala));
-                var p3 = new Point2d(p1.X - (20 / _escala), p1.Y - (10 / _escala) );
-                var p4 = new Point2d(p1.X - (20 / _escala), p1.Y );
-
-                Helpers.AddPolyline(document, p1, p2, p3, p4,  3);
-
-                var p2v1 = new Point2d(p1.X - ( 5 / _escala), p2.Y );
-                var p2v2 = new Point2d(p2v1.X , p2v1.Y + (50 / _escala));
-                var p2v3 = new Point2d(p2v1.X - (10 / _escala), p2v1.Y + (50 / _escala) );
-                var p2v4 = new Point2d(p2v1.X - (10 / _escala), p2v1.Y );
-
-                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4,  3);
-
-                for (int i = 1; i < iLinhasParafuso; i++)
-                {
-                    Helpers.AddLinha(document, new Point3d(p2v1.X, p2v1.Y + ((50 - i) / _escala), 0),
-                                               new Point3d(p2v1.X - (10 / _escala), p2v1.Y + ((50 - i) / _escala), 0), false, ColorIndex.verde);
-                }
+                AddParafuso(document, Posicao.VoltadoCima, new Point2d(coluna.PointD.X - (5 / _escala), coluna.PointD.Y));
             }
             if ((coluna.ParafusoF == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoD == true && coluna.Posicao == Posicao.Vertical))
             {
-                var pontoA = new Point2d(coluna.PointC.X, coluna.PointC.Y);
-                var p1 = new Point2d(pontoA.X + (5 / _escala), pontoA.Y - (20 / _escala));
-                var p2 = new Point2d(p1.X, p1.Y - (10 / _escala));
-                var p3 = new Point2d(p1.X + (20 / _escala), p1.Y - (10 / _escala));
-                var p4 = new Point2d(p1.X + (20 / _escala), p1.Y);
-
-                Helpers.AddPolyline(document, p1, p2, p3, p4,  3);
-
-                var p2v1 = new Point2d(p1.X + (5 / _escala), p2.Y);
-                var p2v2 = new Point2d(p2v1.X, p2v1.Y + (50 / _escala));
-                var p2v3 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y + (50 / _escala));
-                var p2v4 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y);
-
-                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4,  3);
-
-                for (int i = 1; i < iLinhasParafuso; i++)
-                {
-                    Helpers.AddLinha(document, new Point3d(p2v1.X, p2v1.Y + (( 50 -i) / _escala), 0),
-                                               new Point3d(p2v1.X + (10 / _escala), p2v1.Y + ((50 - i) / _escala), 0), false, ColorIndex.verde);
-                }
+                AddParafuso(document, Posicao.VoltadoCima, new Point2d(coluna.PointC.X + ( 35 / _escala), coluna.PointC.Y));
             }
             if ((coluna.ParafusoG == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoE == true && coluna.Posicao == Posicao.Vertical))
             {
-                var pontoA = new Point2d(coluna.PointA.X, coluna.PointC.Y);
-                var p1 = new Point2d(pontoA.X - (30 / _escala), pontoA.Y + ( 45 / _escala));
-                var p2 = new Point2d(p1.X     + ( 10 / _escala), p1.Y);
-                var p3 = new Point2d(p1.X     + ( 10 / _escala) , p1.Y- ( 20 / _escala) );
-                var p4 = new Point2d(p1.X    , p1.Y- ( 20 / _escala) );
-
-                Helpers.AddPolyline(document, p1, p2, p3, p4,  3);
-
-                var p2v1 = new Point2d(p1.X, p1.Y-(5/ _escala));
-                var p2v2 = new Point2d(p2v1.X + ( 50 /_escala ) , p2v1.Y);
-                var p2v3 = new Point2d(p2v1.X + ( 50 / _escala) , p2v1.Y - ( 10/ _escala));
-                var p2v4 = new Point2d(p2v1.X, p2v1.Y - ( 10 / _escala));
-
-                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4,  3 );
-
-                for (int i = 1; i < iLinhasParafuso; i++)
-                {
-                    Helpers.AddLinha(document, new Point3d(p2v1.X + ((50 - i) / _escala), p2v1.Y - (10 / _escala), 0),
-                                             new Point3d(p2v1.X + ((50 - i) / _escala), p2v1.Y, 0), false, ColorIndex.verde);
-                }
+                AddParafuso(document, Posicao.VoltadoDireita, new Point2d(coluna.PointC.X, coluna.PointC.Y - (15 / _escala)));
             }
             if ((coluna.ParafusoH == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoF == true && coluna.Posicao == Posicao.Vertical))
             {
-                var pontoA = new Point2d(coluna.PointA.X, coluna.PointA.Y);
-                var p1 = new Point2d(pontoA.X - (30 / _escala), pontoA.Y - (15 / _escala));
-                var p2 = new Point2d(p1.X + (10 / _escala), p1.Y);
-                var p3 = new Point2d(p1.X + (10 / _escala), p1.Y - (20 / _escala));
-                var p4 = new Point2d(p1.X, p1.Y - (20 / _escala));
-
-                Helpers.AddPolyline(document, p1, p2, p3, p4,  3);
-
-                var p2v1 = new Point2d(p1.X, p1.Y - (5 / _escala));
-                var p2v2 = new Point2d(p2v1.X + (50 / _escala), p2v1.Y);
-                var p2v3 = new Point2d(p2v1.X + (50 / _escala), p2v1.Y - (10 / _escala));
-                var p2v4 = new Point2d(p2v1.X, p2v1.Y - (10 / _escala));
-
-                Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4,  3);
-
-                for (int i = 1; i < iLinhasParafuso; i++)
-                {
-                    Helpers.AddLinha(document, new Point3d(p2v1.X + ((50 - i) / _escala), p2v1.Y - (10 / _escala), 0),
-                                               new Point3d(p2v1.X + ((50 - i) / _escala), p2v1.Y, 0), false, ColorIndex.verde);
-                }
+                AddParafuso(document, Posicao.VoltadoDireita, new Point2d(coluna.PointA.X, coluna.PointA.Y - (55 / _escala)));
             }
-      
         }
-      
+
+        public static void AddParafuso(Document document, Posicao posicao, Point2d PontoA)
+        {
+            Point2d p1, p2, p3, p4, p2v1, p2v2, p2v3, p2v4;
+            switch(posicao)
+            {
+                case Posicao.VoltadoBaixo:
+                    p1 = new Point2d(PontoA.X + (10 / _escala), PontoA.Y + (30 / _escala));
+                    p2 = new Point2d(p1.X + (20 / _escala), p1.Y);
+                    p3 = new Point2d(p1.X + (20 / _escala), p1.Y - (10 / _escala));
+                    p4 = new Point2d(p1.X, p1.Y - (10 / _escala));
+
+                    Helpers.AddPolyline(document, p1, p2, p3, p4, 3);
+
+                    p2v1 = new Point2d(p1.X + (5 / _escala), p1.Y);
+                    p2v2 = new Point2d(p2v1.X, p2v1.Y - (50 / _escala));
+                    p2v3 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y - (50 / _escala));
+                    p2v4 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y);
+
+                    Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, 3);
+
+                    for (int i = 1; i < iLinhasParafuso; i++)
+                    {
+                        Helpers.AddLinha(document, new Point3d(p2v1.X, p2v1.Y - ((50 - i) / _escala), 0), new Point3d(p2v1.X + (10 / _escala), p2v1.Y - ((50 - i) / _escala), 0), false, ColorIndex.verde);
+                    }
+                    break;
+                case Posicao.VoltadoEsqueda:
+                    p1 = new Point2d(PontoA.X + (20 / _escala), PontoA.Y - (25 / _escala));
+                    p2 = new Point2d(p1.X + (10 / _escala), p1.Y);
+                    p3 = new Point2d(p1.X + (10 / _escala), p1.Y - (20 / _escala));
+                    p4 = new Point2d(p1.X, p1.Y - (20 / _escala));
+
+                    Helpers.AddPolyline(document, p1, p2, p3, p4, 3);
+
+                     p2v1 = new Point2d(p2.X, p2.Y - (5 / _escala));
+                     p2v2 = new Point2d(p2v1.X, p2v1.Y - (10 / _escala));
+                     p2v3 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y - (10 / _escala));
+                     p2v4 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y);
+
+                    Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, 3);
+
+                    for (int i = 1; i < iLinhasParafuso; i++)
+                    {
+                        Helpers.AddLinha(document, new Point3d(p2v1.X - ((50 - i) / _escala), p2v1.Y - (10 / _escala), 0), new Point3d(p2v1.X - ((50 - i) / _escala), p2v1.Y, 0), false, ColorIndex.verde);
+                    }
+                    break;
+                case Posicao.VoltadoCima:
+                    p1 = new Point2d(PontoA.X - (5 / _escala), PontoA.Y - (20 / _escala));
+                    p2 = new Point2d(p1.X, p1.Y - (10 / _escala));
+                    p3 = new Point2d(p1.X - (20 / _escala), p1.Y - (10 / _escala));
+                    p4 = new Point2d(p1.X - (20 / _escala), p1.Y);
+
+                    Helpers.AddPolyline(document, p1, p2, p3, p4, 3);
+
+                    p2v1 = new Point2d(p1.X - (5 / _escala), p2.Y);
+                    p2v2 = new Point2d(p2v1.X, p2v1.Y + (50 / _escala));
+                    p2v3 = new Point2d(p2v1.X - (10 / _escala), p2v1.Y + (50 / _escala));
+                    p2v4 = new Point2d(p2v1.X - (10 / _escala), p2v1.Y);
+
+                    Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, 3);
+
+                    for (int i = 1; i < iLinhasParafuso; i++)
+                    {
+                        Helpers.AddLinha(document, new Point3d(p2v1.X, p2v1.Y + ((50 - i) / _escala), 0),
+                                                   new Point3d(p2v1.X - (10 / _escala), p2v1.Y + ((50 - i) / _escala), 0), false, ColorIndex.verde);
+                    }
+                    break;
+                case Posicao.VoltadoDireita:
+                    p1 = new Point2d(PontoA.X - (30 / _escala), PontoA.Y + (45 / _escala));
+                    p2 = new Point2d(p1.X + (10 / _escala), p1.Y);
+                    p3 = new Point2d(p1.X + (10 / _escala), p1.Y - (20 / _escala));
+                    p4 = new Point2d(p1.X, p1.Y - (20 / _escala));
+
+                    Helpers.AddPolyline(document, p1, p2, p3, p4, 3);
+
+                    p2v1 = new Point2d(p1.X, p1.Y - (5 / _escala));
+                    p2v2 = new Point2d(p2v1.X + (50 / _escala), p2v1.Y);
+                    p2v3 = new Point2d(p2v1.X + (50 / _escala), p2v1.Y - (10 / _escala));
+                    p2v4 = new Point2d(p2v1.X, p2v1.Y - (10 / _escala));
+
+                    Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, 3);
+
+                    for (int i = 1; i < iLinhasParafuso; i++)
+                    {
+                        Helpers.AddLinha(document, new Point3d(p2v1.X + ((50 - i) / _escala), p2v1.Y - (10 / _escala), 0),
+                                                 new Point3d(p2v1.X + ((50 - i) / _escala), p2v1.Y, 0), false, ColorIndex.verde);
+                    }
+                    break;
+            }
+        }
+       
         public static void AddPassante(Coluna coluna)
         {
     
@@ -496,7 +443,6 @@ namespace ColunaPronta.Commands
              )
             {
                 var comprimento = Posicao.Vertical == coluna.Posicao ? coluna.Comprimento : coluna.Largura;
-
                 var PontoA = new Point2d(coluna.PointB.X - (40/_escala) , coluna.PointB.Y);
                 AddRetangulo(PontoA,  Posicao.Vertical, 40 , comprimento);
             }
@@ -531,6 +477,7 @@ namespace ColunaPronta.Commands
                 p2 = new Point2d(PontoA.X + ( largura / _escala ), PontoA.Y);
                 p3 = new Point2d(PontoA.X + (largura / _escala)  , PontoA.Y - (comprimento / _escala) );
                 p4 = new Point2d(PontoA.X, PontoA.Y - (comprimento / _escala));
+
             }
             else
             {
@@ -556,27 +503,27 @@ namespace ColunaPronta.Commands
            if( (coluna.eleVermelho == true && coluna.Posicao == Posicao.Horizontal) || 
                (coluna.eleCinza    == true && coluna.Posicao == Posicao.Vertical) )
             {
-                AddElePolyline(new Point2d(coluna.PointA.X + (ladoEle / _escala), coluna.PointA.Y + (ladoEle / _escala)), Posicao.BaixoDireita, ladoEle);
-                AddElePolyline(new Point2d(coluna.PointC.X , coluna.PointC.Y), Posicao.CimaDireita, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointA.X + ((5+ladoEle) / _escala), coluna.PointA.Y + (ladoEle / _escala)), Posicao.BaixoDireita, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointC.X + ( 5  / _escala), coluna.PointC.Y), Posicao.CimaDireita, ladoEle);
             }
            if( (coluna.eleAmarelo   == true && coluna.Posicao == Posicao.Horizontal) || 
                (coluna.eleVermelho  == true && coluna.Posicao == Posicao.Vertical))
             {
-                AddElePolyline(new Point2d(coluna.PointA.X, coluna.PointA.Y), Posicao.BaixoDireita, ladoEle);
-                AddElePolyline(new Point2d(coluna.PointB.X , coluna.PointB.Y), Posicao.BaixoEsquerda, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointA.X, coluna.PointA.Y - (5 / _escala)), Posicao.BaixoDireita, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointB.X , coluna.PointB.Y - (5 / _escala)), Posicao.BaixoEsquerda, ladoEle);
            
             }
             if ( (coluna.eleAzul     == true && coluna.Posicao == Posicao.Horizontal) || 
                (coluna.eleAmarelo  == true && coluna.Posicao == Posicao.Vertical))
             {
-                AddElePolyline(new Point2d(coluna.PointB.X - (ladoEle / _escala), coluna.PointB.Y + (ladoEle / _escala)), Posicao.BaixoEsquerda, ladoEle);
-                AddElePolyline(new Point2d(coluna.PointD.X - (ladoEle / _escala), coluna.PointD.Y), Posicao.CimaEsquerda, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointB.X - (( 5+ladoEle) / _escala), coluna.PointB.Y + (ladoEle / _escala)), Posicao.BaixoEsquerda, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointD.X - (( 5+ladoEle) / _escala), coluna.PointD.Y), Posicao.CimaEsquerda, ladoEle);
             }
             if ( (coluna.eleCinza == true && coluna.Posicao == Posicao.Horizontal) || 
                (coluna.eleAzul  == true && coluna.Posicao == Posicao.Vertical))
             {
-                AddElePolyline(new Point2d(coluna.PointC.X - (ladoEle / _escala), coluna.PointC.Y + (ladoEle / _escala)), Posicao.CimaDireita, ladoEle);
-                AddElePolyline(new Point2d(coluna.PointD.X , coluna.PointD.Y + (ladoEle / _escala)), Posicao.CimaEsquerda, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointC.X - (ladoEle / _escala), coluna.PointC.Y + (( 5+ ladoEle) / _escala)), Posicao.CimaDireita, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointD.X , coluna.PointD.Y + (( 5+ ladoEle) / _escala)), Posicao.CimaEsquerda, ladoEle);
             }
         }
 
@@ -782,7 +729,7 @@ namespace ColunaPronta.Commands
                                                           , "\n Diametro do Sapata: ", item.DiametroSapata.ToString()," - "
                                                           , "\n "
                                                           , item.QtdeColuna.ToString(), ""
-                                                          , item.QtdeColuna == 1 ? " unidade." : "unidades."
+                                                          , item.QtdeColuna == 1 ? " unidade." : " unidades."
                                                           );
 
                         Helpers.AddTexto( document
