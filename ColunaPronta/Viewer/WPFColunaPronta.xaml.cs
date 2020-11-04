@@ -1,4 +1,5 @@
 ﻿using ColunaPronta.Commands;
+using ColunaPronta.Helper;
 using ColunaPronta.Model;
 using System;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace ColunaPronta
             InitializeComponent();
           
             this._coluna = coluna;
-      
+            
             SetTelaInicial();
             SetVisualizacao(coluna.Posicao);
         }
@@ -141,12 +142,18 @@ namespace ColunaPronta
             {
                 StackPanel_SelecionaColunaNormal.Visibility = Visibility.Visible;
                 StackPanel_SelecionaColunapassante.Visibility = Visibility.Hidden;
+                this.textBlock_qtParafuso.Visibility = Visibility.Visible;
+                this.textBox_qtdeParafuso.Visibility = Visibility.Visible;
+
                 bColunaNormal = true;
             }
             else
             {
                 StackPanel_SelecionaColunaNormal.Visibility = Visibility.Hidden;
                 StackPanel_SelecionaColunapassante.Visibility = Visibility.Visible;
+                this.textBlock_qtParafuso.Visibility = Visibility.Hidden;
+                this.textBox_qtdeParafuso.Visibility = Visibility.Hidden;
+                this.textBox_qtdeParafuso.Text = "";
                 bColunaNormal = false;
             }
 
@@ -159,6 +166,15 @@ namespace ColunaPronta
             StackPanel_SelecionaColunaNormal.Visibility = Visibility.Hidden;
             StackPanel_SelecionaColunapassante.Visibility = Visibility.Hidden;
             Grid_Inputs.Visibility = Visibility.Hidden;
+
+            var ultimaColuna = IntegraLayout.GetUltimaColuna();
+            if (ultimaColuna != null)
+            {
+                this.textBox_parafuso.Text = ultimaColuna.DiametroParafuso.ToString();
+                this.textBox_diametro.Text = ultimaColuna.DiametroSapata.ToString();
+                this.textBox_qtdeParafuso.Text = ultimaColuna.QuantidadeParafuso.ToString();
+                this.textBox_altura.Text = ultimaColuna.Altura.ToString();
+            }
         }
 
         private void SetVisualizacao(Posicao posicao)
