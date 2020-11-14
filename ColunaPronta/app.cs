@@ -48,7 +48,7 @@ namespace ColunaPronta
                 return;
             }
 
-            var layout = IntegraLayout.GetUltimaColuna();
+            var layout = IntegraLayout.GetUltimaColuna(coluna.NomeArquivo);
             if (layout != null)
             {
                 IntegraColuna.AddColunaLayout(coluna, layout);
@@ -63,25 +63,27 @@ namespace ColunaPronta
         public void GeraColunaProntaIdentificada()
         {
             var id = IntegraColuna.GetLayoutIdentificado();
-            var coluna = IntegraColuna.SelecionaColuna();
-
-            if (coluna == null)
+            if ( id > 0)
             {
-                MessageBox.Show("Favor selecionar a coluna novamente !", "Atenção!");
-                return;
-            }
+                var coluna = IntegraColuna.SelecionaColuna();
 
-            var layout = IntegraLayout.GetLayout(id);
+                if (coluna == null)
+                {
+                    MessageBox.Show("Favor selecionar a coluna novamente !", "Atenção!");
+                    return;
+                }
 
-            if (layout != null)
-            {
-                IntegraColuna.AddColunaLayout(coluna, layout);
-            }
-            else
-            {
-                MessageBox.Show("Não foi possivel identificar o tipo de coluna informado!", "Atenção!");
-            }
+                var layout = IntegraLayout.GetLayout(id, coluna.NomeArquivo);
 
+                if (layout != null)
+                {
+                    IntegraColuna.AddColunaLayout(coluna, layout);
+                }
+                else
+                {
+                    MessageBox.Show("Não foi possivel identificar o tipo de coluna informado!", "Atenção!");
+                }
+            }
         }
 
         [CommandMethod("GeraRelatorio")]

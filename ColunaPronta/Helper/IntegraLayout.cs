@@ -13,17 +13,20 @@ namespace ColunaPronta.Helper
 {
     public static class IntegraLayout
     {
-        const string caminhoJson = "C:\\Autodesk\\ColunaPronta\\TipoColuna\\layoutsColuna.json";
+        const string caminhoJson = "C:\\Autodesk\\ColunaPronta\\TipoColuna\\";
         const string ultimaColunaJson = "C:\\Autodesk\\ColunaPronta\\TipoColuna\\ultimaColuna.json";
+
 
         public static int GetIColuna(Coluna coluna)
         {
             try
             {
+                var arquivoJson = string.Concat(caminhoJson, coluna.NomeArquivo, ".json");
+
                 var layouts = new List<Coluna>();
-                if (File.Exists(caminhoJson))
+                if (File.Exists(arquivoJson))
                 {
-                    var jsonLayout = File.ReadAllText(caminhoJson);
+                    var jsonLayout = File.ReadAllText(arquivoJson);
                     layouts = JsonConvert.DeserializeObject<List<Coluna>>(jsonLayout);
 
                     foreach (Coluna layout in layouts)
@@ -71,7 +74,7 @@ namespace ColunaPronta.Helper
                 layouts.Add(coluna);
                 layouts.Add(GetLayoutInverso(coluna));
 
-                AddLayout(layouts);
+                AddLayout(layouts, arquivoJson);
 
                 return novoLayout;
             }
@@ -120,14 +123,16 @@ namespace ColunaPronta.Helper
             return layoutInverso;
         }
 
-        public static Coluna GetLayout(int iColuna)
+        public static Coluna GetLayout(int iColuna, string nomeArquivo)
         {
             try
             {
+                var arquivoJson = string.Concat(caminhoJson, nomeArquivo, ".json");
+
                 var layouts = new List<Coluna>();
-                if (File.Exists(caminhoJson))
+                if (File.Exists(arquivoJson))
                 {
-                    var jsonLayout = File.ReadAllText(caminhoJson);
+                    var jsonLayout = File.ReadAllText(arquivoJson);
                     layouts = JsonConvert.DeserializeObject<List<Coluna>>(jsonLayout);
 
                     foreach (Coluna layout in layouts)
@@ -149,17 +154,17 @@ namespace ColunaPronta.Helper
                 return null;
             }
         }
-        private static void AddLayout(List<Coluna> layouts)
+        private static void AddLayout(List<Coluna> layouts, string arquivoJson)
         {
             try
             {
-                if (File.Exists(caminhoJson))
+                if (File.Exists(arquivoJson))
                 {
-                    File.Delete(caminhoJson);
+                    File.Delete(arquivoJson);
                 }
                 var ArquivoLayouts = JsonConvert.SerializeObject(layouts);
 
-                using (FileStream fs = File.Create(caminhoJson))
+                using (FileStream fs = File.Create(arquivoJson))
                 {
                     byte[] info = new UTF8Encoding(true).GetBytes(ArquivoLayouts);
                     fs.Write(info, 0, info.Length);
@@ -172,7 +177,7 @@ namespace ColunaPronta.Helper
                 Logger.Error(e.ToString());
             }
         }
-        public static Coluna GetUltimaColuna()
+        public static Coluna GetUltimaColuna(string nomeAqruivo)
         {
             try
             {
@@ -181,7 +186,7 @@ namespace ColunaPronta.Helper
                     var jsonLayout = File.ReadAllText(ultimaColunaJson);
                     var ultimaColuna = JsonConvert.DeserializeObject<UltimaColuna>(jsonLayout);
 
-                    return GetLayout(ultimaColuna.iColuna);
+                    return GetLayout(ultimaColuna.iColuna, nomeAqruivo);
                 }
                 return null;
             }

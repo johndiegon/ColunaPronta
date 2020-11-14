@@ -172,12 +172,12 @@ namespace ColunaPronta.Model
             Coluna coluna = new Coluna();
             coluna.iColuna            = Convert.ToInt32(values[0]);
             coluna.PointA             = new Point2d(Convert.ToDouble(values[1]), Convert.ToDouble(values[2]));
-            coluna.Comprimento        = Convert.ToDouble(values[3]);    
-            coluna.Largura            = Convert.ToDouble(values[4]);    
-            coluna.Altura             = Convert.ToDouble(values[5]);    
-            coluna.DiametroParafuso   = Convert.ToDouble(values[6]);    
-            coluna.DiametroSapata     = Convert.ToDouble(values[7]);    
-            coluna.QuantidadeParafuso = Convert.ToDouble(values[8]);    
+            coluna.Comprimento        = Math.Round(Convert.ToDouble(values[3]), 2);    
+            coluna.Largura            = Math.Round(Convert.ToDouble(values[4]), 2);    
+            coluna.Altura             = Math.Round(Convert.ToDouble(values[5]), 2);    
+            coluna.DiametroParafuso   = Math.Round(Convert.ToDouble(values[6]), 2);    
+            coluna.DiametroSapata     = Math.Round(Convert.ToDouble(values[7]), 2);    
+            coluna.QuantidadeParafuso = Math.Round(Convert.ToDouble(values[8]), 2);    
             coluna.ParafusoA           = Convert.ToBoolean(values[9] =="0" ? false : true);    
             coluna.ParafusoB           = Convert.ToBoolean(values[10]=="0" ? false : true);    
             coluna.ParafusoC           = Convert.ToBoolean(values[11]=="0" ? false : true);    

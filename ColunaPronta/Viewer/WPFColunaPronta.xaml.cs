@@ -145,6 +145,9 @@ namespace ColunaPronta
                 this.textBlock_qtParafuso.Visibility = Visibility.Visible;
                 this.textBox_qtdeParafuso.Visibility = Visibility.Visible;
 
+                this.textBlock_parafuso.Visibility = Visibility.Visible;
+                this.textBox_parafuso.Visibility = Visibility.Visible;
+
                 bColunaNormal = true;
             }
             else
@@ -153,7 +156,12 @@ namespace ColunaPronta
                 StackPanel_SelecionaColunapassante.Visibility = Visibility.Visible;
                 this.textBlock_qtParafuso.Visibility = Visibility.Hidden;
                 this.textBox_qtdeParafuso.Visibility = Visibility.Hidden;
-                this.textBox_qtdeParafuso.Text = "";
+                this.textBox_qtdeParafuso.Text = "0";
+
+                this.textBlock_parafuso.Visibility = Visibility.Hidden;
+                this.textBox_parafuso.Visibility = Visibility.Hidden;
+                this.textBox_parafuso.Text = "0";
+
                 bColunaNormal = false;
             }
 
@@ -167,7 +175,7 @@ namespace ColunaPronta
             StackPanel_SelecionaColunapassante.Visibility = Visibility.Hidden;
             Grid_Inputs.Visibility = Visibility.Hidden;
 
-            var ultimaColuna = IntegraLayout.GetUltimaColuna();
+            var ultimaColuna = IntegraLayout.GetUltimaColuna(_coluna.NomeArquivo);
             if (ultimaColuna != null)
             {
                 this.textBox_parafuso.Text = ultimaColuna.DiametroParafuso.ToString();

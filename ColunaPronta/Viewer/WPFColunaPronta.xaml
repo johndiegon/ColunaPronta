@@ -117,13 +117,13 @@
 
         <Grid x:Name="Grid_Inputs" Visibility="Visible">
             <Label x:Name="label_metragem" Content="" Margin="554,98,39.6,329.6"/>
-            
-            <TextBlock x:Name="textBlock_chumbador" HorizontalAlignment="Left" Margin="519,165,0,0" TextWrapping="Wrap" Text="Diâmetro Chumbador:" VerticalAlignment="Top"/>
-            <TextBox x:Name="textBox_diametro"  Margin="652,158,0,0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" TextAlignment="Left" VerticalContentAlignment="Bottom" VerticalAlignment="Top" Height="24" Width="120" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
-            <TextBlock x:Name="textBlock_parafuso" HorizontalAlignment="Left" Margin="533,205,0,0" TextWrapping="Wrap" Text="Diâmetro Parafuso:" VerticalAlignment="Top"/>
-            <TextBox x:Name="textBox_parafuso" Margin="652,202,0,0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" TextAlignment="Left" VerticalContentAlignment="Bottom" VerticalAlignment="Top" Height="24" Width="120" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
-            <TextBlock x:Name="textBlock_altura" HorizontalAlignment="Left" Margin="542,246,0,0" TextWrapping="Wrap" Text="Altura da Coluna:" VerticalAlignment="Top"/>
-            <TextBox x:Name="textBox_altura" Margin="652,244,0,0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" TextAlignment="Left" VerticalContentAlignment="Bottom" VerticalAlignment="Top" Height="24" Width="120" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
+
+            <TextBlock x:Name="textBlock_altura" HorizontalAlignment="Left" Margin="542,165,0,0" TextWrapping="Wrap" Text="Altura da Coluna:" VerticalAlignment="Top"/>
+            <TextBox x:Name="textBox_altura" Margin="652,158,0,0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" TextAlignment="Left" VerticalContentAlignment="Bottom" VerticalAlignment="Top" Height="24" Width="120" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
+            <TextBlock x:Name="textBlock_chumbador" HorizontalAlignment="Left" Margin="519,205,0,0" TextWrapping="Wrap" Text="Diâmetro Chumbador:" VerticalAlignment="Top"/>
+            <TextBox x:Name="textBox_diametro"  Margin="652,202,0,0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" TextAlignment="Left" VerticalContentAlignment="Bottom" VerticalAlignment="Top" Height="24" Width="120" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
+            <TextBlock x:Name="textBlock_parafuso" HorizontalAlignment="Left" Margin="533,246,0,0" TextWrapping="Wrap" Text="Diâmetro Parafuso:" VerticalAlignment="Top"/>
+            <TextBox x:Name="textBox_parafuso" Margin="652,244,0,0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" TextAlignment="Left" VerticalContentAlignment="Bottom" VerticalAlignment="Top" Height="24" Width="120" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
             <TextBlock x:Name="textBlock_qtParafuso" HorizontalAlignment="Left" Margin="498,290,0,0" TextWrapping="Wrap" Text="Quantidade de Parafusos:" VerticalAlignment="Top"/>
             <TextBox x:Name="textBox_qtdeParafuso"  Margin="652,286,0,0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" TextAlignment="Left" VerticalContentAlignment="Bottom" VerticalAlignment="Top" Height="24" Width="120" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
 

@@ -81,11 +81,20 @@ namespace ColunaPronta.Commands
 
             if (promptResult.Status == PromptStatus.OK)
             {
+                
                 var teste = promptResult.StringResult.ToString().ToUpper();
                 var txtId = teste.Replace("C", "");
-                id = Convert.ToInt32(txtId);
+                if (txtId == "")
+                {
+                    id = 0;
+                }
+                else
+                {
+                    id = Convert.ToInt32(txtId);
+                }
             }
-            else
+
+            if (id ==0)
             {
                 editor.WriteMessage("\nÉ necessário informar o tipo de coluna para ser gerado.");
                 return 0;
@@ -709,7 +718,7 @@ namespace ColunaPronta.Commands
                 
                     foreach (ItemRelatorio item in dadosRelatorio)
                     {
-                        var coluna = IntegraLayout.GetLayout(item.iColuna) ;
+                        var coluna = IntegraLayout.GetLayout(item.iColuna, nomeProjeto);
                         coluna.Largura = item.Largura;
                         coluna.Comprimento = item.Comprimento;
                         coluna.Altura = item.Altura;
@@ -727,7 +736,8 @@ namespace ColunaPronta.Commands
                                                           , coluna.Altura.ToString("N2"), "mm - "
                                                           , "\n Diametro do Parafuso: " , item.DiametroParafuso.ToString(),""
                                                           , "\n Diametro do Sapata: ", item.DiametroSapata.ToString()," - "
-                                                          , "\n "
+                                                           , "\n Quantidade de parafusos: ", item.QtdeParafuso.ToString(), " - "
+                                                          , "\n Quantidade de Colunas: "
                                                           , item.QtdeColuna.ToString(), ""
                                                           , item.QtdeColuna == 1 ? " unidade." : " unidades."
                                                           );
