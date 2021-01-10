@@ -10,6 +10,7 @@ namespace ColunaPronta.Model
     {
         public double Comprimento { get; set; }
         public double Largura { get; set; }
+        public double Enrijecedor { get; set; }
         public double Altura { get; set; }
         public int iColuna { get; set; }
         public double QtdeParafuso { get; set; }

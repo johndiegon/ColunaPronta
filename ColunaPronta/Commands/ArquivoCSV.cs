@@ -100,5 +100,66 @@ namespace ColunaPronta.Commands
             }
         }
 
+        public static List<Enrijecedor> GetEnrijecedores()
+        {
+            try
+            {
+                string nomeArquivo = "C:\\Autodesk\\ColunaPronta\\enrijecedores.csv";
+
+                if (File.Exists(nomeArquivo))
+                {
+
+                    List<Enrijecedor> values = File.ReadAllLines(nomeArquivo)
+                                                       .Skip(1)
+                                                       .Select(v => Enrijecedor.FromCsv(v))
+                                                       .ToList();
+                    return values;
+                }
+                else
+                {
+                    return null;
+                }
+
+
+            }
+            catch (Exception e)
+            {
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+                return null;
+            }
+        }
+
+        public static List<Especificao> GetEspecificacao()
+        {
+            try
+            {
+                string nomeArquivo = "C:\\Autodesk\\ColunaPronta\\especificacao.csv";
+
+                if (File.Exists(nomeArquivo))
+                {
+
+                    List<Especificao> values = File.ReadAllLines(nomeArquivo)
+                                                       .Skip(1)
+                                                       .Select(v => Especificao.FromCsv(v))
+                                                       .ToList();
+                    return values;
+                }
+                else
+                {
+                    return null;
+                }
+
+
+            }
+            catch (Exception e)
+            {
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+                return null;
+            }
+        }
     }
 }

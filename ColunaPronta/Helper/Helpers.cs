@@ -443,8 +443,7 @@ namespace ColunaPronta.Helper
         }
         public static void TraceBoundaryAndHatch()
         {
-            Document doc =
-              Application.DocumentManager.MdiActiveDocument;
+            Document doc = Application.DocumentManager.MdiActiveDocument;
             Database db = doc.Database;
             Editor ed = doc.Editor;
 

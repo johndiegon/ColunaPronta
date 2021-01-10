@@ -112,6 +112,8 @@
                         <CheckBox x:Name="checkBox_lA"     Content="L.Azul" HorizontalAlignment="Left" Margin="26,306,0,0" VerticalAlignment="Top"/>
                     </Grid>
                 </TabItem>
+                <Button x:Name="button" Content="Button" Height="100" Width="75"/>
+                <Button x:Name="button1" Content="Button" Height="100" Width="75"/>
             </TabControl>
         </StackPanel>
 
@@ -128,7 +130,8 @@
             <TextBox x:Name="textBox_qtdeParafuso"  Margin="652,286,0,0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" TextAlignment="Left" VerticalContentAlignment="Bottom" VerticalAlignment="Top" Height="24" Width="120" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
 
             <Button x:Name="btn_gerarcoluna" Content="Gerar Coluna" HorizontalAlignment="Left" Margin="680,432,0,0" VerticalAlignment="Top" Width="75" Click="Btn_gerarcoluna_Click" Height="24"/>
-            <Button x:Name="button_voltar" Content="Voltar" HorizontalAlignment="Left" Margin="601,432,0,0" VerticalAlignment="Top" Width="75" Click="button_voltar_Click" Height="24"/>
+            <Button x:Name="button_voltar" Content="Voltar" HorizontalAlignment="Left" Margin="478,432,0,0" VerticalAlignment="Top" Width="75" Click="button_voltar_Click" Height="24"/>
+            <Button x:Name="button_limpar" Content="Limpar Paramêtros" HorizontalAlignment="Left" Margin="558,432,0,0" VerticalAlignment="Top" Width="116" Click="button_Limpar_Click" Height="24"/>
 
         </Grid>
 

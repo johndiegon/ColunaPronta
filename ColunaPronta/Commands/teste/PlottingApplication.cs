@@ -76,7 +76,6 @@ namespace ColunaPronta.Commands
                     pi.Layout = btr.LayoutId;
 
 
-
                     // We need a PlotSettings object
                     // based on the layout settings
                     // which we then customize

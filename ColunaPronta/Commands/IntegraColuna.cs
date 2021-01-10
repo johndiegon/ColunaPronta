@@ -9,10 +9,12 @@ using System.Linq;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 using System;
 using NLog.Config;
+using Excel = Microsoft.Office.Interop.Excel;
+using System.IO;
 
 namespace ColunaPronta.Commands
 {
-    public static class IntegraColuna 
+    public static class IntegraColuna
     {
         #region >> Propriedades
 
@@ -20,7 +22,10 @@ namespace ColunaPronta.Commands
         const double distancia = 38 / _escala;
         const int iLinhasParafuso = 15;
         const int ladoEle = 38;
+        const int distanciaSapata = 2;
         #endregion
+
+        #region >> Seleciona 
 
         public static Coluna SelecionaColuna()
         {
@@ -28,7 +33,7 @@ namespace ColunaPronta.Commands
             Database database = document.Database;
             Editor editor = document.Editor;
 
-            var coluna = new Coluna() 
+            var coluna = new Coluna()
             {
                 NomeArquivo = document.Window.Text
             };
@@ -39,7 +44,7 @@ namespace ColunaPronta.Commands
             {
                 using (Transaction tr = database.TransactionManager.StartTransaction())
                 {
-                
+
                     SelectionSet selectionSet = psr.Value;
                     ObjectId[] objectIds = selectionSet.GetObjectIds();
 
@@ -50,7 +55,7 @@ namespace ColunaPronta.Commands
                         var poly = (Polyline)dbo;
                         if (poly != null)
                         {
-                            
+
                             for (int i = 0; i < poly.NumberOfVertices; i++)
                             {
                                 points.Add(poly.GetPoint3dAt(i));
@@ -76,12 +81,12 @@ namespace ColunaPronta.Commands
             Editor editor = document.Editor;
 
             int id = 0;
-            PromptStringOptions opt = new PromptStringOptions( "\nInforme o tipo de coluna:");
-            PromptResult promptResult =  editor.GetString(opt);
+            PromptStringOptions opt = new PromptStringOptions("\nInforme o tipo de coluna:");
+            PromptResult promptResult = editor.GetString(opt);
 
             if (promptResult.Status == PromptStatus.OK)
             {
-                
+
                 var teste = promptResult.StringResult.ToString().ToUpper();
                 var txtId = teste.Replace("C", "");
                 if (txtId == "")
@@ -94,7 +99,7 @@ namespace ColunaPronta.Commands
                 }
             }
 
-            if (id ==0)
+            if (id == 0)
             {
                 editor.WriteMessage("\nÉ necessário informar o tipo de coluna para ser gerado.");
                 return 0;
@@ -103,40 +108,127 @@ namespace ColunaPronta.Commands
             return id;
         }
 
-        public static void AddColuna(Coluna coluna, bool registra)
-        {       
-             AddParafuso(coluna);
-             AddPassante(coluna);
-             AddEle(coluna);
-
-            if (coluna.SapataA == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataD == true && coluna.Posicao == Posicao.Vertical  ) 
+        public static List<ItemRelatorio> GetDadosRelatorio(string nomeProjeto)
+        {
+            try
             {
-                var p1 = new Point2d(coluna.PointA.X, coluna.PointA.Y + distancia); 
+                var colunas = ArquivoCSV.GetColunas(nomeProjeto);
+                var enrijecedores = ArquivoCSV.GetEnrijecedores();
+
+                if (colunas != null)
+                {
+                    var colunasPonto = from coluna in colunas
+                                       group coluna by coluna.PointA into colunaPontoA
+                                       select colunaPontoA.Key;
+                    var colunasRelatorio = new List<Coluna>();
+
+                    foreach (Point2d pontoColuna in colunasPonto)
+                    {
+                        var c = (from coluna in colunas
+                                 where coluna.PointA == pontoColuna
+                                 orderby coluna.dInclusao descending
+                                 select new Coluna
+                                 {
+                                     iColuna = coluna.iColuna,
+                                     DiametroParafuso = coluna.DiametroParafuso,
+                                     DiametroSapata = coluna.DiametroSapata,
+                                     QuantidadeParafuso = coluna.QuantidadeParafuso,
+                                     Comprimento = coluna.Comprimento,
+                                     Largura = coluna.Largura ,
+                                     Altura = coluna.Altura,
+                                 }).FirstOrDefault();
+
+                        colunasRelatorio.Add(c);
+                    }
+
+                    var relatorio = (from coluna in colunasRelatorio
+                                     group coluna by new
+                                     {
+                                         coluna.Altura,
+                                         coluna.Comprimento,
+                                         coluna.Largura,
+                                         coluna.iColuna,
+                                         coluna.QuantidadeParafuso,
+                                         coluna.DiametroSapata,
+                                         coluna.DiametroParafuso
+
+                                     } into c
+                                     select new ItemRelatorio
+                                     {
+                                         Altura = c.Key.Altura,
+                                         Comprimento = c.Key.Comprimento,
+                                         Largura = c.Key.Largura,
+                                         iColuna = c.Key.iColuna,
+                                         QtdeParafuso = c.Key.QuantidadeParafuso,
+                                         DiametroSapata = c.Key.DiametroSapata,
+                                         DiametroParafuso = c.Key.DiametroParafuso,
+                                         QtdeColuna = c.Count() 
+                                     }).ToList();
+
+                    foreach (ItemRelatorio item in relatorio)
+                    {
+                        var perfil = (from enrijecedor in enrijecedores
+                                      where enrijecedor.Perfil == item.Comprimento
+                                      select enrijecedor
+                                       ).FirstOrDefault();
+
+                        item.Enrijecedor = perfil == null ? 0 : perfil.Valor;
+                    }
+
+                    return relatorio;
+                }
+                else
+                {
+                    return null;
+                }
+
+            }
+            catch (Exception e)
+            {
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+                return null;
+            }
+        }
+
+        #endregion
+
+        #region >> Gera Objetos 
+        public static void AddColuna(Coluna coluna, bool registra)
+        {
+            AddParafuso(coluna);
+            AddPassante(coluna);
+            AddEle(coluna);
+
+            if (coluna.SapataA == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataD == true && coluna.Posicao == Posicao.Vertical)
+            {
+                var p1 = new Point2d(coluna.PointA.X, coluna.PointA.Y + distancia);
                 var p2 = new Point2d(coluna.PointB.X, coluna.PointB.Y + distancia);
                 var p3 = new Point2d(coluna.PointB.X, coluna.PointB.Y);
                 var p4 = new Point2d(coluna.PointA.X, coluna.PointA.Y);
 
                 Document document = Application.DocumentManager.MdiActiveDocument;
-                Helpers.AddLinha(document, new Point3d(p1.X , coluna.PointA.Y + (3 / _escala), 0), new Point3d(p2.X , coluna.PointA.Y + (3 / _escala), 0), true, ColorIndex.vermelho);
+                Helpers.AddLinha(document, new Point3d(p1.X, coluna.PointA.Y + (3 / _escala), 0), new Point3d(p2.X, coluna.PointA.Y + (3 / _escala), 0), true, ColorIndex.vermelho);
 
                 AddSapata(p1, p2, p3, p4, coluna.DiametroSapata / _escala);
             }
-            if (coluna.SapataB == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataA == true && coluna.Posicao == Posicao.Vertical  )
+            if (coluna.SapataB == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataA == true && coluna.Posicao == Posicao.Vertical)
             {
-                var p1 = new Point2d(coluna.PointB.X            , coluna.PointB.Y);
+                var p1 = new Point2d(coluna.PointB.X, coluna.PointB.Y);
                 var p2 = new Point2d(coluna.PointB.X + distancia, coluna.PointB.Y);
                 var p3 = new Point2d(coluna.PointB.X + distancia, coluna.PointC.Y);
                 var p4 = new Point2d(coluna.PointB.X, coluna.PointC.Y);
 
                 Document document = Application.DocumentManager.MdiActiveDocument;
-                Helpers.AddLinha(document, new Point3d(p1.X + (3 / _escala) , p1.Y , 0), new Point3d(p1.X + (3 / _escala), coluna.PointC.Y , 0), true, ColorIndex.vermelho);
+                Helpers.AddLinha(document, new Point3d(p1.X + (3 / _escala), p1.Y, 0), new Point3d(p1.X + (3 / _escala), coluna.PointC.Y, 0), true, ColorIndex.vermelho);
 
                 AddSapata(p1, p2, p3, p4, coluna.DiametroSapata / _escala);
             }
-            if (coluna.SapataC == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataB == true && coluna.Posicao == Posicao.Vertical  )
+            if (coluna.SapataC == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataB == true && coluna.Posicao == Posicao.Vertical)
             {
-                var p4 = new Point2d(coluna.PointC.X, coluna.PointC.Y - distancia); 
-                var p3 = new Point2d(coluna.PointD.X, coluna.PointD.Y - distancia);                 
+                var p4 = new Point2d(coluna.PointC.X, coluna.PointC.Y - distancia);
+                var p3 = new Point2d(coluna.PointD.X, coluna.PointD.Y - distancia);
                 var p1 = new Point2d(coluna.PointC.X, coluna.PointC.Y);
                 var p2 = new Point2d(coluna.PointD.X, coluna.PointD.Y);
 
@@ -145,16 +237,16 @@ namespace ColunaPronta.Commands
 
                 AddSapata(p1, p2, p3, p4, coluna.DiametroSapata / _escala);
             }
-            if (coluna.SapataD == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataC == true && coluna.Posicao == Posicao.Vertical  )
+            if (coluna.SapataD == true && coluna.Posicao == Posicao.Horizontal || coluna.SapataC == true && coluna.Posicao == Posicao.Vertical)
             {
 
                 var p1 = new Point2d(coluna.PointA.X - distancia, coluna.PointA.Y);
-                var p2 = new Point2d(coluna.PointA.X            , coluna.PointA.Y);
-                var p3 = new Point2d(coluna.PointA.X            , coluna.PointD.Y);
+                var p2 = new Point2d(coluna.PointA.X, coluna.PointA.Y);
+                var p3 = new Point2d(coluna.PointA.X, coluna.PointD.Y);
                 var p4 = new Point2d(coluna.PointA.X - distancia, coluna.PointD.Y);
 
                 Document document = Application.DocumentManager.MdiActiveDocument;
-                Helpers.AddLinha(document, new Point3d(p2.X - (3 / _escala), p1.Y , 0), new Point3d(p2.X - (3 / _escala), p3.Y, 0), true, ColorIndex.vermelho);
+                Helpers.AddLinha(document, new Point3d(p2.X - (3 / _escala), p1.Y, 0), new Point3d(p2.X - (3 / _escala), p3.Y, 0), true, ColorIndex.vermelho);
 
                 AddSapata(p1, p2, p3, p4, coluna.DiametroSapata / _escala);
             }
@@ -198,7 +290,7 @@ namespace ColunaPronta.Commands
             AddColuna(coluna, true);
         }
 
-        public static Point3dCollection AddEstruturaColuna(Document document, Point2d startPoint, double largura, double comprimento)
+        public static Point3dCollection AddEstruturaColuna(Document? document, Point2d startPoint, double largura, double comprimento)
         {
             var pontosColuna = new Point3dCollection();
 
@@ -206,35 +298,38 @@ namespace ColunaPronta.Commands
             var LadoA = new Point2dCollection();
 
             // Ponto A
-            LadoA.Add(new Point2d(startPoint.X                                     , startPoint.Y                                      ));
+            LadoA.Add(new Point2d(startPoint.X, startPoint.Y));
             pontosColuna.Add((new Point3d(startPoint.X, startPoint.Y, 0)));
             // Ponto B                                                                                                                     
-            LadoA.Add(new Point2d(startPoint.X                                     , startPoint.Y - ( comprimento / _escala )          ));
-            pontosColuna.Add(new Point3d(startPoint.X, startPoint.Y - (comprimento / _escala),0));
+            LadoA.Add(new Point2d(startPoint.X, startPoint.Y - (comprimento / _escala)));
+            pontosColuna.Add(new Point3d(startPoint.X, startPoint.Y - (comprimento / _escala), 0));
             // Ponto C                                                                                                                     
-            LadoA.Add(new Point2d(startPoint.X + ( (largura / 2) / _escala )       , startPoint.Y - ( comprimento / _escala )          ));
+            LadoA.Add(new Point2d(startPoint.X + ((largura / 2) / _escala), startPoint.Y - (comprimento / _escala)));
             // Ponto D                                                                 
-            LadoA.Add(new Point2d(startPoint.X + ( (largura / 2) / _escala)        , startPoint.Y - ( (comprimento - 20 ) / _escala )  ));
+            LadoA.Add(new Point2d(startPoint.X + ((largura / 2) / _escala), startPoint.Y - ((comprimento - 20) / _escala)));
             // Ponto E
-            LadoA.Add(new Point2d(startPoint.X + ( ((largura / 2) - 2) / _escala)  , startPoint.Y - ( (comprimento - 20 ) / _escala )  ));
+            LadoA.Add(new Point2d(startPoint.X + (((largura / 2) - 2) / _escala), startPoint.Y - ((comprimento - 20) / _escala)));
             // Ponto F
-            LadoA.Add(new Point2d(startPoint.X + ( ((largura / 2) - 2) / _escala ) , startPoint.Y - ((comprimento - 2) / _escala)      ));
+            LadoA.Add(new Point2d(startPoint.X + (((largura / 2) - 2) / _escala), startPoint.Y - ((comprimento - 2) / _escala)));
             // Ponto G
-            LadoA.Add(new Point2d(startPoint.X + (2 / _escala)                     , startPoint.Y - ((comprimento - 2) / _escala)      ));
+            LadoA.Add(new Point2d(startPoint.X + (2 / _escala), startPoint.Y - ((comprimento - 2) / _escala)));
             // Ponto H                                                                 
-            LadoA.Add(new Point2d(startPoint.X + (2 / _escala)                     , startPoint.Y - (2 / _escala)                      ));
+            LadoA.Add(new Point2d(startPoint.X + (2 / _escala), startPoint.Y - (2 / _escala)));
             // Ponto I                                                                 
-            LadoA.Add(new Point2d(startPoint.X + (((largura / 2) - 2) / _escala)   , startPoint.Y - (2 / _escala)                      ));
+            LadoA.Add(new Point2d(startPoint.X + (((largura / 2) - 2) / _escala), startPoint.Y - (2 / _escala)));
             // Ponto J                                                                 
-            LadoA.Add(new Point2d(startPoint.X + (((largura / 2) - 2) / _escala)   , startPoint.Y - (20 / _escala)                     ));
+            LadoA.Add(new Point2d(startPoint.X + (((largura / 2) - 2) / _escala), startPoint.Y - (20 / _escala)));
             // Ponto L                                                                                                                     
-            LadoA.Add(new Point2d(startPoint.X + ((largura / 2) / _escala)         , startPoint.Y - (20 / _escala)                     ));
+            LadoA.Add(new Point2d(startPoint.X + ((largura / 2) / _escala), startPoint.Y - (20 / _escala)));
             // Ponto M                                                                 
-            LadoA.Add(new Point2d(startPoint.X + ((largura / 2) / _escala)         , startPoint.Y                                      ));
+            LadoA.Add(new Point2d(startPoint.X + ((largura / 2) / _escala), startPoint.Y));
             // Ponto A                                                                 
-            LadoA.Add(new Point2d(startPoint.X                                     , startPoint.Y                                      ));
+            LadoA.Add(new Point2d(startPoint.X, startPoint.Y));
 
-            Helpers.AddPolyline(document, LadoA, ColorIndex.padrao);
+            if(document !=null)
+            {
+                Helpers.AddPolyline(document, LadoA, ColorIndex.padrao);
+            }
             #endregion
 
             #region >> Estrutura Lado B ( Voltado para Esquerda )
@@ -262,24 +357,28 @@ namespace ColunaPronta.Commands
             LadoB.Add(new Point2d(startPoint.X + ((largura / 2) / _escala), startPoint.Y - (comprimento / _escala)));
             // Ponto L                                                                                                                     
             LadoB.Add(new Point2d(startPoint.X + ((largura) / _escala), startPoint.Y - (comprimento / _escala)));
-            pontosColuna.Add(new Point3d(startPoint.X + ((largura) / _escala), startPoint.Y - (comprimento / _escala),0));
+            pontosColuna.Add(new Point3d(startPoint.X + ((largura) / _escala), startPoint.Y - (comprimento / _escala), 0));
             // Ponto M                                                                 
             LadoB.Add(new Point2d(startPoint.X + ((largura) / _escala), startPoint.Y));
-            pontosColuna.Add(new Point3d(startPoint.X + ((largura) / _escala), startPoint.Y,0));
+            pontosColuna.Add(new Point3d(startPoint.X + ((largura) / _escala), startPoint.Y, 0));
 
             // Ponto A                                                                 
             LadoB.Add(new Point2d(startPoint.X, startPoint.Y));
 
-            Helpers.AddPolyline(document, LadoB, ColorIndex.padrao);
+            if (document != null)
+            {
+                Helpers.AddPolyline(document, LadoB, ColorIndex.padrao);
+            }
+
             #endregion
 
             return pontosColuna;
         }
-        
-        public static void AddSapata(Point2d p1, Point2d p2, Point2d p3, Point2d p4,  double diametro)
+
+        public static void AddSapata(Point2d p1, Point2d p2, Point2d p3, Point2d p4, double diametro)
         {
             var raio = diametro / 2;
-         
+
             Document document = Application.DocumentManager.MdiActiveDocument;
 
             Helpers.AddPolyline(document, p1, p2, p3, p4);
@@ -306,7 +405,7 @@ namespace ColunaPronta.Commands
             Helpers.AddCircle(document, new Point3d(p1.X + centerX, p1.Y - centery, 0), raio);
 
         }
-        
+
         public static void AddParafuso(Coluna coluna)
         {
             Document document = Application.DocumentManager.MdiActiveDocument;
@@ -325,7 +424,7 @@ namespace ColunaPronta.Commands
             }
             if ((coluna.ParafusoD == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoB == true && coluna.Posicao == Posicao.Vertical))
             {
-                AddParafuso(document, Posicao.VoltadoEsqueda, new Point2d(coluna.PointD.X - ( 5 /_escala) , coluna.PointD.Y + (55 / _escala)));
+                AddParafuso(document, Posicao.VoltadoEsqueda, new Point2d(coluna.PointD.X - (5 / _escala), coluna.PointD.Y + (55 / _escala)));
             }
             if ((coluna.ParafusoE == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoC == true && coluna.Posicao == Posicao.Vertical))
             {
@@ -333,7 +432,7 @@ namespace ColunaPronta.Commands
             }
             if ((coluna.ParafusoF == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoD == true && coluna.Posicao == Posicao.Vertical))
             {
-                AddParafuso(document, Posicao.VoltadoCima, new Point2d(coluna.PointC.X + ( 35 / _escala), coluna.PointC.Y));
+                AddParafuso(document, Posicao.VoltadoCima, new Point2d(coluna.PointC.X + (35 / _escala), coluna.PointC.Y));
             }
             if ((coluna.ParafusoG == true && coluna.Posicao == Posicao.Horizontal) || (coluna.ParafusoE == true && coluna.Posicao == Posicao.Vertical))
             {
@@ -348,7 +447,7 @@ namespace ColunaPronta.Commands
         public static void AddParafuso(Document document, Posicao posicao, Point2d PontoA)
         {
             Point2d p1, p2, p3, p4, p2v1, p2v2, p2v3, p2v4;
-            switch(posicao)
+            switch (posicao)
             {
                 case Posicao.VoltadoBaixo:
                     p1 = new Point2d(PontoA.X + (10 / _escala), PontoA.Y + (30 / _escala));
@@ -378,10 +477,10 @@ namespace ColunaPronta.Commands
 
                     Helpers.AddPolyline(document, p1, p2, p3, p4, 3);
 
-                     p2v1 = new Point2d(p2.X, p2.Y - (5 / _escala));
-                     p2v2 = new Point2d(p2v1.X, p2v1.Y - (10 / _escala));
-                     p2v3 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y - (10 / _escala));
-                     p2v4 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y);
+                    p2v1 = new Point2d(p2.X, p2.Y - (5 / _escala));
+                    p2v2 = new Point2d(p2v1.X, p2v1.Y - (10 / _escala));
+                    p2v3 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y - (10 / _escala));
+                    p2v4 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y);
 
                     Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, 3);
 
@@ -434,44 +533,44 @@ namespace ColunaPronta.Commands
                     break;
             }
         }
-       
+
         public static void AddPassante(Coluna coluna)
         {
-    
-            if (     (coluna.PassanteA == true && coluna.Posicao == Posicao.Horizontal) 
-                || (coluna.PassanteD == true && coluna.Posicao == Posicao.Vertical)
-             ) 
-            {
-                var comprimento = Posicao.Horizontal == coluna.Posicao ? coluna.Comprimento : coluna.Largura;
-                var PontoA = new Point2d(coluna.PointA.X , coluna.PointA.Y );
-                AddRetangulo(PontoA, Posicao.Horizontal, 40 , comprimento);
-            }
 
-           if(     (coluna.PassanteB == true && coluna.Posicao == Posicao.Horizontal) || 
-                   (coluna.PassanteA == true && coluna.Posicao == Posicao.Vertical)
+            if ((coluna.PassanteA == true && coluna.Posicao == Posicao.Horizontal)
+                || (coluna.PassanteD == true && coluna.Posicao == Posicao.Vertical)
              )
             {
-                var comprimento = Posicao.Vertical == coluna.Posicao ? coluna.Comprimento : coluna.Largura;
-                var PontoA = new Point2d(coluna.PointB.X - (40/_escala) , coluna.PointB.Y);
-                AddRetangulo(PontoA,  Posicao.Vertical, 40 , comprimento);
+                var comprimento = Posicao.Horizontal == coluna.Posicao ? coluna.Comprimento : coluna.Largura;
+                var PontoA = new Point2d(coluna.PointA.X, coluna.PointA.Y);
+                AddRetangulo(PontoA, Posicao.Horizontal, 40, comprimento);
             }
 
-           if(     (coluna.PassanteC == true && coluna.Posicao == Posicao.Horizontal) || 
-                   (coluna.PassanteB == true && coluna.Posicao == Posicao.Vertical)
-             ) 
+            if ((coluna.PassanteB == true && coluna.Posicao == Posicao.Horizontal) ||
+                    (coluna.PassanteA == true && coluna.Posicao == Posicao.Vertical)
+              )
+            {
+                var comprimento = Posicao.Vertical == coluna.Posicao ? coluna.Comprimento : coluna.Largura;
+                var PontoA = new Point2d(coluna.PointB.X - (40 / _escala), coluna.PointB.Y);
+                AddRetangulo(PontoA, Posicao.Vertical, 40, comprimento);
+            }
+
+            if ((coluna.PassanteC == true && coluna.Posicao == Posicao.Horizontal) ||
+                    (coluna.PassanteB == true && coluna.Posicao == Posicao.Vertical)
+              )
             {
                 var comprimento = Posicao.Horizontal == coluna.Posicao ? coluna.Comprimento : coluna.Largura;
-                var PontoA = new Point2d(coluna.PointC.X , coluna.PointC.Y + (40 / _escala));
-                AddRetangulo(PontoA,  Posicao.Horizontal, 40 , comprimento);
+                var PontoA = new Point2d(coluna.PointC.X, coluna.PointC.Y + (40 / _escala));
+                AddRetangulo(PontoA, Posicao.Horizontal, 40, comprimento);
             }
 
-           if(     (coluna.PassanteD == true && coluna.Posicao == Posicao.Horizontal) || 
-                   (coluna.PassanteC == true && coluna.Posicao == Posicao.Vertical)
-             ) 
+            if ((coluna.PassanteD == true && coluna.Posicao == Posicao.Horizontal) ||
+                    (coluna.PassanteC == true && coluna.Posicao == Posicao.Vertical)
+              )
             {
                 var comprimento = Posicao.Vertical == coluna.Posicao ? coluna.Comprimento : coluna.Largura;
                 var PontoA = new Point2d(coluna.PointA.X, coluna.PointA.Y);
-                AddRetangulo(PontoA, Posicao.Vertical, 40 , comprimento);
+                AddRetangulo(PontoA, Posicao.Vertical, 40, comprimento);
             }
         }
 
@@ -480,11 +579,11 @@ namespace ColunaPronta.Commands
             Point2d p1, p2, p3, p4 = new Point2d();
             var collection = new Point2dCollection();
 
-            if ( posicao == Posicao.Vertical)
+            if (posicao == Posicao.Vertical)
             {
                 p1 = new Point2d(PontoA.X, PontoA.Y);
-                p2 = new Point2d(PontoA.X + ( largura / _escala ), PontoA.Y);
-                p3 = new Point2d(PontoA.X + (largura / _escala)  , PontoA.Y - (comprimento / _escala) );
+                p2 = new Point2d(PontoA.X + (largura / _escala), PontoA.Y);
+                p3 = new Point2d(PontoA.X + (largura / _escala), PontoA.Y - (comprimento / _escala));
                 p4 = new Point2d(PontoA.X, PontoA.Y - (comprimento / _escala));
 
             }
@@ -504,35 +603,35 @@ namespace ColunaPronta.Commands
 
             Document document = Application.DocumentManager.MdiActiveDocument;
             Helpers.AddPolyline(document, collection, ColorIndex.padrao);
-                          
+
         }
 
         public static void AddEle(Coluna coluna)
         {
-           if( (coluna.eleVermelho == true && coluna.Posicao == Posicao.Horizontal) || 
-               (coluna.eleCinza    == true && coluna.Posicao == Posicao.Vertical) )
+            if ((coluna.eleVermelho == true && coluna.Posicao == Posicao.Horizontal) ||
+                (coluna.eleCinza == true && coluna.Posicao == Posicao.Vertical))
             {
-                AddElePolyline(new Point2d(coluna.PointA.X + ((5+ladoEle) / _escala), coluna.PointA.Y + (ladoEle / _escala)), Posicao.BaixoDireita, ladoEle);
-                AddElePolyline(new Point2d(coluna.PointC.X + ( 5  / _escala), coluna.PointC.Y), Posicao.CimaDireita, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointA.X + ((5 + ladoEle) / _escala), coluna.PointA.Y + (ladoEle / _escala)), Posicao.BaixoDireita, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointC.X + (5 / _escala), coluna.PointC.Y), Posicao.CimaDireita, ladoEle);
             }
-           if( (coluna.eleAmarelo   == true && coluna.Posicao == Posicao.Horizontal) || 
-               (coluna.eleVermelho  == true && coluna.Posicao == Posicao.Vertical))
+            if ((coluna.eleAmarelo == true && coluna.Posicao == Posicao.Horizontal) ||
+                (coluna.eleVermelho == true && coluna.Posicao == Posicao.Vertical))
             {
                 AddElePolyline(new Point2d(coluna.PointA.X, coluna.PointA.Y - (5 / _escala)), Posicao.BaixoDireita, ladoEle);
-                AddElePolyline(new Point2d(coluna.PointB.X , coluna.PointB.Y - (5 / _escala)), Posicao.BaixoEsquerda, ladoEle);
-           
+                AddElePolyline(new Point2d(coluna.PointB.X, coluna.PointB.Y - (5 / _escala)), Posicao.BaixoEsquerda, ladoEle);
+
             }
-            if ( (coluna.eleAzul     == true && coluna.Posicao == Posicao.Horizontal) || 
-               (coluna.eleAmarelo  == true && coluna.Posicao == Posicao.Vertical))
+            if ((coluna.eleAzul == true && coluna.Posicao == Posicao.Horizontal) ||
+               (coluna.eleAmarelo == true && coluna.Posicao == Posicao.Vertical))
             {
-                AddElePolyline(new Point2d(coluna.PointB.X - (( 5+ladoEle) / _escala), coluna.PointB.Y + (ladoEle / _escala)), Posicao.BaixoEsquerda, ladoEle);
-                AddElePolyline(new Point2d(coluna.PointD.X - (( 5+ladoEle) / _escala), coluna.PointD.Y), Posicao.CimaEsquerda, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointB.X - ((5 + ladoEle) / _escala), coluna.PointB.Y + (ladoEle / _escala)), Posicao.BaixoEsquerda, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointD.X - ((5 + ladoEle) / _escala), coluna.PointD.Y), Posicao.CimaEsquerda, ladoEle);
             }
-            if ( (coluna.eleCinza == true && coluna.Posicao == Posicao.Horizontal) || 
-               (coluna.eleAzul  == true && coluna.Posicao == Posicao.Vertical))
+            if ((coluna.eleCinza == true && coluna.Posicao == Posicao.Horizontal) ||
+               (coluna.eleAzul == true && coluna.Posicao == Posicao.Vertical))
             {
-                AddElePolyline(new Point2d(coluna.PointC.X - (ladoEle / _escala), coluna.PointC.Y + (( 5+ ladoEle) / _escala)), Posicao.CimaDireita, ladoEle);
-                AddElePolyline(new Point2d(coluna.PointD.X , coluna.PointD.Y + (( 5+ ladoEle) / _escala)), Posicao.CimaEsquerda, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointC.X - (ladoEle / _escala), coluna.PointC.Y + ((5 + ladoEle) / _escala)), Posicao.CimaDireita, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointD.X, coluna.PointD.Y + ((5 + ladoEle) / _escala)), Posicao.CimaEsquerda, ladoEle);
             }
         }
 
@@ -542,13 +641,13 @@ namespace ColunaPronta.Commands
             var collection = new Point2dCollection();
             bool bPosicaoInvalida = false;
 
-            switch(posicao)
+            switch (posicao)
             {
                 case Posicao.BaixoDireita:
                     p1 = new Point2d(PontoA.X, PontoA.Y);
                     p2 = new Point2d(PontoA.X, PontoA.Y - (lado / _escala));
-                    p3 = new Point2d(PontoA.X - (lado/ _escala), PontoA.Y - (lado / _escala));
-                    p4 = new Point2d(PontoA.X - (lado / _escala), PontoA.Y - ( (lado -2) / _escala));
+                    p3 = new Point2d(PontoA.X - (lado / _escala), PontoA.Y - (lado / _escala));
+                    p4 = new Point2d(PontoA.X - (lado / _escala), PontoA.Y - ((lado - 2) / _escala));
                     p5 = new Point2d(PontoA.X - (2 / _escala), PontoA.Y - ((lado - 2) / _escala));
                     p6 = new Point2d(PontoA.X - (2 / _escala), PontoA.Y);
                     break;
@@ -562,32 +661,32 @@ namespace ColunaPronta.Commands
                     break;
                 case Posicao.CimaDireita:
                     p1 = new Point2d(PontoA.X, PontoA.Y);
-                    p2 = new Point2d(PontoA.X + (lado / _escala), PontoA.Y );
+                    p2 = new Point2d(PontoA.X + (lado / _escala), PontoA.Y);
                     p3 = new Point2d(PontoA.X + (lado / _escala), PontoA.Y - (lado / _escala));
-                    p4 = new Point2d(PontoA.X + ( (lado - 2) / _escala ), PontoA.Y - ((lado) / _escala));
-                    p5 = new Point2d(PontoA.X + ( (lado - 2) / _escala ), PontoA.Y - ( 2 / _escala));
-                    p6 = new Point2d(PontoA.X , PontoA.Y - (2 / _escala));
+                    p4 = new Point2d(PontoA.X + ((lado - 2) / _escala), PontoA.Y - ((lado) / _escala));
+                    p5 = new Point2d(PontoA.X + ((lado - 2) / _escala), PontoA.Y - (2 / _escala));
+                    p6 = new Point2d(PontoA.X, PontoA.Y - (2 / _escala));
                     break;
                 case Posicao.CimaEsquerda:
                     p1 = new Point2d(PontoA.X, PontoA.Y);
                     p2 = new Point2d(PontoA.X, PontoA.Y - (lado / _escala));
                     p3 = new Point2d(PontoA.X + (2 / _escala), PontoA.Y - (lado / _escala));
-                    p4 = new Point2d(PontoA.X + (2 / _escala), PontoA.Y - ( 2 / _escala));
-                    p5 = new Point2d(PontoA.X + (lado / _escala), PontoA.Y - ( 2 / _escala));
+                    p4 = new Point2d(PontoA.X + (2 / _escala), PontoA.Y - (2 / _escala));
+                    p5 = new Point2d(PontoA.X + (lado / _escala), PontoA.Y - (2 / _escala));
                     p6 = new Point2d(PontoA.X + (lado / _escala), PontoA.Y);
                     break;
-                default: 
+                default:
                     bPosicaoInvalida = true;
                     p1 = new Point2d(0, 0);
-                    p2 = new Point2d(0,0);
-                    p3 = new Point2d(0,0);
-                    p4 = new Point2d(0,0);
-                    p5 = new Point2d(0,0);
-                    p6 = new Point2d(0,0);
+                    p2 = new Point2d(0, 0);
+                    p3 = new Point2d(0, 0);
+                    p4 = new Point2d(0, 0);
+                    p5 = new Point2d(0, 0);
+                    p6 = new Point2d(0, 0);
                     break;
             }
 
-            if(!bPosicaoInvalida)
+            if (!bPosicaoInvalida)
             {
                 collection.Add(p1);
                 collection.Add(p2);
@@ -609,79 +708,9 @@ namespace ColunaPronta.Commands
             var point = new Point3d(PontoA.X - (60 / _escala), PontoA.Y + (5 / _escala), 0);
             Helpers.AddTexto(document, point, textTipoColuna, ColorIndex.padrao);
         }
-    
-        public static List<ItemRelatorio> GetDadosRelatorio(string nomeProjeto)
-        {
-            try
-            {
-                var colunas = ArquivoCSV.GetColunas(nomeProjeto);
+        #endregion
 
-                if (colunas != null)
-                {
-                    var colunasPonto = from coluna in colunas
-                                       group coluna by coluna.PointA into colunaPontoA
-                                       select colunaPontoA.Key;
-                    var colunasRelatorio = new List<Coluna>();
-
-                    foreach (Point2d pontoColuna in colunasPonto)
-                    {
-                        var c = (from coluna in colunas
-                                 where coluna.PointA == pontoColuna
-                                 orderby coluna.dInclusao descending
-                                 select new Coluna
-                                 {
-                                     iColuna = coluna.iColuna,
-                                     DiametroParafuso = coluna.DiametroParafuso,
-                                     DiametroSapata = coluna.DiametroSapata,
-                                     QuantidadeParafuso = coluna.QuantidadeParafuso,
-                                     Comprimento = coluna.Comprimento,
-                                     Largura = coluna.Largura,
-                                     Altura = coluna.Altura,
-                                 }).FirstOrDefault();
-
-                        colunasRelatorio.Add(c);
-                    }
-
-                    var relatorio = (from coluna in colunasRelatorio
-                                     group coluna by new
-                                     {
-                                         coluna.Altura,
-                                         coluna.Comprimento,
-                                         coluna.Largura,
-                                         coluna.iColuna,
-                                         coluna.QuantidadeParafuso,
-                                         coluna.DiametroSapata,
-                                         coluna.DiametroParafuso
-
-                                     } into c
-                                     select new ItemRelatorio
-                                     {
-                                         Altura = c.Key.Altura,
-                                         Comprimento = c.Key.Comprimento,
-                                         Largura = c.Key.Largura,
-                                         iColuna = c.Key.iColuna,
-                                         QtdeParafuso = c.Key.QuantidadeParafuso,
-                                         DiametroSapata = c.Key.DiametroSapata,
-                                         DiametroParafuso = c.Key.DiametroParafuso,
-                                         QtdeColuna = c.Count()
-                                     }).ToList();
-                    return relatorio;
-                }
-                else
-                {
-                   return null;
-                }
-
-            }
-            catch (Exception e)
-            {
-                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
-                Logger.Error(e.ToString());
-                return null;
-            }
-        }
-
+        #region >> Relatorio
         public static void GeraRelatorio()
         {
             try
@@ -694,7 +723,7 @@ namespace ColunaPronta.Commands
 
                 var dadosRelatorio = GetDadosRelatorio(nomeProjeto);
 
-                if ( dadosRelatorio == null)
+                if (dadosRelatorio == null)
                 {
                     editor.WriteMessage("\nNão possui dados para gerar o relatório ou o nome de um dos arquivos (.csv ou .dwg) foram renomeados ");
                     return;
@@ -715,7 +744,7 @@ namespace ColunaPronta.Commands
                     double startX = startPoint.X;
                     double startY = startPoint.Y;
                     double distancia = 0;
-                
+
                     foreach (ItemRelatorio item in dadosRelatorio)
                     {
                         var coluna = IntegraLayout.GetLayout(item.iColuna, nomeProjeto);
@@ -730,20 +759,32 @@ namespace ColunaPronta.Commands
 
                         AddColuna(coluna, false);
 
-                        var textoDescricao = string.Concat( "C", coluna.iColuna.ToString(), " - "
-                                                          , coluna.Comprimento.ToString("N2"),"x"
-                                                          , coluna.Largura.ToString("N2"), "x"
-                                                          , coluna.Altura.ToString("N2"), "mm - "
-                                                          , "\n Diametro do Parafuso: " , item.DiametroParafuso.ToString(),""
-                                                          , "\n Diametro do Sapata: ", item.DiametroSapata.ToString()," - "
-                                                           , "\n Quantidade de parafusos: ", item.QtdeParafuso.ToString(), " - "
-                                                          , "\n Quantidade de Colunas: "
-                                                          , item.QtdeColuna.ToString(), ""
-                                                          , item.QtdeColuna == 1 ? " unidade." : " unidades."
-                                                          );
+                        //var textoDescricao = string.Concat("C", coluna.iColuna.ToString(), " - "
+                        //                                  , coluna.Comprimento.ToString("N2"), "x"
+                        //                                  , coluna.Largura.ToString("N2"), "x"
+                        //                                  , coluna.Altura.ToString("N2"), "mm - "
+                        //                                  , "\n Diametro do Parafuso: ", item.DiametroParafuso.ToString(), ""
+                        //                                  , "\n Diametro do Sapata: ", item.DiametroSapata.ToString(), " - "
+                        //                                   , "\n Quantidade de parafusos: ", item.QtdeParafuso.ToString(), " - "
+                        //                                  , "\n Quantidade de Colunas: "
+                        //                                  , item.QtdeColuna.ToString(), ""
+                        //                                  , item.QtdeColuna == 1 ? " unidade." : " unidades."
+                        //                                  );
 
-                        Helpers.AddTexto( document
-                                        , new Point3d(startX+ ( (item.Largura+60) / _escala) , startY - ( ( 50 + distancia) / _escala),0)
+                        var textoDescricao = string.Concat("C", coluna.iColuna.ToString(), " - "
+                                                       , coluna.Comprimento.ToString("N2"), " x "
+                                                       , coluna.Largura.ToString("N2"), " x "
+                                                       , coluna.Altura.ToString("N2"), " mm - "
+                                                       //, "\n Diametro do Parafuso: ", item.DiametroParafuso.ToString(), ""
+                                                       //, "\n Diametro do Sapata: ", item.DiametroSapata.ToString(), " - "
+                                                       // , "\n Quantidade de parafusos: ", item.QtdeParafuso.ToString(), " - "
+                                                       //, "\n Quantidade de Colunas: "
+                                                       , item.QtdeColuna.ToString(), ""
+                                                       , item.QtdeColuna == 1 ? " unidade." : " unidades."
+                                                       );
+
+                        Helpers.AddTexto(document
+                                        , new Point3d(startX + ((item.Largura + 60) / _escala), startY - ((50 + distancia) / _escala), 0)
                                         , textoDescricao
                                         , ColorIndex.verde
                                         );
@@ -760,6 +801,534 @@ namespace ColunaPronta.Commands
                 Logger.Error(e.ToString());
             }
         }
-       
+
+        public static void GeraRelatorioExcel(TipoLista tipoLista)
+        {
+            try
+            {
+                Document document = Application.DocumentManager.MdiActiveDocument;
+                Database database = document.Database;
+                Editor editor = document.Editor;
+
+                var nomeProjeto = document.Window.Text;
+                var especificacoes = ArquivoCSV.GetEspecificacao();
+                var dadosRelatorio = GetDadosRelatorio(nomeProjeto);
+                double qtdParafuso = 0;
+
+                if (dadosRelatorio == null)
+                {
+                    editor.WriteMessage("\nNão possui dados para gerar o relatório ou o nome de um dos arquivos (.csv ou .dwg) foram renomeados ");
+                    return;
+                }
+
+                var listaSapata = new List<Sapata>();
+                double startX = 0;
+                double startY = 0;
+                double distancia = 0;
+                var listaParafuso = new List<Double>();
+
+                foreach (ItemRelatorio item in dadosRelatorio)
+                {
+                    var coluna = IntegraLayout.GetLayout(item.iColuna, nomeProjeto);
+                    coluna.Largura = item.Largura;
+                    coluna.Comprimento = item.Comprimento;
+                    coluna.Altura = item.Altura;
+                    coluna.DiametroSapata = item.DiametroSapata;
+                    coluna.DiametroParafuso = item.DiametroParafuso;
+                    var pontosColuna = AddEstruturaColuna(null, new Point2d(startX, startY - (distancia / _escala)), item.Largura, item.Comprimento);
+
+                    coluna.SetPontos(pontosColuna);
+
+                    if (coluna.SapataA)
+                    {
+                        var sapata = GetSapata(new Point2d(coluna.PointB.X, coluna.PointB.Y), new Point2d(coluna.PointD.X, coluna.PointD.Y));
+                        sapata.Chumbador = coluna.DiametroSapata;
+                        sapata.Quantidade = item.QtdeColuna;
+                        listaSapata.Add(sapata);
+                    }
+                    if (coluna.SapataB)
+                    {
+                        var sapata = GetSapata(new Point2d(coluna.PointA.X, coluna.PointA.Y), new Point2d(coluna.PointB.X, coluna.PointB.Y));
+                        sapata.Chumbador = coluna.DiametroSapata;
+                        sapata.Quantidade = item.QtdeColuna;
+                        listaSapata.Add(sapata);
+                    }
+                    if (coluna.SapataC)
+                    {
+                        var sapata = GetSapata(new Point2d(coluna.PointB.X, coluna.PointB.Y), new Point2d(coluna.PointD.X, coluna.PointD.Y));
+                        sapata.Chumbador = coluna.DiametroSapata;
+                        sapata.Quantidade = item.QtdeColuna;
+                        listaSapata.Add(sapata);
+                    }
+                    if (coluna.SapataD)
+                    {
+                        var sapata = GetSapata(new Point2d(coluna.PointC.X, coluna.PointC.Y), new Point2d(coluna.PointD.X, coluna.PointD.Y));
+                        sapata.Chumbador = coluna.DiametroSapata;
+                        sapata.Quantidade = item.QtdeColuna;
+                        listaSapata.Add(sapata);
+                    }
+
+                    if (coluna.ParafusoA) { listaParafuso.Add(coluna.DiametroParafuso); qtdParafuso = qtdParafuso + ( coluna.QuantidadeParafuso * item.QtdeColuna);}
+                    if (coluna.ParafusoB) { listaParafuso.Add(coluna.DiametroParafuso); qtdParafuso = qtdParafuso + ( coluna.QuantidadeParafuso * item.QtdeColuna);}
+                    if (coluna.ParafusoC) { listaParafuso.Add(coluna.DiametroParafuso); qtdParafuso = qtdParafuso + ( coluna.QuantidadeParafuso * item.QtdeColuna);}
+                    if (coluna.ParafusoD) { listaParafuso.Add(coluna.DiametroParafuso); qtdParafuso = qtdParafuso + ( coluna.QuantidadeParafuso * item.QtdeColuna);}
+                    if (coluna.ParafusoE) { listaParafuso.Add(coluna.DiametroParafuso); qtdParafuso = qtdParafuso + ( coluna.QuantidadeParafuso * item.QtdeColuna);}
+                    if (coluna.ParafusoF) { listaParafuso.Add(coluna.DiametroParafuso); qtdParafuso = qtdParafuso + ( coluna.QuantidadeParafuso * item.QtdeColuna);}
+                    if (coluna.ParafusoG) { listaParafuso.Add(coluna.DiametroParafuso); qtdParafuso = qtdParafuso + ( coluna.QuantidadeParafuso * item.QtdeColuna);}
+                    if (coluna.ParafusoH) { listaParafuso.Add(coluna.DiametroParafuso); qtdParafuso = qtdParafuso + ( coluna.QuantidadeParafuso * item.QtdeColuna); }
+                }
+
+                var arquivoExcel =new  List<Planilha>();
+
+                var especificacaoColuna = (from item in especificacoes
+                                              where item.Peca == "coluna"
+                                              select item.Nomenclatura).FirstOrDefault();
+
+
+                var relatorioColuna = (from item in dadosRelatorio
+                                 group item by new
+                                 {
+                                     item.Altura,
+                                     item.Comprimento,
+                                     item.Largura,
+                                     item.Enrijecedor
+                                 } into c
+                                 select new ItemRelatorio
+                                 {
+                                     Altura = c.Key.Altura,
+                                     Comprimento = c.Key.Comprimento,
+                                     Largura = c.Key.Largura / 2,
+                                     Enrijecedor = c.Key.Enrijecedor,
+                                 }).ToList();
+
+
+                foreach (ItemRelatorio item in relatorioColuna)
+                {
+                    var qtde = (from coluna in dadosRelatorio
+                                where coluna.Comprimento == item.Comprimento &&
+                                      coluna.Largura == item.Largura *2
+                                select coluna.QtdeColuna).Sum();
+
+                    var linha = new Planilha();
+                    linha.Item = "Coluna";
+                    linha.Especificao = string.Concat(especificacaoColuna.ToString(), " ", item.Comprimento.ToString("N2"), " x ", item.Largura.ToString("N2"), "x 2,0");
+                    linha.Comprimento= item.Altura.ToString("N2");
+                    linha.Quantidade = qtde *2;
+                    arquivoExcel.Add(linha);
+                }
+
+                var relatorioSapata = (from item in listaSapata
+                                       group item by new
+                                       {
+                                           item.Comprimento
+                                       } into c
+                                       select new Sapata
+                                       {
+                                           Comprimento = Convert.ToDouble(c.Key.Comprimento),
+                                           Quantidade = c.Count()
+                                       }).ToList();
+
+
+
+                var qtdeChumbador = listaSapata.Count();
+                var especificacaoChumbador = (  from item in especificacoes
+                                      where item.Peca == "chumbador"
+                                     select item.Nomenclatura).FirstOrDefault();
+
+                var linhaChumbador = new Planilha();
+                linhaChumbador.Item = "Chumbador";
+                linhaChumbador.Especificao = especificacaoChumbador.ToString();
+                linhaChumbador.Comprimento = "-";
+                linhaChumbador.Quantidade = qtdeChumbador;
+                arquivoExcel.Add(linhaChumbador);
+
+                var especificacaoSapata = (from item in especificacoes
+                                             where item.Peca == "sapata"
+                                             select item.Nomenclatura).FirstOrDefault();
+
+                foreach (Sapata item in relatorioSapata)
+                {
+                    var qtde = (from sapata in listaSapata
+                                where sapata.Comprimento == item.Comprimento
+                                select sapata.Quantidade).Sum();
+
+                    var linha = new Planilha();
+                    linha.Item = "Sapata";
+                    linha.Comprimento = item.Comprimento.ToString("N2");
+                    linha.Quantidade = qtde;
+                    linha.Especificao = especificacaoSapata.ToString();
+                    arquivoExcel.Add(linha);
+                }
+
+                var relatorioParafuso = listaParafuso.GroupBy( parafuso => parafuso)
+                                                              .Select(parafuso => new Parafuso
+                                                              {
+                                                                  Diametro = Convert.ToDouble(parafuso.Key),
+                                                                  Quantidade = parafuso.Count()
+                                                              }).ToList();
+
+                var especificacaoParafuso = (from item in especificacoes
+                                              where item.Peca == "parafuso"
+                                              select item.Nomenclatura).FirstOrDefault();
+
+                foreach (Parafuso item in relatorioParafuso)
+                {
+                    var linha = new Planilha();
+                    linha.Item = "Parafuso";
+                    linha.Especificao = especificacaoParafuso.ToString();
+                    linha.Comprimento = "";
+                    linha.Quantidade = qtdParafuso;
+                    arquivoExcel.Add(linha);
+                }
+
+                GeraArquivoExcel(arquivoExcel, nomeProjeto, tipoLista);
+
+            }
+            catch (Exception e)
+            {
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+            }
+        }
+
+  
+        private static void GeraArquivoExcel(List<Planilha> arquivoExcel, string nomeProjeto, TipoLista tipoLista)
+        {
+            var excelApp = new Excel.Application();
+            // Make the object visible.
+            excelApp.Visible = true;
+            string path;
+
+            path = tipoLista == TipoLista.ListaEntrega ? string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\listaEntrega", nomeProjeto, ".xlsx") 
+                                                       : string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\ListaCorte", nomeProjeto, ".xlsx");
+
+            if(File.Exists(path))
+            {
+                File.Delete(path);
+            }
+
+            if (tipoLista == TipoLista.ListaEntrega)
+            {
+                File.Copy(@"C:\Autodesk\ColunaPronta\Template\ListaDeEntrega.xlsx", path);
+            }
+            else
+            {
+                File.Copy(@"C:\Autodesk\ColunaPronta\Template\ListaDeCorte.xlsx",path);
+            }
+
+           
+            // Create a new, empty workbook and add it to the collection returned
+            // by property Workbooks. The new workbook becomes the active workbook.
+            // Add has an optional parameter for specifying a praticular template.
+            // Because no argument is sent in this example, Add creates a new workbook.
+            excelApp.Workbooks.Open(path);
+
+            // This example uses a single workSheet. The explicit type casting is
+            // removed in a later procedure.
+            Excel._Worksheet workSheet = (Excel.Worksheet)excelApp.ActiveSheet;
+
+            if (tipoLista == TipoLista.ListaEntrega)
+            {
+                var row = 18;
+                foreach (var linha in arquivoExcel)
+                {
+                    row++;
+                    workSheet.Cells[row, "B"] = linha.Item;
+                    workSheet.Cells[row, "E"] = linha.Especificao;
+                    workSheet.Cells[row, "G"] = linha.Comprimento;
+                    workSheet.Cells[row, "H"] = linha.Quantidade;
+                }
+            }
+            else
+            {
+                var row = 9;
+                foreach (var linha in arquivoExcel)
+                {
+                    if(linha.Item == "Sapata" || linha.Item == "Coluna")
+                    {
+                        row++;
+                        workSheet.Cells[row, "C"] = linha.Especificao;
+                        workSheet.Cells[row, "D"] = linha.Comprimento;
+                        workSheet.Cells[row, "E"] = linha.Quantidade;
+                        workSheet.Cells[row, "F"] = linha.Item;
+                    }
+                }
+            }         
+        }
+
+        private static Sapata GetSapata(Point2d point1, Point2d point2)
+        {
+            //distanciaSapata
+            var sapata = new Sapata();
+            sapata.Comprimento = point1.GetDistanceTo(point2) * _escala;
+            sapata.Comprimento = sapata.Comprimento - distanciaSapata;
+            return sapata;
+        }
+
+        public static void CreateLayout()
+
+        {
+
+            var document = Application.DocumentManager.MdiActiveDocument;
+            Editor ed = document.Editor;
+            Database db = document.Database;
+            Point3d first, second;
+            Point2d min, max;
+            PromptPointOptions ppo =
+
+                new PromptPointOptions("/nSelect first corner of plot area: ");
+
+            ppo.AllowNone = false;
+
+            PromptPointResult ppr = ed.GetPoint(ppo);
+
+
+            first = ppr.Value;
+            max = new Point2d(first.X, first.Y);
+            
+            PromptCornerOptions pco =
+             new PromptCornerOptions(
+             "/nSelect second corner of plot area: ",
+             first
+             );
+            
+            ppr = ed.GetCorner(pco);
+            
+            if (ppr.Status == PromptStatus.OK)
+            {
+                second = ppr.Value;
+                min = new Point2d(second.X, second.Y);
+            }
+            else
+            {
+                min = new Point2d(0, 0);
+            }
+
+            if (document == null)
+                return;
+
+            var database = document.Database;
+            var editor = document.Editor;
+            var extents2d = new Extents2d();
+
+            using (var transaction = database.TransactionManager.StartTransaction())
+            {
+
+                var id = LayoutManager.Current.CreateAndMakeLayoutCurrent("NewLayout");
+                var lay = (Layout)transaction.GetObject(id, OpenMode.ForWrite);
+                
+
+                // Make some settings on the layout and get its extents
+
+                string pageSize = "A4";
+                string styleSheet = "monochrome.ctb";
+                string device = "DWFG To PDF.pc3";
+
+                using (var ps = new PlotSettings(lay.ModelType))
+                {
+
+                    ps.CopyFrom(lay);
+
+                    var psv = PlotSettingsValidator.Current;
+
+                    // Set the device
+
+                    var devs = psv.GetPlotDeviceList();
+
+                    if (devs.Contains(device))
+                    {
+                        psv.SetPlotConfigurationName(ps, device, null);
+                        psv.RefreshLists(ps);
+
+                    }
+
+                    // Set the media name/size
+
+                    var mns = psv.GetCanonicalMediaNameList(ps);
+
+                    if (mns.Contains(pageSize))
+                    {
+                        psv.SetCanonicalMediaName(ps, pageSize);
+                    }
+
+                    // Set the pen settings
+
+                    var ssl = psv.GetPlotStyleSheetList();
+                    if (ssl.Contains(styleSheet))
+                    {
+                        psv.SetCurrentStyleSheet(ps, styleSheet);
+                    }
+
+                    // Copy the PlotSettings data back to the Layout
+
+                    var upgraded = false;
+
+                    if (!lay.IsWriteEnabled)
+                    {
+                        lay.UpgradeOpen();
+                        upgraded = true;
+                    }
+
+                    lay.CopyFrom(ps);
+
+                    if (upgraded)
+                    {
+                        lay.DowngradeOpen();
+                    }
+                }
+
+                extents2d = new Extents2d(min, max); // lay.GetMaximumExtents();
+
+
+                lay.ApplyToViewport(transaction, 2,
+                  vp =>
+                  {
+
+                      // Size the viewport according to the extents calculated when
+                      // we set the PlotSettings (device, page size, etc.)
+                      // Use the standard 10% margin around the viewport
+                      // (found by measuring pixels on screenshots of Layout1, etc.)
+
+                      vp.ResizeViewport(extents2d, 0.8);
+
+
+                      // Adjust the view so that the model contents fit
+
+                      if (ValidDbExtents(database.Extmin, database.Extmax))
+
+                      {
+
+                          vp.FitContentToViewport(new Extents3d(database.Extmin, database.Extmax), 0.9);
+
+                      }
+
+
+
+                      // Finally we lock the view to prevent meddling
+
+
+
+                      vp.Locked = true;
+
+                  }
+
+                );
+
+
+
+                // Commit the transaction
+
+
+
+                transaction.Commit();
+
+            }
+
+
+
+            // Zoom so that we can see our new layout, again with a little padding
+
+
+
+            //editor.Command("_.ZOOM", "_E");
+
+            //editor.Command("_.ZOOM", ".7X");
+
+            editor.Regen();
+
+        }
+
+
+        public static void ResizeViewport(this Viewport vp, Extents2d ext, double fac = 1.0)
+        {
+
+            vp.Width = 142.705;                         //((ext.MaxPoint.X > ext.MinPoint.X ? ext.MaxPoint.X - ext.MinPoint.X : ext.MinPoint.X - ext.MaxPoint.X ) * fac  ) /1000;
+            vp.Height = 341.73;                       // ((ext.MaxPoint.Y > ext.MinPoint.Y ? ext.MaxPoint.Y - ext.MinPoint.Y : ext.MinPoint.Y - ext.MaxPoint.Y ) * fac ) /1000;
+            vp.CenterPoint = new Point3d(ext.MinPoint.X + ext.MinPoint.GetDistanceTo(ext.MaxPoint) /2, ext.MinPoint.Y + ext.MinPoint.GetDistanceTo(ext.MaxPoint) / 2, 0)  ;
+            
+        }
+        public static void ApplyToViewport(this Layout lay, Transaction tr, int vpNum, Action<Viewport> f)
+        {
+
+            var vpIds = lay.GetViewports();
+
+            Viewport vp = null;
+
+            foreach (ObjectId vpId in vpIds)
+            {
+
+                var vp2 = tr.GetObject(vpId, OpenMode.ForWrite) as Viewport;
+                if (vp2 != null && vp2.Number == vpNum)
+                {
+
+                    // We have found our viewport, so call the action
+                    vp = vp2;
+                    break;
+                }
+            }
+
+            if (vp == null)
+            {
+
+                // We have not found our viewport, so create one
+
+                var btr = (BlockTableRecord)tr.GetObject(lay.BlockTableRecordId, OpenMode.ForWrite);
+
+                vp = new Viewport();
+
+                // Add it to the database
+
+                btr.AppendEntity(vp);
+
+                tr.AddNewlyCreatedDBObject(vp, true);
+
+                // Turn it - and its grid - on
+
+                vp.On = true;
+                vp.GridOn = true;
+            }
+
+            // Finally we call our function on it
+            f(vp);
+
+        }
+
+        public static void FitContentToViewport(this Viewport vp, Extents3d ext, double fac = 1.0)
+        {
+
+            // Let's zoom to just larger than the extents
+
+            vp.ViewCenter = new Point2d(ext.MinPoint.X + ext.MinPoint.DistanceTo(ext.MaxPoint) / 2, ext.MinPoint.Y + ext.MinPoint.DistanceTo(ext.MaxPoint) / 2);  //(ext.MinPoint + ((ext.MaxPoint - ext.MinPoint) * 0.5)).Strip();
+
+
+            var hgt = 297; // ext.MaxPoint.Y - ext.MinPoint.Y;
+
+            vp.ViewHeight = hgt;
+            
+
+     
+            vp.CustomScale *= 108;
+        }
+
+
+        public static Point2d Strip(this Point3d pt)
+
+        {
+
+            return new Point2d(pt.X, pt.Y);
+
+        }
+
+        private static bool ValidDbExtents(Point3d min, Point3d max)
+        {
+            return
+
+              !(min.X > 0 && min.Y > 0 && min.Z > 0 &&
+                max.X < 0 && max.Y < 0 && max.Z < 0);
+        }
+        #endregion
+
     }
+
 }

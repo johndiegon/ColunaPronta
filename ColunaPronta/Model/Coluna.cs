@@ -138,6 +138,8 @@ namespace ColunaPronta.Model
         public bool ParafusoF { get; set; }
         public bool ParafusoG { get; set; }
         public bool ParafusoH { get; set; }
+
+   
         #endregion
 
         #region >> Sapata

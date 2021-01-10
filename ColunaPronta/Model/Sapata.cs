@@ -11,6 +11,8 @@ namespace ColunaPronta.Model
     {
         public double Comprimento { get; set; }
         public double Largura { get; set; }
+        public double Chumbador { get; set; }
+        public double Quantidade { get; set; }
         public Point2d PointA { get; set; }
         public Point2d PointB { get; set; }
         public Point2d PointC { get; set; }

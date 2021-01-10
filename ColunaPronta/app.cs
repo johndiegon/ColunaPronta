@@ -95,8 +95,19 @@ namespace ColunaPronta
         //[CommandMethod("Teste")]
         //public void Teste()
         //{
-        //    var com = new LayoutCreation.Commands();
-        //    com.CreateLayout();
+        //    IntegraColuna.CreateLayout();
         //}
+        [CommandMethod("GeraLC")]
+        public void GeraListaCorte()
+        {
+            IntegraColuna.GeraRelatorioExcel(TipoLista.ListaCorte);
+        }
+
+        [CommandMethod("GeraLE")]
+        public void GeraListaEntrega()
+        {
+            IntegraColuna.GeraRelatorioExcel(TipoLista.ListaEntrega);
+        }
+
     }
 }

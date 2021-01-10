@@ -252,5 +252,13 @@ namespace ColunaPronta
         {
             SetTelaInicial();
         }
+        
+        private void button_Limpar_Click (object sender, RoutedEventArgs e)
+        {
+            this.textBox_parafuso.Text = "";
+            this.textBox_diametro.Text = "";
+            this.textBox_qtdeParafuso.Text = "";
+            this.textBox_altura.Text = "";
+        }
     }
 }
