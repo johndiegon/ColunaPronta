@@ -2,6 +2,7 @@
 using ColunaPronta.Commands;
 using ColunaPronta.Helper;
 using ColunaPronta.Model;
+using ColunaPronta.Viewer;
 using System.ServiceModel.Channels;
 using System.Windows;
 
@@ -14,6 +15,7 @@ namespace ColunaPronta
 
         public void Initialize()
         {
+            AbreAbaFerramenta();
         }
 
         public void Terminate()
@@ -97,16 +99,22 @@ namespace ColunaPronta
         //{
         //    IntegraColuna.CreateLayout();
         //}
-        [CommandMethod("GeraLC")]
+        [CommandMethod("GeraListaCorte")]
         public void GeraListaCorte()
         {
             IntegraColuna.GeraRelatorioExcel(TipoLista.ListaCorte);
         }
 
-        [CommandMethod("GeraLE")]
+        [CommandMethod("GeraListaEntrega")]
         public void GeraListaEntrega()
         {
             IntegraColuna.GeraRelatorioExcel(TipoLista.ListaEntrega);
+        }
+
+        public void AbreAbaFerramenta()
+        {
+            AbaFerramenta aba = new AbaFerramenta();
+            aba.Add();
         }
 
     }
