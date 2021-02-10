@@ -138,6 +138,7 @@ namespace ColunaPronta.Model
         public bool ParafusoF { get; set; }
         public bool ParafusoG { get; set; }
         public bool ParafusoH { get; set; }
+        public double AlturaViga { get; set; }
 
    
         #endregion
@@ -200,7 +201,8 @@ namespace ColunaPronta.Model
             coluna.eleVermelho         = Convert.ToBoolean(values[26]=="0" ? false : true);    
             coluna.eleAzul             = Convert.ToBoolean(values[27]=="0" ? false : true);    
             coluna.eleCinza            = Convert.ToBoolean(values[28]=="0" ? false : true);    
-            coluna.dInclusao          = Convert.ToDateTime(values[29]);
+            coluna.dInclusao           = Convert.ToDateTime(values[29]);
+            coluna.AlturaViga          = Math.Round(Convert.ToDouble(values[30]), 2);
             return coluna;
         }
     }

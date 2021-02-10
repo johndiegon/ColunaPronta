@@ -109,6 +109,7 @@
     <Compile Include="Commands\teste\ViewPlottColuna.cs" />
     <Compile Include="Helper\Helpers.cs" />
     <Compile Include="Helper\IntegraLayout.cs" />
+    <Compile Include="Model\Cantoneira.cs" />
     <Compile Include="Model\Especificao.cs" />
     <Compile Include="Model\Parafuso.cs" />
     <Compile Include="Model\Planilha.cs" />

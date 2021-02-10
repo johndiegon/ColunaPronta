@@ -74,7 +74,7 @@
                         <CheckBox x:Name="checkBox_passante_sptD"  Content="S.D" HorizontalAlignment="Left" Margin="28, 183, 0,0" VerticalAlignment="Top" Checked="checkBox_spt_Checked" />
                     </Grid>
                 </TabItem>
-                <TabItem Header="passante">
+                <TabItem Header="Cantoneira 3 Furos">
                     <Grid Background="White" Margin="0,0,310,0.4">
                         <Image x:Name="image_passanteb_horizontal" Source="C:\Autodesk\ColunaPronta\Image\passante_b.png" Visibility="Visible" Grid.ColumnSpan="5" Margin="-4,9,4,-9.4"/>
                         <Image x:Name="image_passanteb_vertical" Source="C:\Autodesk\ColunaPronta\Image\passante_b.png" Visibility="Hidden" Margin="340,32,-486,-25.4">
@@ -93,7 +93,7 @@
                         <CheckBox x:Name="checkBox_passanteD" Content="P.D" HorizontalAlignment="Left" Margin="36,210,0,0"  VerticalAlignment="Top"/>
                     </Grid>
                 </TabItem>
-                <TabItem Header="passante">
+                <TabItem Header="Cantoneira Passante">
                     <Grid Background="White" Margin="0,0,310,0.4">
                         <Image x:Name="image_passantec_horizontal" Source="C:\Autodesk\ColunaPronta\Image\passante_c.png" Visibility="Hidden" Margin="10,9,0,6" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
                         <Image x:Name="image_passantec_vertical" Source="C:\Autodesk\ColunaPronta\Image\passante_c.png" Visibility="Visible" Margin="376,40,-479,-34.4">
@@ -112,8 +112,6 @@
                         <CheckBox x:Name="checkBox_lA"     Content="L.Azul" HorizontalAlignment="Left" Margin="26,306,0,0" VerticalAlignment="Top"/>
                     </Grid>
                 </TabItem>
-                <Button x:Name="button" Content="Button" Height="100" Width="75"/>
-                <Button x:Name="button1" Content="Button" Height="100" Width="75"/>
             </TabControl>
         </StackPanel>
 
@@ -124,6 +122,8 @@
             <TextBox x:Name="textBox_altura" Margin="652,158,0,0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" TextAlignment="Left" VerticalContentAlignment="Bottom" VerticalAlignment="Top" Height="24" Width="120" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
             <TextBlock x:Name="textBlock_chumbador" HorizontalAlignment="Left" Margin="519,205,0,0" TextWrapping="Wrap" Text="Diâmetro Chumbador:" VerticalAlignment="Top"/>
             <TextBox x:Name="textBox_diametro"  Margin="652,202,0,0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" TextAlignment="Left" VerticalContentAlignment="Bottom" VerticalAlignment="Top" Height="24" Width="120" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
+            <TextBlock x:Name="textBlock_alturaviga" HorizontalAlignment="Left" Margin="559,246,0,0" TextWrapping="Wrap" Text="Altura da Viga:" VerticalAlignment="Top"/>
+            <TextBox x:Name="textBox_alturaviga" Margin="652,244,0,0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" TextAlignment="Left" VerticalContentAlignment="Bottom" VerticalAlignment="Top" Height="24" Width="120" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
             <TextBlock x:Name="textBlock_parafuso" HorizontalAlignment="Left" Margin="533,246,0,0" TextWrapping="Wrap" Text="Diâmetro Parafuso:" VerticalAlignment="Top"/>
             <TextBox x:Name="textBox_parafuso" Margin="652,244,0,0" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" TextAlignment="Left" VerticalContentAlignment="Bottom" VerticalAlignment="Top" Height="24" Width="120" BorderBrush="Black" PreviewTextInput="textBox_PreviewTextInput"/>
             <TextBlock x:Name="textBlock_qtParafuso" HorizontalAlignment="Left" Margin="498,290,0,0" TextWrapping="Wrap" Text="Quantidade de Parafusos:" VerticalAlignment="Top"/>

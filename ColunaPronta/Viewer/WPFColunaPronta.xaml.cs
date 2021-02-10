@@ -54,6 +54,18 @@ namespace ColunaPronta
                 this._coluna.Altura = Convert.ToDouble(textBox_altura.Text.ToString());
             }
 
+
+            //Altura Viga
+            if ( !bColunaNormal && textBox_alturaviga.Text.ToString() == "")
+            {
+                MessageBox.Show("Preenchimento da altura da viga é obrigatório.", "Atenção!");
+                return;
+            }
+            else if (!bColunaNormal)
+            {
+                this._coluna.AlturaViga = Convert.ToDouble(textBox_alturaviga.Text.ToString());
+            }
+
             //Quantidade de parafuso
             if (textBox_qtdeParafuso.Text.ToString() == "")
             {
@@ -148,6 +160,8 @@ namespace ColunaPronta
                 this.textBlock_parafuso.Visibility = Visibility.Visible;
                 this.textBox_parafuso.Visibility = Visibility.Visible;
 
+                this.textBlock_alturaviga.Visibility = Visibility.Hidden;
+                this.textBox_alturaviga.Visibility = Visibility.Hidden;
                 bColunaNormal = true;
             }
             else
@@ -161,6 +175,10 @@ namespace ColunaPronta
                 this.textBlock_parafuso.Visibility = Visibility.Hidden;
                 this.textBox_parafuso.Visibility = Visibility.Hidden;
                 this.textBox_parafuso.Text = "0";
+
+                this.textBlock_alturaviga.Visibility = Visibility.Visible;
+                this.textBox_alturaviga.Visibility = Visibility.Visible;
+                this.textBox_alturaviga.Text = "0";
 
                 bColunaNormal = false;
             }
@@ -182,6 +200,7 @@ namespace ColunaPronta
                 this.textBox_diametro.Text = ultimaColuna.DiametroSapata.ToString();
                 this.textBox_qtdeParafuso.Text = ultimaColuna.QuantidadeParafuso.ToString();
                 this.textBox_altura.Text = ultimaColuna.Altura.ToString();
+                this.textBox_alturaviga.Text = ultimaColuna.AlturaViga.ToString();
             }
         }
 
@@ -260,5 +279,7 @@ namespace ColunaPronta
             this.textBox_qtdeParafuso.Text = "";
             this.textBox_altura.Text = "";
         }
+
+
     }
 }

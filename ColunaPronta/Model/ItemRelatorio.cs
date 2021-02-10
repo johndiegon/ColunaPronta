@@ -12,11 +12,13 @@ namespace ColunaPronta.Model
         public double Largura { get; set; }
         public double Enrijecedor { get; set; }
         public double Altura { get; set; }
+        public double AlturaViga { get; set; }
         public int iColuna { get; set; }
         public double QtdeParafuso { get; set; }
         public double QtdeColuna { get; set; }
         public double DiametroSapata { get; set; }
         public double DiametroParafuso { get; set; }
+        public bool bPassante { get; set; } 
         
     }
 }

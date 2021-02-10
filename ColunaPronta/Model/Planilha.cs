@@ -11,6 +11,7 @@ namespace ColunaPronta.Model
         public string Item { get; set; } 
         public string Especificao { get; set; }
         public string Comprimento { get; set; }
+        public string Observacao { get; set; }
         public double Quantidade { get; set; }
         public String Perfil { get; set; }
 

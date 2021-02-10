@@ -24,7 +24,7 @@ namespace ColunaPronta.Commands
                 else
                 {
                     writer = File.CreateText(nomeArquivo);
-                    writer.WriteLine("iColuna;PontoA_X;PontoA_Y;Comprimento;Largura;Altura;DiametroParafuso;DiametroSapata;QuantidadeParafuso;ParafusoA;ParafusoB;ParafusoC;ParafusoD;ParafusoE;ParafusoF;ParafusoG;ParafusoH;SapataA;SapataB;SapataC;SapataD;PassanteA;PassanteB;PassanteC;PassanteD;eleAmarelo;eleVermelho;eleAzul;eleCinza;dAlteracao");
+                    writer.WriteLine("iColuna;PontoA_X;PontoA_Y;Comprimento;Largura;Altura;DiametroParafuso;DiametroSapata;QuantidadeParafuso;ParafusoA;ParafusoB;ParafusoC;ParafusoD;ParafusoE;ParafusoF;ParafusoG;ParafusoH;SapataA;SapataB;SapataC;SapataD;PassanteA;PassanteB;PassanteC;PassanteD;eleAmarelo;eleVermelho;eleAzul;eleCinza;dAlteracao;AlturaViga");
                 }
 
                 var linhaColuna = string.Concat( coluna.iColuna.ToString() , ";"
@@ -56,7 +56,8 @@ namespace ColunaPronta.Commands
                                                , coluna.eleVermelho == false ? 0 : 1, ";"
                                                , coluna.eleAzul == false ? 0 : 1, ";"
                                                , coluna.eleCinza == false ? 0 : 1, ";"
-                                               , DateTime.Now.ToString()
+                                               , DateTime.Now.ToString() ,";"
+                                               , coluna.AlturaViga
                                                ); ;
                 writer.WriteLine(linhaColuna);
                 writer.Close();

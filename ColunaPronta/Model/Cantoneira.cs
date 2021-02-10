@@ -1,9 +1,9 @@
 ﻿
 namespace ColunaPronta.Model
 {
-    public class Parafuso
+    public class Cantoneira
     {
-        public double Diametro { get; set; }
+        public double AlturaViga { get; set; }
         public double Quantidade { get; set; }
     }
 }

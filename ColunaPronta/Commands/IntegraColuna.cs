@@ -136,6 +136,7 @@ namespace ColunaPronta.Commands
                                      Comprimento = coluna.Comprimento,
                                      Largura = coluna.Largura ,
                                      Altura = coluna.Altura,
+                                     AlturaViga = coluna.AlturaViga
                                  }).FirstOrDefault();
 
                         colunasRelatorio.Add(c);
@@ -145,6 +146,7 @@ namespace ColunaPronta.Commands
                                      group coluna by new
                                      {
                                          coluna.Altura,
+                                         coluna.AlturaViga,
                                          coluna.Comprimento,
                                          coluna.Largura,
                                          coluna.iColuna,
@@ -156,6 +158,7 @@ namespace ColunaPronta.Commands
                                      select new ItemRelatorio
                                      {
                                          Altura = c.Key.Altura,
+                                         AlturaViga = c.Key.AlturaViga,
                                          Comprimento = c.Key.Comprimento,
                                          Largura = c.Key.Largura,
                                          iColuna = c.Key.iColuna,
@@ -813,7 +816,7 @@ namespace ColunaPronta.Commands
                 var nomeProjeto = document.Window.Text;
                 var especificacoes = ArquivoCSV.GetEspecificacao();
                 var dadosRelatorio = GetDadosRelatorio(nomeProjeto);
-                double qtdParafuso = 0;
+                int fatorTpRelatorio = tipoLista == TipoLista.ListaCorte ? 2 : 1;
 
                 if (dadosRelatorio == null)
                 {
@@ -825,10 +828,15 @@ namespace ColunaPronta.Commands
                 double startX = 0;
                 double startY = 0;
                 double distancia = 0;
-                var listaParafuso = new List<Double>();
+                var listaParafuso = new List<Parafuso>();
+                var listaCantoneiraViga = new List<Cantoneira>();
+                double qtdCantoneira3Furos = 0;
+                int qtdCantoneira1Furo  = 0;
+                double qtdColunaPassante   = 0;
 
                 foreach (ItemRelatorio item in dadosRelatorio)
                 {
+                   
                     var coluna = IntegraLayout.GetLayout(item.iColuna, nomeProjeto);
                     coluna.Largura = item.Largura;
                     coluna.Comprimento = item.Comprimento;
@@ -836,6 +844,7 @@ namespace ColunaPronta.Commands
                     coluna.DiametroSapata = item.DiametroSapata;
                     coluna.DiametroParafuso = item.DiametroParafuso;
                     var pontosColuna = AddEstruturaColuna(null, new Point2d(startX, startY - (distancia / _escala)), item.Largura, item.Comprimento);
+                    int iqtdParafuso = 0; 
 
                     coluna.SetPontos(pontosColuna);
 
@@ -861,29 +870,77 @@ namespace ColunaPronta.Commands
                         listaSapata.Add(sapata);
                     }
                     if (coluna.SapataD)
-                    {
+                    { 
                         var sapata = GetSapata(new Point2d(coluna.PointC.X, coluna.PointC.Y), new Point2d(coluna.PointD.X, coluna.PointD.Y));
                         sapata.Chumbador = coluna.DiametroSapata;
                         sapata.Quantidade = item.QtdeColuna;
                         listaSapata.Add(sapata);
                     }
 
-                    if (coluna.ParafusoA) { listaParafuso.Add(coluna.DiametroParafuso); qtdParafuso = qtdParafuso + ( coluna.QuantidadeParafuso * item.QtdeColuna);}
-                    if (coluna.ParafusoB) { listaParafuso.Add(coluna.DiametroParafuso); qtdParafuso = qtdParafuso + ( coluna.QuantidadeParafuso * item.QtdeColuna);}
-                    if (coluna.ParafusoC) { listaParafuso.Add(coluna.DiametroParafuso); qtdParafuso = qtdParafuso + ( coluna.QuantidadeParafuso * item.QtdeColuna);}
-                    if (coluna.ParafusoD) { listaParafuso.Add(coluna.DiametroParafuso); qtdParafuso = qtdParafuso + ( coluna.QuantidadeParafuso * item.QtdeColuna);}
-                    if (coluna.ParafusoE) { listaParafuso.Add(coluna.DiametroParafuso); qtdParafuso = qtdParafuso + ( coluna.QuantidadeParafuso * item.QtdeColuna);}
-                    if (coluna.ParafusoF) { listaParafuso.Add(coluna.DiametroParafuso); qtdParafuso = qtdParafuso + ( coluna.QuantidadeParafuso * item.QtdeColuna);}
-                    if (coluna.ParafusoG) { listaParafuso.Add(coluna.DiametroParafuso); qtdParafuso = qtdParafuso + ( coluna.QuantidadeParafuso * item.QtdeColuna);}
-                    if (coluna.ParafusoH) { listaParafuso.Add(coluna.DiametroParafuso); qtdParafuso = qtdParafuso + ( coluna.QuantidadeParafuso * item.QtdeColuna); }
+                    if (coluna.ParafusoA) { iqtdParafuso ++; item.bPassante = false; }
+                    if (coluna.ParafusoB) { iqtdParafuso ++; item.bPassante = false; }
+                    if (coluna.ParafusoC) { iqtdParafuso ++; item.bPassante = false; }
+                    if (coluna.ParafusoD) { iqtdParafuso ++; item.bPassante = false; }
+                    if (coluna.ParafusoE) { iqtdParafuso ++; item.bPassante = false; }
+                    if (coluna.ParafusoF) { iqtdParafuso ++; item.bPassante = false; }
+                    if (coluna.ParafusoG) { iqtdParafuso ++; item.bPassante = false; }
+                    if (coluna.ParafusoH) { iqtdParafuso ++; item.bPassante = false; }
+
+                    var parafuso = new Parafuso
+                    {
+                        Quantidade = iqtdParafuso * item.QtdeParafuso,
+                        Diametro = coluna.DiametroParafuso
+                    };
+
+                    listaParafuso.Add(parafuso);
+
+                    if (coluna.eleAmarelo)  { qtdCantoneira1Furo++;  item.bPassante = true; }
+                    if (coluna.eleAzul)     { qtdCantoneira1Furo++;  item.bPassante = true; }
+                    if (coluna.eleCinza)    { qtdCantoneira1Furo++;  item.bPassante = true; }
+                    if (coluna.eleVermelho) { qtdCantoneira1Furo++;  item.bPassante = true; }
+                    if (coluna.PassanteA)   
+                    { 
+                        qtdCantoneira3Furos += item.QtdeColuna; item.bPassante = true; 
+                    }
+                    if (coluna.PassanteB)   
+                    { 
+                        qtdCantoneira3Furos += item.QtdeColuna; item.bPassante = true; 
+                    }
+                    if (coluna.PassanteD)  
+                    { 
+                        qtdCantoneira3Furos += item.QtdeColuna; item.bPassante = true; 
+                    }
+                    if (coluna.PassanteC)  
+                    { 
+                        qtdCantoneira3Furos += item.QtdeColuna; item.bPassante = true; 
+                    }
+
                 }
 
                 var arquivoExcel =new  List<Planilha>();
 
-                var especificacaoColuna = (from item in especificacoes
-                                              where item.Peca == "coluna"
-                                              select item.Nomenclatura).FirstOrDefault();
+                #region >> Dados Coluna
+                var especificacaoColuna = (  from item in especificacoes
+                                                 where item.Peca == "COLUNA"
+                                              select new Especificao
+                                              {
+                                                  Peca =item.Peca,
+                                                  Descricao =item.Descricao,
+                                                  Nomenclatura = item.Nomenclatura,
+                                                  Observacao = item.Observacao   
+                                              }
+                                           ).FirstOrDefault();
 
+                var especificacaoColunaPassante =  (  from item in especificacoes
+                                                      where item.Peca == "COLUNAPASSANTE"
+                                                   select new Especificao
+                                                   {
+                                                       Peca =item.Peca,
+                                                       Descricao =item.Descricao,
+                                                       Nomenclatura = item.Nomenclatura,
+                                                       Observacao = item.Observacao   
+                                                   }
+                                                ).FirstOrDefault();
 
                 var relatorioColuna = (from item in dadosRelatorio
                                  group item by new
@@ -891,14 +948,16 @@ namespace ColunaPronta.Commands
                                      item.Altura,
                                      item.Comprimento,
                                      item.Largura,
-                                     item.Enrijecedor
+                                     item.Enrijecedor,
+                                     item.bPassante
                                  } into c
                                  select new ItemRelatorio
                                  {
                                      Altura = c.Key.Altura,
                                      Comprimento = c.Key.Comprimento,
-                                     Largura = c.Key.Largura / 2,
+                                     Largura = c.Key.Largura / fatorTpRelatorio,
                                      Enrijecedor = c.Key.Enrijecedor,
+                                     bPassante = c.Key.bPassante
                                  }).ToList();
 
 
@@ -906,16 +965,52 @@ namespace ColunaPronta.Commands
                 {
                     var qtde = (from coluna in dadosRelatorio
                                 where coluna.Comprimento == item.Comprimento &&
-                                      coluna.Largura == item.Largura *2
+                                      coluna.Largura == item.Largura * fatorTpRelatorio &&
+                                      coluna.bPassante == item.bPassante
                                 select coluna.QtdeColuna).Sum();
 
+          
+                    if (item.bPassante)
+                    {
+                        var iAlturaViga = (from coluna in dadosRelatorio
+                                           where coluna.Comprimento == item.Comprimento &&
+                                                 coluna.Largura == item.Largura * fatorTpRelatorio &&
+                                                 coluna.bPassante == item.bPassante
+                                           select coluna.AlturaViga).FirstOrDefault();
+
+                        var alturaviga = new Cantoneira { 
+                            AlturaViga = iAlturaViga == 0 ? 1 : iAlturaViga,
+                            Quantidade = qtde
+                        };
+                        listaCantoneiraViga.Add(alturaviga);
+                        qtdColunaPassante = qtdColunaPassante + qtde;
+                    }
+
                     var linha = new Planilha();
-                    linha.Item = "Coluna";
-                    linha.Especificao = string.Concat(especificacaoColuna.ToString(), " ", item.Comprimento.ToString("N2"), " x ", item.Largura.ToString("N2"), "x 2,0");
+                    linha.Item = item.bPassante ? especificacaoColunaPassante.Descricao.ToString() : especificacaoColuna.Descricao.ToString();
+                    linha.Especificao = item.bPassante ? string.Concat(especificacaoColunaPassante.Nomenclatura.ToString(), " ", item.Comprimento.ToString("N2"), " x ", item.Largura.ToString("N2"), "x 2,0") 
+                                                       : string.Concat(especificacaoColuna.Nomenclatura.ToString(), " ", item.Comprimento.ToString("N2"), " x ", item.Largura.ToString("N2"), "x 2,0")
+                                                       ;
+                              
                     linha.Comprimento= item.Altura.ToString("N2");
-                    linha.Quantidade = qtde *2;
+                    linha.Quantidade = qtde * fatorTpRelatorio;
+                    linha.Observacao = item.bPassante ? especificacaoColunaPassante.Observacao.ToString() : especificacaoColuna.Observacao.ToString();
                     arquivoExcel.Add(linha);
                 }
+
+                #endregion
+
+                #region >> Dados Sapata
+
+                var especificacaoSapata = (from item in especificacoes
+                                           where item.Peca == "SAPATA"
+                                           select new Especificao
+                                           {
+                                               Peca = item.Peca,
+                                               Descricao = item.Descricao,
+                                               Nomenclatura = item.Nomenclatura,
+                                               Observacao = item.Observacao
+                                           }).FirstOrDefault();
 
                 var relatorioSapata = (from item in listaSapata
                                        group item by new
@@ -929,23 +1024,7 @@ namespace ColunaPronta.Commands
                                        }).ToList();
 
 
-
-                var qtdeChumbador = listaSapata.Count();
-                var especificacaoChumbador = (  from item in especificacoes
-                                      where item.Peca == "chumbador"
-                                     select item.Nomenclatura).FirstOrDefault();
-
-                var linhaChumbador = new Planilha();
-                linhaChumbador.Item = "Chumbador";
-                linhaChumbador.Especificao = especificacaoChumbador.ToString();
-                linhaChumbador.Comprimento = "-";
-                linhaChumbador.Quantidade = qtdeChumbador;
-                arquivoExcel.Add(linhaChumbador);
-
-                var especificacaoSapata = (from item in especificacoes
-                                             where item.Peca == "sapata"
-                                             select item.Nomenclatura).FirstOrDefault();
-
+                double qtdeChumbador = 0;
                 foreach (Sapata item in relatorioSapata)
                 {
                     var qtde = (from sapata in listaSapata
@@ -953,33 +1032,143 @@ namespace ColunaPronta.Commands
                                 select sapata.Quantidade).Sum();
 
                     var linha = new Planilha();
-                    linha.Item = "Sapata";
+                    linha.Item        = especificacaoSapata.Descricao.ToUpper();
                     linha.Comprimento = item.Comprimento.ToString("N2");
-                    linha.Quantidade = qtde;
-                    linha.Especificao = especificacaoSapata.ToString();
+                    linha.Quantidade  = qtde;
+                    linha.Especificao = especificacaoSapata.Nomenclatura.ToUpper();
+                    linha.Observacao = especificacaoSapata.Observacao.ToUpper();
                     arquivoExcel.Add(linha);
+
+                    qtdeChumbador = qtdeChumbador + qtde;
                 }
 
-                var relatorioParafuso = listaParafuso.GroupBy( parafuso => parafuso)
-                                                              .Select(parafuso => new Parafuso
-                                                              {
-                                                                  Diametro = Convert.ToDouble(parafuso.Key),
-                                                                  Quantidade = parafuso.Count()
-                                                              }).ToList();
+                var especificacaoChumbador = (from item in especificacoes
+                                              where item.Peca == "CHUMBADOR"
+                                              select new Especificao
+                                              {
+                                                  Peca = item.Peca,
+                                                  Descricao = item.Descricao,
+                                                  Nomenclatura = item.Nomenclatura,
+                                                  Observacao = item.Observacao
+                                              }).FirstOrDefault();
+
+                var linhaChumbador = new Planilha();
+                linhaChumbador.Item = especificacaoChumbador.Descricao.ToUpper();
+                linhaChumbador.Especificao = especificacaoChumbador.Nomenclatura.ToString();
+                linhaChumbador.Comprimento = "-";
+                linhaChumbador.Quantidade = qtdeChumbador;
+                linhaChumbador.Observacao = especificacaoChumbador.Observacao.ToString();
+                arquivoExcel.Add(linhaChumbador);
+
+                #endregion
+
+                #region >> Dados Parafuso
+
+                var qtdParafuso = (from item in listaParafuso
+                                         select item.Quantidade
+                                          ).Sum();
 
                 var especificacaoParafuso = (from item in especificacoes
-                                              where item.Peca == "parafuso"
-                                              select item.Nomenclatura).FirstOrDefault();
+                                             where item.Peca == "PARAFUSO"
+                                             select new Especificao
+                                             {
+                                                 Peca = item.Peca,
+                                                 Descricao = item.Descricao,
+                                                 Nomenclatura = item.Nomenclatura,
+                                                 Observacao = item.Observacao
+                                             }).FirstOrDefault();
 
-                foreach (Parafuso item in relatorioParafuso)
+                var linhaParafuso = new Planilha();
+                linhaParafuso.Item = especificacaoParafuso.Descricao.ToUpper();
+                linhaParafuso.Especificao = especificacaoParafuso.Nomenclatura.ToString();
+                linhaParafuso.Comprimento = "";
+                linhaParafuso.Quantidade = qtdParafuso;
+                linhaParafuso.Observacao = especificacaoParafuso.Observacao.ToUpper();
+                arquivoExcel.Add(linhaParafuso);
+
+                #endregion
+
+                #region >> Dados Passante
+
+                if (listaCantoneiraViga.Count > 0)
                 {
-                    var linha = new Planilha();
-                    linha.Item = "Parafuso";
-                    linha.Especificao = especificacaoParafuso.ToString();
-                    linha.Comprimento = "";
-                    linha.Quantidade = qtdParafuso;
-                    arquivoExcel.Add(linha);
+                    var especificacaoCantoneira = (from item in especificacoes
+                                                   where item.Peca == "CANTONEIRA"
+                                                   select new Especificao
+                                                   {
+                                                       Peca = item.Peca,
+                                                       Descricao = item.Descricao,
+                                                       Nomenclatura = item.Nomenclatura,
+                                                       Observacao = item.Observacao
+                                                   }).FirstOrDefault();
+
+                    var linhaCantoneira3 = new Planilha();
+                    linhaCantoneira3.Item = especificacaoCantoneira.Descricao.ToUpper() ;
+                    linhaCantoneira3.Especificao = especificacaoCantoneira.Nomenclatura.ToUpper();
+                    linhaCantoneira3.Comprimento = "";
+                    linhaCantoneira3.Quantidade = qtdCantoneira3Furos;
+                    linhaCantoneira3.Observacao = especificacaoCantoneira.Observacao.ToUpper();
+                    arquivoExcel.Add(linhaCantoneira3);
+
+
+                    var especificacaoAutobrocante = (from item in especificacoes
+                                                     where item.Peca == "AUTOBROCANTE"
+                                                     select new Especificao
+                                                     {
+                                                         Peca = item.Peca,
+                                                         Descricao = item.Descricao,
+                                                         Nomenclatura = item.Nomenclatura,
+                                                         Observacao = item.Observacao
+                                                     }).FirstOrDefault();
+
+                    var linhaAutobrocante = new Planilha();
+                    linhaAutobrocante.Item = especificacaoAutobrocante.Descricao.ToUpper();
+                    linhaAutobrocante.Especificao = especificacaoCantoneira.Nomenclatura.ToString();
+                    linhaAutobrocante.Comprimento = "";
+                    linhaAutobrocante.Quantidade = qtdColunaPassante * 7;
+                    linhaAutobrocante.Observacao = especificacaoCantoneira.Observacao.ToString();
+                    arquivoExcel.Add(linhaAutobrocante);
+
+                    var relatorioCantoneira = (from item in listaCantoneiraViga
+                                               group item by new
+                                               {
+                                                   item.AlturaViga,
+                                               } into c
+                                               select new Cantoneira
+                                               {
+                                                   AlturaViga = c.Key.AlturaViga,
+                                                   Quantidade = c.Count()
+                                               }).ToList();
+
+                    var especificacaoCantoneiraPassante = (from item in especificacoes
+                                                   where item.Peca == "CANTONEIRAPASSANTE"
+                                                   select new Especificao
+                                                   {
+                                                       Peca = item.Peca,
+                                                       Descricao = item.Descricao,
+                                                       Nomenclatura = item.Nomenclatura,
+                                                       Observacao = item.Observacao
+                                                   }).FirstOrDefault();
+
+                    foreach (Cantoneira item in relatorioCantoneira)
+                    {
+                        var quantidade = (from lista in listaCantoneiraViga
+                                          where item.AlturaViga == lista.AlturaViga
+                                          select lista.Quantidade).Sum();
+
+
+                        var linha = new Planilha();
+                        linha.Item = especificacaoCantoneiraPassante.Descricao.ToUpper();
+                        linha.Especificao = especificacaoCantoneiraPassante.Nomenclatura.ToUpper();
+                        linha.Comprimento = (item.AlturaViga + 200).ToString("N2");
+                        linha.Quantidade = item.Quantidade * quantidade;
+                        linha.Observacao = especificacaoCantoneiraPassante.Observacao.ToUpper();
+                        arquivoExcel.Add(linha);
+                    }
+
                 }
+
+                #endregion
 
                 GeraArquivoExcel(arquivoExcel, nomeProjeto, tipoLista);
 
@@ -1034,10 +1223,11 @@ namespace ColunaPronta.Commands
                 foreach (var linha in arquivoExcel)
                 {
                     row++;
-                    workSheet.Cells[row, "B"] = linha.Item;
-                    workSheet.Cells[row, "E"] = linha.Especificao;
+                    workSheet.Cells[row, "B"] = linha.Item.ToUpper();
+                    workSheet.Cells[row, "E"] = linha.Especificao.ToUpper();
                     workSheet.Cells[row, "G"] = linha.Comprimento;
                     workSheet.Cells[row, "H"] = linha.Quantidade;
+                    workSheet.Cells[row, "I"] = linha.Observacao.ToUpper();
                 }
             }
             else
@@ -1045,13 +1235,17 @@ namespace ColunaPronta.Commands
                 var row = 9;
                 foreach (var linha in arquivoExcel)
                 {
-                    if(linha.Item == "Sapata" || linha.Item == "Coluna")
+                    if( linha.Item.ToUpper() == ("Coluna"              ).ToUpper()|| 
+                        linha.Item.ToUpper() == ("Coluna Passante"     ).ToUpper()||
+                        linha.Item.ToUpper() == ("Cantoneira Passante" ).ToUpper()||
+                        linha.Item.ToUpper() == ("Cantoneira 3 FUROS"  ).ToUpper()
+                        )
                     {
                         row++;
-                        workSheet.Cells[row, "C"] = linha.Especificao;
+                        workSheet.Cells[row, "C"] = linha.Especificao.ToUpper();
                         workSheet.Cells[row, "D"] = linha.Comprimento;
                         workSheet.Cells[row, "E"] = linha.Quantidade;
-                        workSheet.Cells[row, "F"] = linha.Item;
+                        workSheet.Cells[row, "F"] = linha.Item.ToUpper();
                     }
                 }
             }         
