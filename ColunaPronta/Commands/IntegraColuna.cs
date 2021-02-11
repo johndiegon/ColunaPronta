@@ -289,6 +289,7 @@ namespace ColunaPronta.Commands
             coluna.eleVermelho = layout.eleVermelho;
             coluna.eleAzul = layout.eleAzul;
             coluna.eleCinza = layout.eleCinza;
+            coluna.AlturaViga = layout.AlturaViga;
 
             AddColuna(coluna, true);
         }
@@ -762,30 +763,13 @@ namespace ColunaPronta.Commands
 
                         AddColuna(coluna, false);
 
-                        //var textoDescricao = string.Concat("C", coluna.iColuna.ToString(), " - "
-                        //                                  , coluna.Comprimento.ToString("N2"), "x"
-                        //                                  , coluna.Largura.ToString("N2"), "x"
-                        //                                  , coluna.Altura.ToString("N2"), "mm - "
-                        //                                  , "\n Diametro do Parafuso: ", item.DiametroParafuso.ToString(), ""
-                        //                                  , "\n Diametro do Sapata: ", item.DiametroSapata.ToString(), " - "
-                        //                                   , "\n Quantidade de parafusos: ", item.QtdeParafuso.ToString(), " - "
-                        //                                  , "\n Quantidade de Colunas: "
-                        //                                  , item.QtdeColuna.ToString(), ""
-                        //                                  , item.QtdeColuna == 1 ? " unidade." : " unidades."
-                        //                                  );
-
                         var textoDescricao = string.Concat("C", coluna.iColuna.ToString(), " - "
                                                        , coluna.Comprimento.ToString("N2"), " x "
                                                        , coluna.Largura.ToString("N2"), " x "
                                                        , coluna.Altura.ToString("N2"), " mm - "
-                                                       //, "\n Diametro do Parafuso: ", item.DiametroParafuso.ToString(), ""
-                                                       //, "\n Diametro do Sapata: ", item.DiametroSapata.ToString(), " - "
-                                                       // , "\n Quantidade de parafusos: ", item.QtdeParafuso.ToString(), " - "
-                                                       //, "\n Quantidade de Colunas: "
                                                        , item.QtdeColuna.ToString(), ""
                                                        , item.QtdeColuna == 1 ? " unidade." : " unidades."
                                                        );
-
                         Helpers.AddTexto(document
                                         , new Point3d(startX + ((item.Largura + 60) / _escala), startY - ((50 + distancia) / _escala), 0)
                                         , textoDescricao
@@ -888,7 +872,7 @@ namespace ColunaPronta.Commands
 
                     var parafuso = new Parafuso
                     {
-                        Quantidade = iqtdParafuso * item.QtdeParafuso,
+                        Quantidade = iqtdParafuso * item.QtdeParafuso * item.QtdeColuna,
                         Diametro = coluna.DiametroParafuso
                     };
 
@@ -980,13 +964,14 @@ namespace ColunaPronta.Commands
 
                         var alturaviga = new Cantoneira { 
                             AlturaViga = iAlturaViga == 0 ? 1 : iAlturaViga,
-                            Quantidade = qtde
+                            Quantidade = qtde * 2
                         };
                         listaCantoneiraViga.Add(alturaviga);
                         qtdColunaPassante = qtdColunaPassante + qtde;
                     }
 
                     var linha = new Planilha();
+                    linha.Peca = item.bPassante ? especificacaoColunaPassante.Peca.ToString() : especificacaoColuna.Peca.ToString();
                     linha.Item = item.bPassante ? especificacaoColunaPassante.Descricao.ToString() : especificacaoColuna.Descricao.ToString();
                     linha.Especificao = item.bPassante ? string.Concat(especificacaoColunaPassante.Nomenclatura.ToString(), " ", item.Comprimento.ToString("N2"), " x ", item.Largura.ToString("N2"), "x 2,0") 
                                                        : string.Concat(especificacaoColuna.Nomenclatura.ToString(), " ", item.Comprimento.ToString("N2"), " x ", item.Largura.ToString("N2"), "x 2,0")
@@ -1032,6 +1017,7 @@ namespace ColunaPronta.Commands
                                 select sapata.Quantidade).Sum();
 
                     var linha = new Planilha();
+                    linha.Peca        = especificacaoSapata.Peca.ToUpper();
                     linha.Item        = especificacaoSapata.Descricao.ToUpper();
                     linha.Comprimento = item.Comprimento.ToString("N2");
                     linha.Quantidade  = qtde;
@@ -1053,6 +1039,7 @@ namespace ColunaPronta.Commands
                                               }).FirstOrDefault();
 
                 var linhaChumbador = new Planilha();
+                linhaChumbador.Peca = especificacaoChumbador.Peca.ToUpper();
                 linhaChumbador.Item = especificacaoChumbador.Descricao.ToUpper();
                 linhaChumbador.Especificao = especificacaoChumbador.Nomenclatura.ToString();
                 linhaChumbador.Comprimento = "-";
@@ -1079,6 +1066,7 @@ namespace ColunaPronta.Commands
                                              }).FirstOrDefault();
 
                 var linhaParafuso = new Planilha();
+                linhaParafuso.Peca = especificacaoParafuso.Peca.ToUpper();
                 linhaParafuso.Item = especificacaoParafuso.Descricao.ToUpper();
                 linhaParafuso.Especificao = especificacaoParafuso.Nomenclatura.ToString();
                 linhaParafuso.Comprimento = "";
@@ -1103,6 +1091,7 @@ namespace ColunaPronta.Commands
                                                    }).FirstOrDefault();
 
                     var linhaCantoneira3 = new Planilha();
+                    linhaCantoneira3.Peca = especificacaoCantoneira.Peca.ToUpper();
                     linhaCantoneira3.Item = especificacaoCantoneira.Descricao.ToUpper() ;
                     linhaCantoneira3.Especificao = especificacaoCantoneira.Nomenclatura.ToUpper();
                     linhaCantoneira3.Comprimento = "";
@@ -1122,6 +1111,7 @@ namespace ColunaPronta.Commands
                                                      }).FirstOrDefault();
 
                     var linhaAutobrocante = new Planilha();
+                    linhaAutobrocante.Peca = especificacaoAutobrocante.Peca.ToUpper();
                     linhaAutobrocante.Item = especificacaoAutobrocante.Descricao.ToUpper();
                     linhaAutobrocante.Especificao = especificacaoCantoneira.Nomenclatura.ToString();
                     linhaAutobrocante.Comprimento = "";
@@ -1158,6 +1148,7 @@ namespace ColunaPronta.Commands
 
 
                         var linha = new Planilha();
+                        linha.Peca = especificacaoCantoneiraPassante.Peca.ToUpper();
                         linha.Item = especificacaoCantoneiraPassante.Descricao.ToUpper();
                         linha.Especificao = especificacaoCantoneiraPassante.Nomenclatura.ToUpper();
                         linha.Comprimento = (item.AlturaViga + 200).ToString("N2");
@@ -1222,12 +1213,20 @@ namespace ColunaPronta.Commands
                 var row = 18;
                 foreach (var linha in arquivoExcel)
                 {
-                    row++;
-                    workSheet.Cells[row, "B"] = linha.Item.ToUpper();
-                    workSheet.Cells[row, "E"] = linha.Especificao.ToUpper();
-                    workSheet.Cells[row, "G"] = linha.Comprimento;
-                    workSheet.Cells[row, "H"] = linha.Quantidade;
-                    workSheet.Cells[row, "I"] = linha.Observacao.ToUpper();
+                    if(
+                        linha.Peca.ToUpper() != ("CANTONEIRA").ToUpper() &&
+                        linha.Peca.ToUpper() != ("SAPATA").ToUpper() &&
+                        linha.Peca.ToUpper() != ("cantoneirapassante").ToUpper()
+                        )
+                    {
+                        row++;
+                        workSheet.Cells[row, "B"] = linha.Item.ToUpper();
+                        workSheet.Cells[row, "E"] = linha.Especificao.ToUpper();
+                        workSheet.Cells[row, "G"] = linha.Comprimento;
+                        workSheet.Cells[row, "H"] = linha.Quantidade;
+                        workSheet.Cells[row, "I"] = linha.Observacao.ToUpper();
+                    }
+              
                 }
             }
             else
@@ -1235,10 +1234,13 @@ namespace ColunaPronta.Commands
                 var row = 9;
                 foreach (var linha in arquivoExcel)
                 {
-                    if( linha.Item.ToUpper() == ("Coluna"              ).ToUpper()|| 
-                        linha.Item.ToUpper() == ("Coluna Passante"     ).ToUpper()||
-                        linha.Item.ToUpper() == ("Cantoneira Passante" ).ToUpper()||
-                        linha.Item.ToUpper() == ("Cantoneira 3 FUROS"  ).ToUpper()
+                    if( linha.Peca.ToUpper() == ("Coluna"              ).ToUpper()|| 
+                        linha.Peca.ToUpper() == ("colunaPassante").ToUpper()||
+                        linha.Peca.ToUpper() == ("CANTONEIRA").ToUpper()||
+                        linha.Peca.ToUpper() == ("SAPATA").ToUpper()  ||
+                        linha.Peca.ToUpper() == ("cantoneirapassante").ToUpper()
+
+
                         )
                     {
                         row++;

@@ -13,6 +13,7 @@ namespace ColunaPronta.Model
         public string Comprimento { get; set; }
         public string Observacao { get; set; }
         public double Quantidade { get; set; }
+        public string Peca { get; set; }
         public String Perfil { get; set; }
 
     }
