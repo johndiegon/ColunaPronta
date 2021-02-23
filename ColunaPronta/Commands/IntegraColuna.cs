@@ -814,6 +814,7 @@ namespace ColunaPronta.Commands
                 double distancia = 0;
                 var listaParafuso = new List<Parafuso>();
                 var listaCantoneiraViga = new List<Cantoneira>();
+                var listaCantoneira3Furos = new List<Cantoneira>();
                 double qtdCantoneira3Furos = 0;
                 int qtdCantoneira1Furo  = 0;
                 double qtdColunaPassante   = 0;
@@ -860,7 +861,7 @@ namespace ColunaPronta.Commands
                         sapata.Quantidade = item.QtdeColuna;
                         listaSapata.Add(sapata);
                     }
-
+            
                     if (coluna.ParafusoA) { iqtdParafuso ++; item.bPassante = false; }
                     if (coluna.ParafusoB) { iqtdParafuso ++; item.bPassante = false; }
                     if (coluna.ParafusoC) { iqtdParafuso ++; item.bPassante = false; }
@@ -884,19 +885,67 @@ namespace ColunaPronta.Commands
                     if (coluna.eleVermelho) { qtdCantoneira1Furo++;  item.bPassante = true; }
                     if (coluna.PassanteA)   
                     { 
-                        qtdCantoneira3Furos += item.QtdeColuna; item.bPassante = true; 
+                        qtdCantoneira3Furos += item.QtdeColuna; item.bPassante = true;
+                        
+                        var point1 = new Point2d(coluna.PointB.X, coluna.PointB.Y);
+                        var point2 = new Point2d(coluna.PointD.X, coluna.PointD.Y);
+                        var comprimento = point1.GetDistanceTo(point2);
+                        var cantoneira = new Cantoneira
+                        {
+                            Comprimento = ( comprimento * _escala) - distanciaSapata,
+                            Quantidade = item.QtdeColuna
+                        };
+                        listaCantoneira3Furos.Add(cantoneira);
+
                     }
                     if (coluna.PassanteB)   
                     { 
-                        qtdCantoneira3Furos += item.QtdeColuna; item.bPassante = true; 
-                    }
-                    if (coluna.PassanteD)  
-                    { 
-                        qtdCantoneira3Furos += item.QtdeColuna; item.bPassante = true; 
+                        qtdCantoneira3Furos += item.QtdeColuna; item.bPassante = true;
+
+                        var point1 = new Point2d(coluna.PointA.X, coluna.PointA.Y);
+                        var point2 = new Point2d(coluna.PointB.X, coluna.PointB.Y);
+                        var comprimento = point1.GetDistanceTo(point2);
+                        var cantoneira = new Cantoneira
+                        {
+                            Comprimento = (comprimento * _escala) - distanciaSapata,
+                            Quantidade = item.QtdeColuna
+
+                        };
+                        listaCantoneira3Furos.Add(cantoneira);
+
                     }
                     if (coluna.PassanteC)  
                     { 
-                        qtdCantoneira3Furos += item.QtdeColuna; item.bPassante = true; 
+                        qtdCantoneira3Furos += item.QtdeColuna; item.bPassante = true;
+                        var point1 = new Point2d(coluna.PointB.X, coluna.PointB.Y);
+                        var point2 = new Point2d(coluna.PointD.X, coluna.PointD.Y);
+                        var comprimento = point1.GetDistanceTo(point2);
+                        var cantoneira = new Cantoneira
+                        {
+                            Comprimento = (comprimento * _escala) - distanciaSapata,
+                            Quantidade = item.QtdeColuna
+
+                        };
+                        listaCantoneira3Furos.Add(cantoneira);
+
+                    }
+                    if (coluna.PassanteD)  
+                    { 
+                        qtdCantoneira3Furos += item.QtdeColuna; item.bPassante = true;
+
+                        var point1 = new Point2d(coluna.PointC.X, coluna.PointC.Y);
+                        var point2 = new Point2d(coluna.PointD.X, coluna.PointD.Y);
+                        var comprimento = point1.GetDistanceTo(point2);
+
+                        var cantoneira = new Cantoneira
+                        {
+                            Comprimento = (comprimento * _escala) - distanciaSapata,
+                            Quantidade = item.QtdeColuna
+
+                        };
+
+                        listaCantoneira3Furos.Add(cantoneira);
+
                     }
 
                 }
@@ -1090,15 +1139,31 @@ namespace ColunaPronta.Commands
                                                        Observacao = item.Observacao
                                                    }).FirstOrDefault();
 
-                    var linhaCantoneira3 = new Planilha();
-                    linhaCantoneira3.Peca = especificacaoCantoneira.Peca.ToUpper();
-                    linhaCantoneira3.Item = especificacaoCantoneira.Descricao.ToUpper() ;
-                    linhaCantoneira3.Especificao = especificacaoCantoneira.Nomenclatura.ToUpper();
-                    linhaCantoneira3.Comprimento = "";
-                    linhaCantoneira3.Quantidade = qtdCantoneira3Furos;
-                    linhaCantoneira3.Observacao = especificacaoCantoneira.Observacao.ToUpper();
-                    arquivoExcel.Add(linhaCantoneira3);
+                    var relatorioCantoneira3Furos = (from item in listaCantoneira3Furos
+                                               group item by new
+                                               {
+                                                   item.Comprimento,
+                                               } into c
+                                               select new Cantoneira
+                                               {
+                                                   Comprimento = c.Key.Comprimento  ,
+                                               }).ToList();
 
+                    foreach (Cantoneira item in relatorioCantoneira3Furos)
+                    {
+                        var quantidade = (from lista in listaCantoneira3Furos
+                                          where item.Comprimento == lista.Comprimento
+                                          select lista.Quantidade).Sum();
+
+                        var linha = new Planilha();
+                        linha.Peca = especificacaoCantoneira.Peca.ToUpper();
+                        linha.Item = especificacaoCantoneira.Descricao.ToUpper();
+                        linha.Especificao = especificacaoCantoneira.Nomenclatura.ToUpper();
+                        linha.Comprimento = ( item.Comprimento ).ToString("N2");
+                        linha.Quantidade = quantidade;
+                        linha.Observacao = especificacaoCantoneira.Observacao.ToUpper();
+                        arquivoExcel.Add(linha);
+                    }
 
                     var especificacaoAutobrocante = (from item in especificacoes
                                                      where item.Peca == "AUTOBROCANTE"
