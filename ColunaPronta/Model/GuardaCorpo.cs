@@ -1,4 +1,5 @@
 ﻿using Autodesk.AutoCAD.Geometry;
+using ColunaPronta.Helper;
 using Newtonsoft.Json;
 using NLog.Config;
 using System;
@@ -23,11 +24,10 @@ namespace ColunaPronta.Model
         public Point2d PontoB { get; set; }
         public bool bPosteInicial { get; set; }
         public bool bPosteFinal { get; set; }
-        public List<Poste> Postes { get; set; }
+        public List<Retangulo> Postes { get; set; }
         public List<GuardaCorpoFilho> GuardaCorpos { get; set; }
         public Posicao Posicao { get; set; }
         public Settings Settings { get; set; }
-
         public GuardaCorpo(Point2d point1 , Point2d point2)
         {
             this.Settings = GetSettings();
@@ -41,18 +41,25 @@ namespace ColunaPronta.Model
             bVertical = point1.Y == point2.Y ? true : false;
 
             Largura = point1.GetDistanceTo(point2);
-        }
 
-        private void CriaGuardaCorpo()
+            SetGuardaCorpo();
+        }
+        private void SetGuardaCorpo()
         {
             var comprimentoRestante = this.Comprimento;
             var X = this.PontoInicio.X;
             var Y = this.PontoInicio.Y;
+            var posicaoPoste = Posicao.Horizontal;
+
+            if (this.Posicao == Posicao.VoltadoBaixo || this.Posicao == Posicao.VoltadoCima)
+            {
+                posicaoPoste = Posicao.Vertical;
+            }
 
             if (this.bPosteInicial)
             {
 
-                var poste = GetPoste(new Point2d(X, Y), this.Posicao);
+                var poste = new Retangulo(this.Settings.PosteLargura, this.Settings.PosteComprimento, new Point2d(X, Y), posicaoPoste);
 
                 this.Postes.Add(poste);
                 comprimentoRestante = comprimentoRestante - this.Settings.PosteComprimento;
@@ -64,20 +71,14 @@ namespace ColunaPronta.Model
                 {
                     var comprimento = bPosteFinal ? comprimentoRestante - this.Settings.PosteComprimento : comprimentoRestante;
 
-                    var guardaCorpo = new GuardaCorpoFilho
-                    {
-                        Altura = this.Settings.Altura,
-                        PontoA = this.bVertical ? new Point2d(X, Y) : new Point2d(X, Y),
-                        PontoB = this.bVertical ? new Point2d(X, Y) : new Point2d(X, Y),
-                        PontoC = this.bVertical ? new Point2d(X, Y) : new Point2d(X, Y),
-                        PontoD = this.bVertical ? new Point2d(X, Y) : new Point2d(X, Y),
-                    };
-
+                    var guardaCorpo = new GuardaCorpoFilho(this.Settings.Largura, comprimento,  new Point2d( X, Y), this.Posicao);
+                    
                     if(bPosteFinal)
                     {
-                        var poste = GetPoste(new Point2d(X, Y), this.Posicao);
+                        var poste = new Retangulo(this.Settings.PosteLargura, this.Settings.PosteComprimento, new Point2d(X, Y), posicaoPoste);
 
                         this.Postes.Add(poste);
+                        comprimentoRestante = comprimentoRestante - this.Settings.PosteComprimento;
                     }
 
                     this.GuardaCorpos.Add(guardaCorpo);
@@ -87,147 +88,14 @@ namespace ColunaPronta.Model
                 {
                     var comprimento = this.Settings.ComprimentoPadrao;
 
-                    var guardaCorpo = new GuardaCorpoFilho
-                    {
-                        Altura = this.Settings.Altura,
-                        PontoA = this.bVertical ? new Point2d(X, Y) : new Point2d(X, Y),
-                        PontoB = this.bVertical ? new Point2d(X, Y) : new Point2d(X, Y),
-                        PontoC = this.bVertical ? new Point2d(X, Y) : new Point2d(X, Y),
-                        PontoD = this.bVertical ? new Point2d(X, Y) : new Point2d(X, Y),
-                    };
+                    var guardaCorpo = new GuardaCorpoFilho(this.Settings.Largura, comprimento, new Point2d(X, Y), this.Posicao);
+                    this.GuardaCorpos.Add(guardaCorpo);
 
-                    var poste = GetPoste(new Point2d(X, Y), this.Posicao);
-
+                    var poste = new Retangulo(this.Settings.PosteLargura, this.Settings.PosteComprimento, new Point2d(X, Y), posicaoPoste);
                     this.Postes.Add(poste);
 
-                    this.GuardaCorpos.Add(guardaCorpo);
                     comprimentoRestante = comprimentoRestante - comprimento - this.Settings.PosteComprimento;
                 }
-            }
-        }
-
-        private Poste GetPoste( Point2d pontoA , Posicao posicao )
-        {
-            switch(posicao)
-            {
-                case Posicao.VoltadoBaixo :
-                    var posteVoltadoBaixo = new Poste
-                    {
-                        PontoA = new Point2d(pontoA.X, pontoA.Y),
-                        PontoB = new Point2d(pontoA.X + this.Settings.PosteLargura, pontoA.Y),
-                        PontoC = new Point2d(pontoA.X, pontoA.Y + this.Settings.PosteComprimento),
-                        PontoD = new Point2d(pontoA.X + this.Settings.PosteLargura, pontoA.Y + this.Settings.PosteComprimento)                    
-                    };
-                    return posteVoltadoBaixo;
-                    break;
-                case Posicao.VoltadoCima :
-                    var posteVoltadoCima = new Poste
-                    {
-                        PontoA = new Point2d(pontoA.X, pontoA.Y),
-                        PontoB = new Point2d(pontoA.X + this.Settings.PosteLargura, pontoA.Y),
-                        PontoC = new Point2d(pontoA.X, pontoA.Y + this.Settings.PosteComprimento),
-                        PontoD = new Point2d(pontoA.X + this.Settings.PosteLargura, pontoA.Y + this.Settings.PosteComprimento)
-                    };
-                    return posteVoltadoCima;
-                    break;
-                case Posicao.VoltadoEsqueda :
-                    var posteVoltadoEsqueda = new Poste
-                    {
-                        PontoA = new Point2d(pontoA.X, pontoA.Y),
-                        PontoB = new Point2d(pontoA.X + this.Settings.PosteLargura, pontoA.Y),
-                        PontoC = new Point2d(pontoA.X, pontoA.Y + this.Settings.PosteComprimento),
-                        PontoD = new Point2d(pontoA.X + this.Settings.PosteLargura, pontoA.Y + this.Settings.PosteComprimento)
-                    };
-                    return posteVoltadoEsqueda;
-                    break;
-                case Posicao.VoltadoDireita :
-                    var posteVoltadoDireita = new Poste
-                    {
-                        PontoA = new Point2d(pontoA.X, pontoA.Y),
-                        PontoB = new Point2d(pontoA.X + this.Settings.PosteLargura, pontoA.Y),
-                        PontoC = new Point2d(pontoA.X, pontoA.Y + this.Settings.PosteComprimento),
-                        PontoD = new Point2d(pontoA.X + this.Settings.PosteLargura, pontoA.Y + this.Settings.PosteComprimento)
-                    };
-                    return posteVoltadoDireita;
-                    break;
-                default:
-                    return null;
-                    break;
-            }
-        }
-
-        private GuardaCorpoFilho GetGuardaCorpo(Point2d pontoA, Posicao posicao, double comprimento)
-        {
-            switch (posicao)
-            {
-                case Posicao.VoltadoBaixo:
-                    var guardaCorpoVoltadoBaixo = new GuardaCorpoFilho
-                    {
-                        Altura = this.Settings.Altura,
-                        PontoA = this.bVertical ? new Point2d(pontoA.X, pontoA.Y) : new Point2d(pontoA.X, pontoA.Y),
-                        PontoB = this.bVertical ? new Point2d(pontoA.X, pontoA.Y) : new Point2d(pontoA.X, pontoA.Y),
-                        PontoC = this.bVertical ? new Point2d(pontoA.X, pontoA.Y) : new Point2d(pontoA.X, pontoA.Y),
-                        PontoD = this.bVertical ? new Point2d(pontoA.X, pontoA.Y) : new Point2d(pontoA.X, pontoA.Y),
-                    };
-                    if(comprimento > this.Settings.ComprimentoMinimoReforco)
-                    {
-                        var posteVoltadoBaixo = GetPoste(new Point2d(X, Y), this.Posicao);
-
-                        guardaCorpoVoltadoBaixo.PosteReforco = posteVoltadoBaixo;
-                    }
-                    return guardaCorpoVoltadoBaixo;
-                    break;
-                case Posicao.VoltadoCima:
-                    var guardaCorpoVoltadoCima = new GuardaCorpoFilho
-                    {
-                        Altura = this.Settings.Altura,
-                        PontoA = this.bVertical ? new Point2d(pontoA.X, pontoA.Y) : new Point2d(pontoA.X, pontoA.Y),
-                        PontoB = this.bVertical ? new Point2d(pontoA.X, pontoA.Y) : new Point2d(pontoA.X, pontoA.Y),
-                        PontoC = this.bVertical ? new Point2d(pontoA.X, pontoA.Y) : new Point2d(pontoA.X, pontoA.Y),
-                        PontoD = this.bVertical ? new Point2d(pontoA.X, pontoA.Y) : new Point2d(pontoA.X, pontoA.Y),
-                    };
-                    if (comprimento > this.Settings.ComprimentoMinimoReforco)
-                    {
-                        var posteVoltadoCima = GetPoste(new Point2d(X, Y), this.Posicao);
-                        guardaCorpoVoltadoCima.PosteReforco = posteVoltadoCima;
-                    }
-                    return guardaCorpoVoltadoCima;
-                    break;
-                case Posicao.VoltadoEsqueda:
-                    var guardaCorpoVoltadoEsqueda = new GuardaCorpoFilho
-                    {
-                        Altura = this.Settings.Altura,
-                        PontoA = this.bVertical ? new Point2d(pontoA.X, pontoA.Y) : new Point2d(pontoA.X, pontoA.Y),
-                        PontoB = this.bVertical ? new Point2d(pontoA.X, pontoA.Y) : new Point2d(pontoA.X, pontoA.Y),
-                        PontoC = this.bVertical ? new Point2d(pontoA.X, pontoA.Y) : new Point2d(pontoA.X, pontoA.Y),
-                        PontoD = this.bVertical ? new Point2d(pontoA.X, pontoA.Y) : new Point2d(pontoA.X, pontoA.Y),
-                    };
-                    if (comprimento > this.Settings.ComprimentoMinimoReforco)
-                    {
-                        var posteVoltadoEsqueda = GetPoste(new Point2d(X, Y), this.Posicao);
-                        guardaCorpoVoltadoEsqueda.PosteReforco = posteVoltadoEsqueda;
-                    }
-                    return guardaCorpoVoltadoEsqueda;
-                    break;
-                case Posicao.VoltadoDireita:
-                    var guardaCorpoVoltadoDireita = new GuardaCorpoFilho
-                    {
-                        Altura = this.Settings.Altura,
-                        PontoA = this.bVertical ? new Point2d(pontoA.X, pontoA.Y) : new Point2d(pontoA.X, pontoA.Y),
-                        PontoB = this.bVertical ? new Point2d(pontoA.X, pontoA.Y) : new Point2d(pontoA.X, pontoA.Y),
-                        PontoC = this.bVertical ? new Point2d(pontoA.X, pontoA.Y) : new Point2d(pontoA.X, pontoA.Y),
-                        PontoD = this.bVertical ? new Point2d(pontoA.X, pontoA.Y) : new Point2d(pontoA.X, pontoA.Y),
-                    };
-                    if (comprimento > this.Settings.ComprimentoMinimoReforco)
-                    {
-                        var posteVoltadoDireita = GetPoste(new Point2d(X, Y), this.Posicao);
-                        guardaCorpoVoltadoDireita.PosteReforco = posteVoltadoDireita;
-                    }
-                    return guardaCorpoVoltadoDireita;
-                    break;
-                default:
-                    return null;
-                    break;
             }
         }
         private Settings GetSettings()
@@ -246,6 +114,7 @@ namespace ColunaPronta.Model
                     var settings = new Settings
                     {
                         Altura = 1.75,
+                        Largura = 0.3,
                         ComprimentoPadrao = 3,
                         ComprimentoMaxima = 4,
                         ComprimentoMinimoReforco= 1,
@@ -266,7 +135,6 @@ namespace ColunaPronta.Model
                 return null;
             }
         }
-
         private static void SetSettings(Settings settings)
         {
             try
@@ -296,6 +164,7 @@ namespace ColunaPronta.Model
 
     public class Settings
     {
+        public double Largura { get; set; }
         public double Altura { get; set; }
         public double ComprimentoPadrao { get; set; }
         public double ComprimentoMaxima { get; set; }
@@ -305,21 +174,25 @@ namespace ColunaPronta.Model
         public double EspessuraCantoneira { get; set; }
     }
 
-    public class Poste
-    {
-        public Point2d PontoA { get; set; }
-        public Point2d PontoB { get; set; }
-        public Point2d PontoC { get; set; }
-        public Point2d PontoD { get; set; }
-    }
     public class GuardaCorpoFilho
     {
-        public Point2d PontoA { get; set; }
-        public Point2d PontoB { get; set; }
-        public Point2d PontoC { get; set; }
-        public Point2d PontoD { get; set; }
-        public double Altura { get; set; }
-        public Poste PosteReforco { get; set; }
+        public Retangulo retangulo { get; } 
+        public double Largura { get; }
+        public double Comprimento { get; }
+        public Retangulo PosteReforco { get;  }
+        public GuardaCorpoFilho( double largura, double comprimento, Point2d pontoA, Posicao posicao)
+        {
+            var posicaoRetangulo = Posicao.Vertical;
+            this.Largura = largura;
+            this.Comprimento = comprimento;
+
+            if (posicao == Posicao.VoltadoBaixo || posicao == Posicao.VoltadoCima)
+            {
+                posicaoRetangulo = Posicao.Horizontal;
+            }
+
+            this.retangulo = new Retangulo(largura, comprimento, pontoA, posicaoRetangulo);
+        }
     }
    
 }
