@@ -69,7 +69,6 @@ namespace ColunaPronta.Commands
                 Logger.Error(e.ToString());
             }
         }
-
         public static List<Coluna> GetColunas(string arquivo) 
         {
             try
@@ -90,7 +89,6 @@ namespace ColunaPronta.Commands
                     return null;
                 }
 
-
             }
             catch (Exception e)
             {
@@ -100,7 +98,6 @@ namespace ColunaPronta.Commands
                 return null;
             }
         }
-
         public static List<Enrijecedor> GetEnrijecedores()
         {
             try
@@ -131,7 +128,6 @@ namespace ColunaPronta.Commands
                 return null;
             }
         }
-
         public static List<Especificao> GetEspecificacao()
         {
             try

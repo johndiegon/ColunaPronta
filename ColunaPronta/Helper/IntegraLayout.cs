@@ -15,8 +15,6 @@ namespace ColunaPronta.Helper
     {
         const string caminhoJson = "C:\\Autodesk\\ColunaPronta\\TipoColuna\\";
         const string ultimaColunaJson = "C:\\Autodesk\\ColunaPronta\\TipoColuna\\ultimaColuna.json";
-
-
         public static int GetIColuna(Coluna coluna)
         {
             try
@@ -86,7 +84,6 @@ namespace ColunaPronta.Helper
                 return 0;
             }
         }
-
         private static Coluna GetLayoutInverso(Coluna coluna)
         {
             var layoutInverso = new Coluna()
@@ -122,7 +119,6 @@ namespace ColunaPronta.Helper
 
             return layoutInverso;
         }
-
         public static Coluna GetLayout(int iColuna, string nomeArquivo)
         {
             try

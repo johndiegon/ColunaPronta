@@ -107,7 +107,6 @@ namespace ColunaPronta.Commands
 
             return id;
         }
-
         public static List<ItemRelatorio> GetDadosRelatorio(string nomeProjeto)
         {
             try
