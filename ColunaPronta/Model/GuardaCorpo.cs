@@ -14,7 +14,6 @@ namespace ColunaPronta.Model
 {
     public class GuardaCorpo
     {
-        const string caminhoSettings = @"C:\Autodesk\ColunaPronta\";
         public double Largura { get; set; }
         public double Comprimento { get; set; }
         public double Folga { get; set; }
@@ -25,12 +24,16 @@ namespace ColunaPronta.Model
         public bool bPosteInicial { get; set; }
         public bool bPosteFinal { get; set; }
         public List<Retangulo> Postes { get; set; }
+        public List<Retangulo> Cantoneira { get; set; }
         public List<GuardaCorpoFilho> GuardaCorpos { get; set; }
         public Posicao Posicao { get; set; }
         public Settings Settings { get; set; }
+
+        #region >> Construtor
         public GuardaCorpo(Point2d point1 , Point2d point2)
         {
-            this.Settings = GetSettings();
+            var settings = new Settings();
+            this.Settings = settings.GetSettings();
 
             var posteInical = MessageBox.Show("Poste", "Há poste no inicio?", MessageBoxButton.YesNo);
             bPosteInicial = posteInical == MessageBoxResult.Yes ? true : false;
@@ -44,6 +47,9 @@ namespace ColunaPronta.Model
 
             SetGuardaCorpo();
         }
+        #endregion
+
+        #region >> Métodos
         private void SetGuardaCorpo()
         {
             var comprimentoRestante = this.Comprimento;
@@ -59,140 +65,145 @@ namespace ColunaPronta.Model
             if (this.bPosteInicial)
             {
 
-                var poste = new Retangulo(this.Settings.PosteLargura, this.Settings.PosteComprimento, new Point2d(X, Y), posicaoPoste);
+                var poste = new Retangulo(Settings.PosteLargura, this.Settings.PosteComprimento, new Point2d(X, Y), posicaoPoste);
 
                 this.Postes.Add(poste);
                 comprimentoRestante = comprimentoRestante - this.Settings.PosteComprimento;
+
+                if(bVertical)
+                {
+                    Y = Y - this.Settings.PosteComprimento;
+                }
+                {
+                    X = X + this.Settings.PosteComprimento;
+                }
             }
 
             while (comprimentoRestante > 0)
             {
                 if ( comprimentoRestante > this.Settings.ComprimentoPadrao && comprimentoRestante <= this.Settings.ComprimentoMaxima)
                 {
+                    #region >> Gera Guarda Corpo
                     var comprimento = bPosteFinal ? comprimentoRestante - this.Settings.PosteComprimento : comprimentoRestante;
-
-                    var guardaCorpo = new GuardaCorpoFilho(this.Settings.Largura, comprimento,  new Point2d( X, Y), this.Posicao);
                     
-                    if(bPosteFinal)
+                    AddGuardaCorpo(comprimento, Largura, new Point2d(X, Y));
+                  
+                    if (bVertical)
+                    {
+                        Y = Y - comprimento;
+                    }
+                    {
+                        X = X + comprimento;
+                    }
+                    
+                    comprimentoRestante = comprimentoRestante - comprimento;
+                    
+                    #endregion
+
+                    #region >> Gera Poste Final 
+                    if (bPosteFinal)
                     {
                         var poste = new Retangulo(this.Settings.PosteLargura, this.Settings.PosteComprimento, new Point2d(X, Y), posicaoPoste);
-
                         this.Postes.Add(poste);
+                        
+                        if (bVertical)
+                        {
+                            Y = Y - this.Settings.PosteComprimento;
+                        }
+                        {
+                            X = X + this.Settings.PosteComprimento;
+                        }
+
                         comprimentoRestante = comprimentoRestante - this.Settings.PosteComprimento;
                     }
-
-                    this.GuardaCorpos.Add(guardaCorpo);
-                    comprimentoRestante = comprimentoRestante - comprimento;
+                    #endregion
                 }
                 else
                 {
+                    #region >> Gera Guarda Corpo
+
                     var comprimento = this.Settings.ComprimentoPadrao;
 
-                    var guardaCorpo = new GuardaCorpoFilho(this.Settings.Largura, comprimento, new Point2d(X, Y), this.Posicao);
-                    this.GuardaCorpos.Add(guardaCorpo);
+                    AddGuardaCorpo(comprimento, Largura, new Point2d(X, Y));
 
-                    var poste = new Retangulo(this.Settings.PosteLargura, this.Settings.PosteComprimento, new Point2d(X, Y), posicaoPoste);
-                    this.Postes.Add(poste);
-
-                    comprimentoRestante = comprimentoRestante - comprimento - this.Settings.PosteComprimento;
-                }
-            }
-        }
-        private Settings GetSettings()
-        {
-            try
-            {               
-                if (File.Exists(caminhoSettings))
-                {
-                    var jsonSettings = File.ReadAllText(caminhoSettings);
-                    var settings = JsonConvert.DeserializeObject<Settings>(jsonSettings);
-
-                    return settings;
-                }
-                else
-                {
-                    var settings = new Settings
+                    if (bVertical)
                     {
-                        Altura = 1.75,
-                        Largura = 0.3,
-                        ComprimentoPadrao = 3,
-                        ComprimentoMaxima = 4,
-                        ComprimentoMinimoReforco= 1,
-                        PosteComprimento = 0.30,
-                        PosteLargura = 0.50,
-                        EspessuraCantoneira = 0.03,
-                    };
-
-                    SetSettings(settings);
-                    return settings;
+                        Y = Y - comprimento;
+                    }
+                    {
+                        X = X + comprimento;
+                    }
+                    #endregion
                 }
             }
-            catch (Exception e)
-            {
-                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
-                Logger.Error(e.ToString());
-                return null;
-            }
         }
-        private static void SetSettings(Settings settings)
+        private void AddGuardaCorpo(double comprimento, double largura, Point2d pontoInicial)
         {
-            try
+            Double X = pontoInicial.X, Y = pontoInicial.Y;
+       
+            #region >> Definir Posicao das Cantoneiras
+            Posicao posicaoCantoneiraInicio, posicaoCantoneiraFim;
+
+            switch (this.Posicao)
             {
-
-                if (File.Exists(caminhoSettings))
-                {
-                    File.Delete(caminhoSettings);
-                }
-
-                var arquivo = JsonConvert.SerializeObject(settings);
-
-                using (FileStream fs = File.Create(caminhoSettings))
-                {
-                    byte[] info = new UTF8Encoding(true).GetBytes(arquivo);
-                    fs.Write(info, 0, info.Length);
-                }
+                case Posicao.VoltadoBaixo:
+                    posicaoCantoneiraInicio = Posicao.CimaEsquerda;
+                    posicaoCantoneiraFim = Posicao.CimaDireita;
+                    break;
+                case Posicao.VoltadoDireita:
+                    posicaoCantoneiraInicio = Posicao.CimaDireita;
+                    posicaoCantoneiraFim = Posicao.CimaEsquerda;
+                    break;
+                case Posicao.VoltadoCima:
+                    posicaoCantoneiraInicio = Posicao.BaixoEsquerda;
+                    posicaoCantoneiraFim = Posicao.BaixoDireita;
+                    break;
+                default:
+                    posicaoCantoneiraInicio = Posicao.CimaEsquerda;
+                    posicaoCantoneiraFim = Posicao.CimaDireita;
+                    break;
             }
-            catch (Exception e)
+            #endregion
+
+            #region >> Cantoneira Inicial
+
+            var cantoneiraInicial = new CantoneiraGuardaCorpo( new Point2d(X,Y), posicaoCantoneiraInicio );
+
+            if (bVertical)
             {
-                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
-                Logger.Error(e.ToString());
+                Y = Y - ( this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga);
             }
+            {
+                X = X + (this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga);
+            }
+
+            comprimento = comprimento - (this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga);
+
+            #endregion
+
+            #region >> Guarda Corpo 
+
+            var guardaCorpo = new GuardaCorpoFilho(largura, comprimento, new Point2d(X, Y), this.Posicao);
+
+            #endregion
+
+            #region >> Cantoneira Final 
+            if (bVertical)
+            {
+                Y = Y - (comprimento - this.Settings.CantoneiraLargura);
+            }
+            {
+                X = X + (comprimento - this.Settings.CantoneiraLargura);
+            }
+
+            var cantoneiraFinal = new CantoneiraGuardaCorpo(new Point2d(X, Y), posicaoCantoneiraFim);
+
+            #endregion
+
+            guardaCorpo.Cantoneiras.Add(cantoneiraInicial);
+            guardaCorpo.Cantoneiras.Add(cantoneiraFinal);
+            this.GuardaCorpos.Add(guardaCorpo);
         }
-    }
-
-    public class Settings
-    {
-        public double Largura { get; set; }
-        public double Altura { get; set; }
-        public double ComprimentoPadrao { get; set; }
-        public double ComprimentoMaxima { get; set; }
-        public double ComprimentoMinimoReforco { get; set; }
-        public double PosteComprimento { get; set; }
-        public double PosteLargura { get; set; }
-        public double EspessuraCantoneira { get; set; }
-    }
-
-    public class GuardaCorpoFilho
-    {
-        public Retangulo retangulo { get; } 
-        public double Largura { get; }
-        public double Comprimento { get; }
-        public Retangulo PosteReforco { get;  }
-        public GuardaCorpoFilho( double largura, double comprimento, Point2d pontoA, Posicao posicao)
-        {
-            var posicaoRetangulo = Posicao.Vertical;
-            this.Largura = largura;
-            this.Comprimento = comprimento;
-
-            if (posicao == Posicao.VoltadoBaixo || posicao == Posicao.VoltadoCima)
-            {
-                posicaoRetangulo = Posicao.Horizontal;
-            }
-
-            this.retangulo = new Retangulo(largura, comprimento, pontoA, posicaoRetangulo);
-        }
-    }
-   
+        #endregion
+    } 
 }
