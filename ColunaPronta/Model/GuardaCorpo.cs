@@ -32,8 +32,7 @@ namespace ColunaPronta.Model
         #region >> Construtor
         public GuardaCorpo(Point2d point1 , Point2d point2)
         {
-            var settings = new Settings();
-            this.Settings = settings.GetSettings();
+            this.Settings = new Settings();
 
             var posteInical = MessageBox.Show("Poste", "Há poste no inicio?", MessageBoxButton.YesNo);
             bPosteInicial = posteInical == MessageBoxResult.Yes ? true : false;
@@ -140,34 +139,12 @@ namespace ColunaPronta.Model
         private void AddGuardaCorpo(double comprimento, double largura, Point2d pontoInicial)
         {
             Double X = pontoInicial.X, Y = pontoInicial.Y;
+            bool bCantoneiraInicio = true;
        
-            #region >> Definir Posicao das Cantoneiras
-            Posicao posicaoCantoneiraInicio, posicaoCantoneiraFim;
-
-            switch (this.Posicao)
-            {
-                case Posicao.VoltadoBaixo:
-                    posicaoCantoneiraInicio = Posicao.CimaEsquerda;
-                    posicaoCantoneiraFim = Posicao.CimaDireita;
-                    break;
-                case Posicao.VoltadoDireita:
-                    posicaoCantoneiraInicio = Posicao.CimaDireita;
-                    posicaoCantoneiraFim = Posicao.CimaEsquerda;
-                    break;
-                case Posicao.VoltadoCima:
-                    posicaoCantoneiraInicio = Posicao.BaixoEsquerda;
-                    posicaoCantoneiraFim = Posicao.BaixoDireita;
-                    break;
-                default:
-                    posicaoCantoneiraInicio = Posicao.CimaEsquerda;
-                    posicaoCantoneiraFim = Posicao.CimaDireita;
-                    break;
-            }
-            #endregion
-
+           
             #region >> Cantoneira Inicial
 
-            var cantoneiraInicial = new CantoneiraGuardaCorpo( new Point2d(X,Y), posicaoCantoneiraInicio );
+            var cantoneiraInicial = new CantoneiraGuardaCorpo( new Point2d(X,Y), this.Posicao, bCantoneiraInicio );
 
             if (bVertical)
             {
@@ -196,7 +173,7 @@ namespace ColunaPronta.Model
                 X = X + (comprimento - this.Settings.CantoneiraLargura);
             }
 
-            var cantoneiraFinal = new CantoneiraGuardaCorpo(new Point2d(X, Y), posicaoCantoneiraFim);
+            var cantoneiraFinal = new CantoneiraGuardaCorpo(new Point2d(X, Y), this.Posicao, bCantoneiraInicio);
 
             #endregion
 

@@ -20,9 +20,11 @@ namespace ColunaPronta.Model
         public double PosteComprimento { get; set; }
         public double PosteLargura { get; set; }
         public double CantoneiraLargura { get; set; }
+        public double CantoneiraComprimento { get; set; }
         public double CantoneiraFolga { get; set; }
         public double CantoneiraEspessura { get; set; }
         public double DistanciaCantoneiraGC { get; set; }
+        public double DistanciaCantoneiraL { get; set; }
         public Settings()
         {
             try
@@ -40,9 +42,11 @@ namespace ColunaPronta.Model
                     this.PosteComprimento = settings.PosteComprimento;
                     this.PosteLargura = settings.PosteLargura;
                     this.CantoneiraLargura = settings.CantoneiraLargura;
+                    this.CantoneiraComprimento = settings.CantoneiraComprimento;
                     this.CantoneiraFolga = settings.CantoneiraFolga;
                     this.CantoneiraEspessura = settings.CantoneiraEspessura;
                     this.DistanciaCantoneiraGC = settings.DistanciaCantoneiraGC;
+                    this.DistanciaCantoneiraL = settings.DistanciaCantoneiraL;
                 }
                 else
                 {
@@ -57,6 +61,8 @@ namespace ColunaPronta.Model
                     this.CantoneiraFolga = 0.020;
                     this.CantoneiraLargura = 0.0380;
                     this.DistanciaCantoneiraGC = 0.018;
+                    this.DistanciaCantoneiraL = 0.010;
+                    this.CantoneiraComprimento = 0.50;
                     SetSettings();
                 }
             }

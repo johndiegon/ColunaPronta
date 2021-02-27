@@ -1,12 +1,6 @@
 ﻿using Autodesk.AutoCAD.Geometry;
-using ColunaPronta.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ColunaPronta.Helper
+namespace ColunaPronta.Model
 {
     public class Retangulo
     {
