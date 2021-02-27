@@ -110,7 +110,7 @@
     <Compile Include="Commands\teste\ViewPlottColuna.cs" />
     <Compile Include="Helper\Helpers.cs" />
     <Compile Include="Helper\IntegraLayout.cs" />
-    <Compile Include="Helper\Retangulo.cs" />
+    <Compile Include="Model\Retangulo.cs" />
     <Compile Include="Model\Cantoneira.cs" />
     <Compile Include="Model\CantoneiraGuardaCorpo.cs" />
     <Compile Include="Model\Especificao.cs" />
