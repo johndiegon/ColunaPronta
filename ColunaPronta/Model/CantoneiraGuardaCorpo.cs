@@ -18,7 +18,9 @@ namespace ColunaPronta.Model
         public Point2dCollection Linha { get; }
         public CantoneiraGuardaCorpo(Point2d pontoInicial, Posicao posicao, bool bInicio)
         {
-            double X = pontoInicial.X, Y = pontoInicial.Y;
+            PontosL = new Point2dCollection();
+            Linha = new Point2dCollection();
+
             this.Posicao = posicao;
             this.Settings = new Settings();
             this.bInicio = bInicio;
@@ -26,7 +28,7 @@ namespace ColunaPronta.Model
             var espessura = Settings.CantoneiraEspessura;
 
             Posicao posicaoCantoneira = GetPosicaoEleCantoneira();
-            Point2d pontoInicialdoELe = GetPontoInicialL( pontoInicial);
+            Point2d pontoInicialdoELe = GetPontoInicialL();
 
             SetPontosCantoneiraL(posicaoCantoneira, pontoInicialdoELe, lado, espessura);
 
@@ -56,7 +58,7 @@ namespace ColunaPronta.Model
 
             return posicaoCantoneira;
         }
-        private Point2d GetPontoInicialL(Point2d pontoInicial)
+        private Point2d GetPontoInicialL()
         {
             double X = pontoInicial.X, Y = pontoInicial.Y;
             switch (Posicao)

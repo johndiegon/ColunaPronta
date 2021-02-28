@@ -12,11 +12,10 @@ using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 
 namespace ColunaPronta.Commands
 {
-    public class IntegraGuardaCorpo : IDisposable
+    public static class IntegraGuardaCorpo 
     {
-        private bool disposedValue;
-
-        public void Add()
+        
+        public static void Add()
         {
             Document documentFundoViga = Application.DocumentManager.MdiActiveDocument;
             Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
@@ -29,39 +28,25 @@ namespace ColunaPronta.Commands
 
             PromptPointResult prPtRes1 = editor.GetPoint(prPtOpt);
 
-            if (prPtRes1.Status != PromptStatus.OK) return;
-            Point3d larguraPpoint1 = prPtRes1.Value;
-
+            if (prPtRes1.Status != PromptStatus.OK) 
+                return;
+            
             prPtOpt.Message = "\nIndique o ponto final: ";
 
             PromptPointResult prPtRes2 = editor.GetPoint(prPtOpt);
             
-            if (prPtRes2.Status != PromptStatus.OK) return;
-            Point3d larguraPoint2 = prPtRes2.Value;
+            if (prPtRes2.Status != PromptStatus.OK) 
+                return;
 
             var guardaCorpo = new GuardaCorpo(new Point2d(prPtRes1.Value.X, prPtRes1.Value.Y), new Point2d(prPtRes2.Value.X, prPtRes2.Value.Y));
-          
 
+            Integra(guardaCorpo);
         }
 
-        public void Dispose()
+        private static void Integra(GuardaCorpo guardaCorpo)
         {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            var queComecemOsJogos = "testetete";
         }
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects)
-                }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
-                disposedValue = true;
-            }
-        }
     }
 }

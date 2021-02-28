@@ -42,7 +42,14 @@ namespace ColunaPronta.Model
 
             bVertical = point1.Y == point2.Y ? true : false;
 
-            Largura = point1.GetDistanceTo(point2);
+            PontoA = point1;
+            PontoB = point2;
+
+            PontoInicio = point1;
+            Comprimento = point1.GetDistanceTo(point2);
+            Largura = Settings.Largura;
+            Folga = Settings.CantoneiraFolga;
+
 
             SetGuardaCorpo();
         }
@@ -55,6 +62,10 @@ namespace ColunaPronta.Model
             var X = this.PontoInicio.X;
             var Y = this.PontoInicio.Y;
             var posicaoPoste = Posicao.Horizontal;
+
+            this.Postes= new List<Retangulo>();
+            this.Cantoneira = new List<Retangulo>();
+            this.GuardaCorpos = new List<GuardaCorpoFilho>();
 
             if (this.Posicao == Posicao.VoltadoBaixo || this.Posicao == Posicao.VoltadoCima)
             {
@@ -176,9 +187,10 @@ namespace ColunaPronta.Model
             var cantoneiraFinal = new CantoneiraGuardaCorpo(new Point2d(X, Y), this.Posicao, bCantoneiraInicio);
 
             #endregion
-
-            guardaCorpo.Cantoneiras.Add(cantoneiraInicial);
-            guardaCorpo.Cantoneiras.Add(cantoneiraFinal);
+            var cantoneiras = new List<CantoneiraGuardaCorpo>();
+            cantoneiras.Add(cantoneiraInicial);
+            cantoneiras.Add(cantoneiraFinal);
+            guardaCorpo.Cantoneiras= cantoneiras;
             this.GuardaCorpos.Add(guardaCorpo);
         }
         #endregion

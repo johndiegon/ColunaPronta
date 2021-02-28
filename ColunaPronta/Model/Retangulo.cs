@@ -4,34 +4,36 @@ namespace ColunaPronta.Model
 {
     public class Retangulo
     {
-        public double Largura { get;  }
-        public double Comprimento { get;  }
+        public double Largura { get; set; }
+        public double Comprimento { get; set; }
         public double Area { get { return Largura * Comprimento; } }
-        public Point2dCollection Pontos { get;  }
+        public Point2dCollection Pontos { get; set; }
 
         public Retangulo(double largura, double comprimento, Point2d pontoInicial, Posicao posicao)
         {
             this.Largura = largura;
             this.Comprimento = comprimento;
+            var collection = new Point2dCollection();
 
             switch (posicao)
             {
                 case Posicao.Vertical:
-                    this.Pontos.Add(new Point2d(pontoInicial.X, pontoInicial.Y));
-                    this.Pontos.Add(new Point2d(pontoInicial.X + largura, pontoInicial.Y));
-                    this.Pontos.Add(new Point2d(pontoInicial.X + largura, pontoInicial.Y - comprimento));
-                    this.Pontos.Add(new Point2d(pontoInicial.X, pontoInicial.Y - comprimento));
-                    this.Pontos.Add(new Point2d(pontoInicial.X, pontoInicial.Y));
+                    collection.Add(new Point2d(pontoInicial.X, pontoInicial.Y));
+                    collection.Add(new Point2d(pontoInicial.X + largura, pontoInicial.Y));
+                    collection.Add(new Point2d(pontoInicial.X + largura, pontoInicial.Y - comprimento));
+                    collection.Add(new Point2d(pontoInicial.X, pontoInicial.Y - comprimento));
+                    collection.Add(new Point2d(pontoInicial.X, pontoInicial.Y));
                     break;
                 case Posicao.Horizontal:
-                    this.Pontos.Add(new Point2d(pontoInicial.X, pontoInicial.Y));
-                    this.Pontos.Add(new Point2d(pontoInicial.X + comprimento, pontoInicial.Y));
-                    this.Pontos.Add(new Point2d(pontoInicial.X + comprimento, pontoInicial.Y - largura));
-                    this.Pontos.Add(new Point2d(pontoInicial.X, pontoInicial.Y - largura));
-                    this.Pontos.Add(new Point2d(pontoInicial.X, pontoInicial.Y));
+                    collection.Add(new Point2d(pontoInicial.X, pontoInicial.Y));
+                    collection.Add(new Point2d(pontoInicial.X + comprimento, pontoInicial.Y));
+                    collection.Add(new Point2d(pontoInicial.X + comprimento, pontoInicial.Y - largura));
+                    collection.Add(new Point2d(pontoInicial.X, pontoInicial.Y - largura));
+                    collection.Add(new Point2d(pontoInicial.X, pontoInicial.Y));
                     break;
             }
 
+            this.Pontos = collection;
         }
 
     }

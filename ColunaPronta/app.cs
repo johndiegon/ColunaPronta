@@ -24,6 +24,7 @@ namespace ColunaPronta
 
         #endregion
 
+        #region >> Integra Coluna
         [CommandMethod("geracp")]
         public void GeraColuna()
         {
@@ -94,11 +95,6 @@ namespace ColunaPronta
             IntegraColuna.GeraRelatorio();
         }
 
-        //[CommandMethod("Teste")]
-        //public void Teste()
-        //{
-        //    IntegraColuna.CreateLayout();
-        //}
         [CommandMethod("GeraListaCorte")]
         public void GeraListaCorte()
         {
@@ -110,7 +106,17 @@ namespace ColunaPronta
         {
             IntegraColuna.GeraRelatorioExcel(TipoLista.ListaEntrega);
         }
+        #endregion
 
+        #region >> Integra Guarda Corpo 
+
+        [CommandMethod("geragc")]
+        public void GeraGuardaCorpo()
+        {
+            IntegraGuardaCorpo.Add();
+        }
+
+        #endregion
         public void AbreAbaFerramenta()
         {
             AbaFerramenta aba = new AbaFerramenta();
