@@ -9,10 +9,10 @@ namespace ColunaPronta.Model
 {
     public class CantoneiraGuardaCorpo
     {
-        private Settings Settings { get; set; }
-        private Posicao Posicao { get; set; }
-        private bool bInicio { get; set; }
-        private Point2d pontoInicial { get; set; }
+        private Settings Settings { get; }
+        private Posicao Posicao { get; }
+        private bool bInicio { get; }
+        private Point2d pontoInicial { get; }
         public Point2dCollection PontosL { get; }
         public Retangulo Retangulo { get; }
         public Point2dCollection Linha { get; }
@@ -20,6 +20,7 @@ namespace ColunaPronta.Model
         {
             PontosL = new Point2dCollection();
             Linha = new Point2dCollection();
+            this.pontoInicial = pontoInicial;
 
             this.Posicao = posicao;
             this.Settings = new Settings();
@@ -32,11 +33,10 @@ namespace ColunaPronta.Model
 
             SetPontosCantoneiraL(posicaoCantoneira, pontoInicialdoELe, lado, espessura);
 
-            this.Retangulo = new Retangulo(Settings.CantoneiraLargura, Settings.CantoneiraComprimento,pontoInicial, posicao );
+            this.Retangulo = new Retangulo(Settings.CantoneiraLargura, Settings.CantoneiraComprimento,pontoInicial, GetPosicaoRetangulo());
 
             SetLinha();
         }
-
         private Posicao GetPosicaoEleCantoneira()
         {
             Posicao posicaoCantoneira;
@@ -64,28 +64,55 @@ namespace ColunaPronta.Model
             switch (Posicao)
             {
                 case Posicao.VoltadoBaixo:
-                    Y = Y - Settings.DistanciaCantoneiraL;
+                    Y = Y - Settings.DistanciaCantoneiraL ;
+                    //X = X + Settings.CantoneiraEspessura + Settings.CantoneiraFolga;
                     break;
                 case Posicao.VoltadoDireita:
-                    X = X + Settings.DistanciaCantoneiraL;
+                    X = X + Settings.DistanciaCantoneiraL ;
+                    //Y = Y + Settings.CantoneiraEspessura + Settings.CantoneiraFolga;
                     break;
                 case Posicao.VoltadoCima:
-                    Y = Y + Settings.DistanciaCantoneiraL;
+                    Y = Y + Settings.DistanciaCantoneiraL ;
+                    //X = X + Settings.CantoneiraEspessura + Settings.CantoneiraFolga;
                     break;
                 case Posicao.VoltadoEsqueda:
-                    X = X - Settings.DistanciaCantoneiraL;
+                    X = X - Settings.DistanciaCantoneiraL ;
+                    //Y = Y + Settings.CantoneiraEspessura + Settings.CantoneiraFolga;
                     break;
                 default:
                     break;
             }
 
+
+
             return new Point2d(X, Y);
+        }
+        private Posicao GetPosicaoRetangulo()
+        {
+            Posicao posicaoRetangulo;
+            switch (Posicao)
+            {
+                case Posicao.VoltadoBaixo:
+                    posicaoRetangulo = Posicao.Vertical;
+                    break;
+                case Posicao.VoltadoDireita:
+                    posicaoRetangulo = Posicao.Horizontal;
+                    break;
+                case Posicao.VoltadoCima:
+                    posicaoRetangulo = Posicao.Vertical;
+                    break;
+                default: // Posicao.Esquerda
+                    posicaoRetangulo = Posicao.Horizontal;
+                    break;
+            }
+
+            return posicaoRetangulo;
         }
         private void SetPontosCantoneiraL(Posicao posicao, Point2d pontoInicial, double lado, double espessura)
         {
             Point2d p1, p2, p3, p4, p5, p6;
             double X = pontoInicial.X, Y = pontoInicial.Y;
-
+       
             switch (posicao)
             {
                 case Posicao.BaixoDireita:
@@ -129,6 +156,7 @@ namespace ColunaPronta.Model
             PontosL.Add(p4);
             PontosL.Add(p5);
             PontosL.Add(p6);
+            PontosL.Add(p1);
         }
         private void SetLinha()
         {
@@ -137,7 +165,7 @@ namespace ColunaPronta.Model
             switch (Posicao)
             {
                 case Posicao.VoltadoBaixo:
-                    X1 = bInicio ? pontoInicial.X + Settings.CantoneiraEspessura : pontoInicial.X - Settings.CantoneiraEspessura;
+                    X1 = bInicio ? pontoInicial.X + Settings.CantoneiraEspessura : pontoInicial.X + Settings.CantoneiraLargura - Settings.CantoneiraEspessura;
                     Y1 = pontoInicial.Y;
                     X2 = X1;
                     Y2 = pontoInicial.Y - Settings.CantoneiraComprimento;

@@ -1,13 +1,8 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
+using ColunaPronta.Helper;
 using ColunaPronta.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 
 namespace ColunaPronta.Commands
@@ -17,7 +12,7 @@ namespace ColunaPronta.Commands
         
         public static void Add()
         {
-            Document documentFundoViga = Application.DocumentManager.MdiActiveDocument;
+       
             Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
 
             PromptPointOptions prPtOpt = new PromptPointOptions("\nIndique o ponto inicial: ")
@@ -45,8 +40,38 @@ namespace ColunaPronta.Commands
 
         private static void Integra(GuardaCorpo guardaCorpo)
         {
-            var queComecemOsJogos = "testetete";
-        }
+            var document = Application.DocumentManager.MdiActiveDocument;
 
+            foreach (Retangulo poste in guardaCorpo.Postes)
+            {
+                Helpers.AddPolyline(document, poste.Pontos, ColorIndex.padrao);
+            }
+
+            foreach (GuardaCorpoFilho gc in guardaCorpo.GuardaCorpos)
+            {
+                
+                Helpers.AddPolyline(document, gc.retangulo.Pontos, ColorIndex.padrao);
+
+                if (gc.PosteReforco != null)
+                {
+                    Helpers.AddPolyline(document, gc.PosteReforco.Pontos, ColorIndex.padrao);
+                }
+
+                foreach (CantoneiraGuardaCorpo cantoneira in gc.Cantoneiras)
+                {
+                    Helpers.AddPolyline(document, cantoneira.Retangulo.Pontos, ColorIndex.padrao);
+
+                    Helpers.AddPolyline(document, cantoneira.PontosL, ColorIndex.padrao);
+
+                    if (cantoneira.Linha.Count == 2)
+                    {
+                        Point3d pnt1 = new Point3d(cantoneira.Linha[0].X, cantoneira.Linha[0].Y, 0);
+                        Point3d pnt2 = new Point3d(cantoneira.Linha[1].X, cantoneira.Linha[1].Y, 0);
+
+                        Helpers.AddLinha(document, pnt1, pnt2, false, ColorIndex.padrao);
+                    }
+                }
+            };
+        }
     }
 }

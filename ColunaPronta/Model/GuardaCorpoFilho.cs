@@ -15,9 +15,8 @@ namespace ColunaPronta.Model
         public double Comprimento { get; }
         public Retangulo PosteReforco { get; }
         public List<CantoneiraGuardaCorpo> Cantoneiras { get; set; }
-        public GuardaCorpoFilho(double largura, double comprimento, Point2d pontoA, Posicao posicao)
+        public GuardaCorpoFilho(double largura, double comprimento, Point2d pontoA, Posicao posicao, double distanciaCantoneiraGC)
         {
-            var settings = new Settings();
             var posicaoRetangulo = Posicao.Vertical;
             this.Largura = largura;
             this.Comprimento = comprimento;
@@ -27,19 +26,19 @@ namespace ColunaPronta.Model
             {
                 case Posicao.VoltadoBaixo:
                     posicaoRetangulo = Posicao.Horizontal;
-                    Y = Y - settings.DistanciaCantoneiraGC;
+                    Y = Y - distanciaCantoneiraGC;
                     break;
                 case Posicao.VoltadoDireita:
                     posicaoRetangulo = Posicao.Vertical;
-                    X = X + settings.DistanciaCantoneiraGC;
+                    X = X + distanciaCantoneiraGC;
                     break;
                 case Posicao.VoltadoCima:
                     posicaoRetangulo = Posicao.Horizontal;
-                    Y = Y + settings.DistanciaCantoneiraGC;
+                    Y = Y + distanciaCantoneiraGC;
                     break;
                 default:
                     posicaoRetangulo = Posicao.Vertical;
-                    X = X + settings.DistanciaCantoneiraGC;
+                    X = X + distanciaCantoneiraGC;
                     break;
             }
            

@@ -11,60 +11,127 @@ namespace ColunaPronta.Model
 {
     public class Settings
     {
-        const string caminhoSettings = @"C:\Autodesk\ColunaPronta\";
-        public double Largura { get; set; }
-        public double Altura { get; set; }
-        public double ComprimentoPadrao { get; set; }
-        public double ComprimentoMaxima { get; set; }
-        public double ComprimentoMinimoReforco { get; set; }
-        public double PosteComprimento { get; set; }
-        public double PosteLargura { get; set; }
-        public double CantoneiraLargura { get; set; }
-        public double CantoneiraComprimento { get; set; }
-        public double CantoneiraFolga { get; set; }
-        public double CantoneiraEspessura { get; set; }
-        public double DistanciaCantoneiraGC { get; set; }
-        public double DistanciaCantoneiraL { get; set; }
+        const string caminhoSettings = @"C:\Autodesk\ColunaPronta\SettingsGC.json";
+        const int _escala = 1000;
+        private double largura;
+        private double altura;
+        private double comprimentoPadrao;
+        private double comprimentoMaxima;
+        private double comprimentoMinimoReforco;
+        private double posteComprimento;
+        private double posteLargura;
+        private double cantoneiraLargura;
+        private double cantoneiraComprimento;
+        private double cantoneiraFolga;
+        private double cantoneiraEspessura;
+        private double distanciaCantoneiraGC;
+        private double distanciaCantoneiraL;
+        public int Escala {  get { return _escala; } }
+        public double Largura 
+        { 
+            get { return largura / _escala; }
+            set { largura = value; }
+        }
+        public double Altura 
+        {
+            get { return altura / _escala; }
+            set { altura = value; }
+        }
+        public double ComprimentoPadrao
+        {
+            get { return comprimentoPadrao / _escala;   }
+            set { comprimentoPadrao = value; }
+        }
+        public double ComprimentoMaxima
+        {
+            get { return comprimentoMaxima / _escala;   }
+            set { comprimentoMaxima = value; }
+        }
+        public double ComprimentoMinimoReforco 
+        {
+            get { return comprimentoMinimoReforco / _escala;  }
+            set { comprimentoMinimoReforco = value; }
+        }
+        public double PosteComprimento
+        {
+            get { return posteComprimento / _escala; } 
+            set { posteComprimento = value; }
+        }
+        public double PosteLargura 
+        {
+            get { return posteLargura / _escala; }
+            set { posteLargura = value; }
+        }
+        public double CantoneiraLargura 
+        {
+            get { return cantoneiraLargura / _escala; }
+            set { cantoneiraLargura = value; }
+        }
+        public double CantoneiraComprimento 
+        {
+            get { return cantoneiraComprimento / _escala; }
+            set { cantoneiraComprimento = value; }
+        }
+        public double CantoneiraFolga 
+        { 
+            get { return cantoneiraFolga / _escala;   } 
+            set { cantoneiraFolga = value; }
+        }
+        public double CantoneiraEspessura 
+        {
+            get { return cantoneiraEspessura / _escala; } 
+            set { cantoneiraEspessura = value; }
+        }
+        public double DistanciaCantoneiraGC 
+        {
+            get { return distanciaCantoneiraGC / _escala; } 
+            set { distanciaCantoneiraGC = value; } 
+        }
+        public double DistanciaCantoneiraL 
+        { 
+            get { return distanciaCantoneiraL / _escala; } 
+            set { distanciaCantoneiraL = value; }
+        }
         public Settings()
         {
             try
             {
-                if (File.Exists(caminhoSettings))
-                {
-                    var jsonSettings = File.ReadAllText(caminhoSettings);
-                    var settings = JsonConvert.DeserializeObject<Settings>(jsonSettings);
+                //if (File.Exists(caminhoSettings))
+                //{
+                //    var jsonSettings = File.ReadAllText(caminhoSettings);
+                //    var settings = JsonConvert.DeserializeObject<Settings>(jsonSettings);
                  
-                    this.Largura = settings.Largura;
-                    this.Altura = settings.Altura;
-                    this.ComprimentoPadrao = settings.ComprimentoPadrao;
-                    this.ComprimentoMaxima = settings.ComprimentoMaxima;
-                    this.ComprimentoMinimoReforco = settings.ComprimentoMinimoReforco;
-                    this.PosteComprimento = settings.PosteComprimento;
-                    this.PosteLargura = settings.PosteLargura;
-                    this.CantoneiraLargura = settings.CantoneiraLargura;
-                    this.CantoneiraComprimento = settings.CantoneiraComprimento;
-                    this.CantoneiraFolga = settings.CantoneiraFolga;
-                    this.CantoneiraEspessura = settings.CantoneiraEspessura;
-                    this.DistanciaCantoneiraGC = settings.DistanciaCantoneiraGC;
-                    this.DistanciaCantoneiraL = settings.DistanciaCantoneiraL;
-                }
-                else
-                {
-                    this.Altura = 1.75;
-                    this.Largura = 0.3;
-                    this.ComprimentoPadrao = 3;
-                    this.ComprimentoMaxima = 4;
-                    this.ComprimentoMinimoReforco = 1;
-                    this.PosteComprimento = 0.30;
-                    this.PosteLargura = 0.50;
-                    this.CantoneiraEspessura = 0.03;
-                    this.CantoneiraFolga = 0.020;
-                    this.CantoneiraLargura = 0.0380;
-                    this.DistanciaCantoneiraGC = 0.018;
-                    this.DistanciaCantoneiraL = 0.010;
-                    this.CantoneiraComprimento = 0.50;
-                    SetSettings();
-                }
+                //    this.Largura                  = settings.Largura;
+                //    this.Altura                   = settings.Altura;
+                //    this.ComprimentoPadrao        = settings.ComprimentoPadrao;
+                //    this.ComprimentoMaxima        = settings.ComprimentoMaxima;
+                //    this.ComprimentoMinimoReforco = settings.ComprimentoMinimoReforco;
+                //    this.PosteComprimento         = settings.PosteComprimento;
+                //    this.PosteLargura             = settings.PosteLargura;
+                //    this.CantoneiraLargura        = settings.CantoneiraLargura;
+                //    this.CantoneiraComprimento    = settings.CantoneiraComprimento;
+                //    this.CantoneiraFolga          = settings.CantoneiraFolga;
+                //    this.CantoneiraEspessura      = settings.CantoneiraEspessura;
+                //    this.DistanciaCantoneiraGC    = settings.DistanciaCantoneiraGC;
+                //    this.DistanciaCantoneiraL     = settings.DistanciaCantoneiraL;
+                //}
+                //else
+                //{
+                    this.Altura                   = 1.75;
+                    this.Largura                  = 20;
+                    this.ComprimentoPadrao        = 3000;
+                    this.ComprimentoMaxima        = 4000;
+                    this.ComprimentoMinimoReforco = 1000;
+                    this.PosteComprimento         = 70;
+                    this.PosteLargura             = 30;
+                    this.CantoneiraEspessura      = 3;
+                    this.CantoneiraFolga          = 2;
+                    this.CantoneiraLargura        = 38;
+                    this.DistanciaCantoneiraGC    = 18;
+                    this.DistanciaCantoneiraL     = 10;
+                    this.CantoneiraComprimento    = 70;
+                //    SetSettings();
+                //}
             }
             catch (Exception e)
             {

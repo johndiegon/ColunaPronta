@@ -25,10 +25,10 @@ namespace ColunaPronta.Model
                     collection.Add(new Point2d(pontoInicial.X, pontoInicial.Y));
                     break;
                 case Posicao.Horizontal:
-                    collection.Add(new Point2d(pontoInicial.X, pontoInicial.Y));
+                    collection.Add(new Point2d(pontoInicial.X              , pontoInicial.Y));
                     collection.Add(new Point2d(pontoInicial.X + comprimento, pontoInicial.Y));
                     collection.Add(new Point2d(pontoInicial.X + comprimento, pontoInicial.Y - largura));
-                    collection.Add(new Point2d(pontoInicial.X, pontoInicial.Y - largura));
+                    collection.Add(new Point2d(pontoInicial.X              , pontoInicial.Y - largura));
                     collection.Add(new Point2d(pontoInicial.X, pontoInicial.Y));
                     break;
             }
