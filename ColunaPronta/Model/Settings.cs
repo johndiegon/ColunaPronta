@@ -118,7 +118,7 @@ namespace ColunaPronta.Model
                 //else
                 //{
                     this.Altura                   = 1.75;
-                    this.Largura                  = 20;
+                    this.Largura                  = 30;
                     this.ComprimentoPadrao        = 3000;
                     this.ComprimentoMaxima        = 4000;
                     this.ComprimentoMinimoReforco = 1000;
