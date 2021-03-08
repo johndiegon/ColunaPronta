@@ -113,7 +113,8 @@ namespace ColunaPronta
         [CommandMethod("geragc")]
         public void GeraGuardaCorpo()
         {
-            IntegraGuardaCorpo.Add();
+            WPFGuardaCorpo window = new WPFGuardaCorpo();
+            window.Show();
         }
 
         #endregion

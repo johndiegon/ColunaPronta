@@ -10,7 +10,7 @@ namespace ColunaPronta.Commands
     public static class IntegraGuardaCorpo 
     {
         
-        public static void Add()
+        public static void Add(Posicao posicao, bool bPosteInicial, bool bPosteFinal)
         {
        
             Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
@@ -33,7 +33,12 @@ namespace ColunaPronta.Commands
             if (prPtRes2.Status != PromptStatus.OK) 
                 return;
 
-            var guardaCorpo = new GuardaCorpo(new Point2d(prPtRes1.Value.X, prPtRes1.Value.Y), new Point2d(prPtRes2.Value.X, prPtRes2.Value.Y));
+            var guardaCorpo = new GuardaCorpo(  new Point2d(prPtRes1.Value.X, prPtRes1.Value.Y)
+                                              , new Point2d(prPtRes2.Value.X, prPtRes2.Value.Y)
+                                              , posicao
+                                              , bPosteInicial
+                                              , bPosteFinal
+                                              );
 
             Integra(guardaCorpo);
         }
@@ -41,6 +46,11 @@ namespace ColunaPronta.Commands
         private static void Integra(GuardaCorpo guardaCorpo)
         {
             var document = Application.DocumentManager.MdiActiveDocument;
+
+            foreach (Retangulo poste in guardaCorpo.Postes)
+            {
+                Helpers.AddPolyline(document, poste.Pontos, ColorIndex.padrao);
+            }
 
             foreach (Retangulo poste in guardaCorpo.Postes)
             {

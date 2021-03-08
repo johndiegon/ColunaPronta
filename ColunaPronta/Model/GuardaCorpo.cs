@@ -24,39 +24,42 @@ namespace ColunaPronta.Model
         public bool bPosteInicial { get; set; }
         public bool bPosteFinal { get; set; }
         public List<Retangulo> Postes { get; set; }
+        public List<Retangulo> Cantoneira { get; set; }
         public List<GuardaCorpoFilho> GuardaCorpos { get; set; }
         public Posicao Posicao { get; set; }
         public Settings Settings { get; set; }
 
         #region >> Construtor
-        public GuardaCorpo(Point2d point1 , Point2d point2)
+        public GuardaCorpo(Point2d point1 , Point2d point2, Posicao posicao, bool bPInicial, bool bPFinal)
         {
+            this.Posicao = Posicao;
+            this.PontoA = point1;
             this.Settings = new Settings();
 
-            var posteInical = MessageBox.Show( "Há poste no inicio?", "Poste" , MessageBoxButton.YesNo);
-            bPosteInicial = posteInical == MessageBoxResult.Yes ? true : false;
+            //var posteInical = MessageBox.Show( "Há poste no inicio?", "Poste" , MessageBoxButton.YesNo);
+            bPosteInicial = bPInicial;// posteInical == MessageBoxResult.Yes ? true : false;
 
-            var posteFinal  = MessageBox.Show("Há poste no fim?",  "Poste" , MessageBoxButton.YesNo);
-            bPosteFinal = posteFinal == MessageBoxResult.Yes ? true : false;
+            //var posteFinal  = /*MessageBox*/.Show("Há poste no fim?",  "Poste" , MessageBoxButton.YesNo);
+            bPosteFinal = bPFinal; // posteFinal == MessageBoxResult.Yes ? true : false;
 
-            bVertical = false; // point1.Y == point2.Y ? true : false;
-
-            Posicao = Posicao.VoltadoBaixo;
-            PontoA = point1;
-
+            
             switch(Posicao)
             {
                 case Posicao.VoltadoBaixo :
                     PontoB = new Point2d(point2.X, point1.Y);
+                    bVertical = false;
                     break;
                 case Posicao.VoltadoCima:
                     PontoB = new Point2d(point2.X, point1.Y);
+                    bVertical = false;
                     break;
                 case Posicao.VoltadoDireita:
                     PontoB = new Point2d(point1.X, point2.Y);
+                    bVertical = true;
                     break;
                 default:
                     PontoB = new Point2d(point1.X, point2.Y);
+                    bVertical = true;
                     break;
             }
 
@@ -187,12 +190,10 @@ namespace ColunaPronta.Model
                 X = X +( ( this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga ) );
             }
 
-            //comprimento = comprimento - (2 * ( this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga ));
-
             #endregion
 
             #region >> Guarda Corpo 
-
+          
             var guardaCorpo = new GuardaCorpoFilho(largura, comprimento, new Point2d(X, Y), this.Posicao, Settings.DistanciaCantoneiraGC);
 
             #endregion
@@ -217,56 +218,7 @@ namespace ColunaPronta.Model
             this.GuardaCorpos.Add(guardaCorpo);
         }
 
-        private void AddGuardaCorpo(double largura, Point2d pontoInicial, Point2d pontoFinal)
-        {
-            Double X = pontoInicial.X, Y = pontoInicial.Y;
-            bool bCantoneiraInicio = true;
-
-            #region >> Cantoneira Inicial
-
-            var cantoneiraInicial = new CantoneiraGuardaCorpo(new Point2d(X, Y), this.Posicao, bCantoneiraInicio);
-
-            bCantoneiraInicio = false;
-
-            if (bVertical)
-            {
-                Y = Y - ((this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga));
-            }
-            {
-                X = X + ((this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga));
-            }
-
-            //comprimento = comprimento - (2 * ( this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga ));
-
-            #endregion
-
-            #region >> Guarda Corpo 
-
-            var comprimento = pontoInicial.GetDistanceTo(pontoFinal) -  (this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga);
-
-            var guardaCorpo = new GuardaCorpoFilho(largura, comprimento, new Point2d(X, Y), this.Posicao, Settings.DistanciaCantoneiraGC);
-
-            #endregion
-
-            #region >> Cantoneira Final 
-
-            if (bVertical)
-            {
-                Y = Y - (comprimento - this.Settings.CantoneiraLargura);
-            }
-            {
-                X = X + (comprimento - (this.Settings.CantoneiraLargura - (this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga)));
-            }
-
-            var cantoneiraFinal = new CantoneiraGuardaCorpo(new Point2d(X, Y), this.Posicao, bCantoneiraInicio);
-
-            #endregion
-            var cantoneiras = new List<CantoneiraGuardaCorpo>();
-            cantoneiras.Add(cantoneiraInicial);
-            cantoneiras.Add(cantoneiraFinal);
-            guardaCorpo.Cantoneiras = cantoneiras;
-            this.GuardaCorpos.Add(guardaCorpo);
-        }
+      
         #endregion
     } 
 }

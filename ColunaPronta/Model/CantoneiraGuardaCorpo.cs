@@ -64,7 +64,7 @@ namespace ColunaPronta.Model
             switch (Posicao)
             {
                 case Posicao.VoltadoBaixo:
-                    Y = Y - Settings.DistanciaCantoneiraL ;
+                    Y = Y - Settings.DistanciaCantoneiraGC + Settings.CantoneiraEspessura;
                     //X = X + Settings.CantoneiraEspessura + Settings.CantoneiraFolga;
                     break;
                 case Posicao.VoltadoDireita:
