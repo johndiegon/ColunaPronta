@@ -114,7 +114,10 @@ namespace ColunaPronta
         public void GeraGuardaCorpo()
         {
             WPFGuardaCorpo window = new WPFGuardaCorpo();
+            window.MaxHeight = 430;
+            window.MaxWidth = 430;
             window.Show();
+
         }
 
         #endregion

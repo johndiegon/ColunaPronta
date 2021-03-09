@@ -4,15 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ColunaPronta.Viewer"
-        Title="Guarda Corpo"
+             Title="Guarda Corpo"
              mc:Ignorable="d" d:DesignWidth="400" Height="430">
 
     <Grid >
         <StackPanel HorizontalAlignment="Left" Height="400"  VerticalAlignment="Top" Width="400">
-            <TabControl >
+            <TabControl Height="399" >
                 <TabItem Header="Guarda Corpo" >
-                    <Grid >
-                        <StackPanel  >
+                    <Grid Height="356" Margin="0,0,0.4,0" >
+                        <StackPanel Margin="0,0,0,1"  >
                             <TextBlock><Run Text="Qual lado você deseja gerar ?"/></TextBlock>
                             <TextBlock/>
                             <RadioButton Name="RadioButtonLadoA" Content="Lado A" GroupName="radio" IsChecked="True"/>
@@ -36,7 +36,7 @@
                             <Button Click="Button_Click">Gerar Guarda Corpo</Button>
                         </StackPanel>
 
-                        <Image x:Name="image" Margin="176,-4,9.4,295.2" Source="C:\Autodesk\ColunaPronta\Image\gcorpo.png"/>
+                        <Image x:Name="image" Margin="143,-4,9,221" Source="C:\Autodesk\ColunaPronta\Image\gcorpo.png"/>
 
                     </Grid>
 

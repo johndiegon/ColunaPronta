@@ -32,7 +32,7 @@ namespace ColunaPronta.Model
         #region >> Construtor
         public GuardaCorpo(Point2d point1 , Point2d point2, Posicao posicao, bool bPInicial, bool bPFinal)
         {
-            this.Posicao = Posicao;
+            this.Posicao = posicao;
             this.PontoA = point1;
             this.Settings = new Settings();
 

@@ -22,15 +22,17 @@ namespace ColunaPronta.Viewer
     /// </summary>
     public partial class WPFGuardaCorpo : Window
     {
-        Settings settings = new Settings();
+        Settings settings = new Settings(1);
 
         public WPFGuardaCorpo()
         {
             InitializeComponent();
+            SetTelaInicial();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            this.Close();
             settings.ToCSV();
             var bPosteInicial = this.RadioButtonPosteInicioSim.IsChecked == true ? true : false;
             var bPosteFinal = this.RadioButtonPosteFimSim.IsChecked == true ? true : false;
