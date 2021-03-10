@@ -1,10 +1,5 @@
 ﻿using Autodesk.AutoCAD.Geometry;
-using ColunaPronta.Helper;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ColunaPronta.Model
 {
@@ -36,11 +31,11 @@ namespace ColunaPronta.Model
                     break;
                 case Posicao.VoltadoCima:
                     posicaoRetangulo = Posicao.Horizontal;
-                    Y = Y + distanciaCantoneiraGC;
+                    Y = Y - settings.CantoneiraComprimento + settings.Largura + distanciaCantoneiraGC;
                     break;
                 default:
                     posicaoRetangulo = Posicao.Vertical;
-                    X = X + distanciaCantoneiraGC;
+                    X = X - distanciaCantoneiraGC - settings.Largura;
                     break;
             }
 
@@ -64,11 +59,11 @@ namespace ColunaPronta.Model
                     case Posicao.VoltadoCima:
                         posicaoReforco = Posicao.Vertical;
                         PosteX = X + ((comprimento / 2) - (settings.PosteReforcaoLargura / 2));
-                        PosteY = Y + (settings.PosteReforcoComprimento - settings.PosteReforcoDistancia);
+                        PosteY = Y - settings.CantoneiraComprimento + (settings.PosteReforcoComprimento - settings.PosteReforcoDistancia );
                         break;
                     default:
                         posicaoReforco = Posicao.Horizontal;
-                        PosteX = X - (settings.PosteReforcoComprimento + (settings.Largura + settings.PosteReforcoDistancia));
+                        PosteX = X - (settings.PosteReforcoComprimento  -   settings.PosteReforcoDistancia - settings.Largura);
                         PosteY = Y - +((comprimento / 2) - (settings.PosteReforcaoLargura / 2));
                         break;
                 }

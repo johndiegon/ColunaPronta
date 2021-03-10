@@ -33,7 +33,7 @@ namespace ColunaPronta.Model
         public GuardaCorpo(Point2d point1 , Point2d point2, Posicao posicao, bool bPInicial, bool bPFinal)
         {
             this.Posicao = posicao;
-            this.PontoA = point1;
+           
             this.Settings = new Settings();
 
             //var posteInical = MessageBox.Show( "Há poste no inicio?", "Poste" , MessageBoxButton.YesNo);
@@ -46,18 +46,22 @@ namespace ColunaPronta.Model
             switch(Posicao)
             {
                 case Posicao.VoltadoBaixo :
+                    PontoA = new Point2d(point1.X, point1.Y);
                     PontoB = new Point2d(point2.X, point1.Y);
                     bVertical = false;
                     break;
                 case Posicao.VoltadoCima:
+                    PontoA = new Point2d(point1.X, point1.Y);
                     PontoB = new Point2d(point2.X, point1.Y);
                     bVertical = false;
                     break;
                 case Posicao.VoltadoDireita:
+                    PontoA = new Point2d(point1.X, point1.Y);
                     PontoB = new Point2d(point1.X, point2.Y);
                     bVertical = true;
                     break;
                 default:
+                    PontoA = new Point2d(point1.X, point1.Y);
                     PontoB = new Point2d(point1.X, point2.Y);
                     bVertical = true;
                     break;
@@ -77,7 +81,7 @@ namespace ColunaPronta.Model
         {
             var comprimentoRestante = this.Comprimento ;
             var X = this.PontoInicio.X;
-            var Y = this.PontoInicio.Y;
+            var Y = Posicao == Posicao.VoltadoCima ? this.PontoInicio.Y + Settings.CantoneiraComprimento : this.PontoInicio.Y;
             var posicaoPoste = Posicao.Horizontal;
 
             this.Postes= new List<Retangulo>();
@@ -90,7 +94,14 @@ namespace ColunaPronta.Model
 
             if (this.bPosteInicial)
             {
-                var poste = new Retangulo(Settings.PosteLargura, this.Settings.PosteComprimento, new Point2d(X, Y), posicaoPoste);
+                double posteX = X, postesY = Y;
+
+                if(Posicao == Posicao.VoltadoEsqueda)
+                {
+                    posteX = posteX - Settings.PosteComprimento;
+                }
+
+                var poste = new Retangulo(Settings.PosteLargura, Settings.PosteComprimento, new Point2d(posteX, postesY), posicaoPoste);
 
                 this.Postes.Add(poste);
 
@@ -99,7 +110,7 @@ namespace ColunaPronta.Model
                 if(bVertical)
                 {
                     Y = Y - ( this.Settings.PosteLargura) ;
-                }
+                }else
                 {
                     X = X + ( this.Settings.PosteLargura ) ;
                 }
@@ -117,7 +128,7 @@ namespace ColunaPronta.Model
                     if (bVertical)
                     {
                         Y = Y - (comprimento); /// Settings.Escala
-                    }
+                    }else
                     {
                         X = X + (comprimento); //// Settings.Escala
                     }
@@ -136,7 +147,7 @@ namespace ColunaPronta.Model
                     if (bVertical)
                     {
                         Y = Y - (this.Settings.PosteLargura );
-                    }
+                    } else
                     {
                         X = X + (this.Settings.PosteLargura);
                     }
@@ -147,21 +158,44 @@ namespace ColunaPronta.Model
                 else
                 {
                     #region >> Gera Guarda Corpo
-                    var comprimento = bPosteFinal ? comprimentoRestante - this.Settings.PosteComprimento : comprimentoRestante;
+                    double comprimento = bPosteFinal ? comprimentoRestante - this.Settings.PosteLargura - Settings.CantoneiraFolga - Settings.CantoneiraEspessura  : comprimentoRestante;
 
                     AddGuardaCorpo(comprimento, Largura, new Point2d(X, Y));
 
                     if (bVertical)
                     {
                         Y = Y - (comprimento); /// Settings.Escala
-                    }
+                    } else
                     {
                         X = X + (comprimento); //  / Settings.Escala
                     }
 
                     if (bPosteFinal)
                     {
-                        var poste = new Retangulo(this.Settings.PosteLargura, this.Settings.PosteComprimento, new Point2d(X, Y), posicaoPoste);
+                        double posteX = X, posteY = Y;
+
+                        if (Posicao == Posicao.VoltadoEsqueda)
+                        {
+                            posteX = posteX - Settings.PosteComprimento;
+                        }
+
+                        switch (this.Posicao)
+                        {
+                            case Posicao.VoltadoBaixo:
+                                posteX = X + (Settings.CantoneiraFolga + Settings.CantoneiraEspessura) ;
+                                break;
+                            case Posicao.VoltadoDireita:
+                                posteY = Y - ( ( Settings.CantoneiraFolga + Settings.CantoneiraEspessura) ) ;
+                                break;
+                            case Posicao.VoltadoCima:
+                                posteX = X + (Settings.CantoneiraFolga + Settings.CantoneiraEspessura) ;
+                                break;
+                            default:
+                                posteY = Y - ((Settings.CantoneiraFolga + Settings.CantoneiraEspessura));
+                                break;
+                        }
+
+                        var poste = new Retangulo(this.Settings.PosteLargura, this.Settings.PosteComprimento, new Point2d(posteX, posteY), posicaoPoste);
                         this.Postes.Add(poste);
                     }
 
@@ -181,11 +215,12 @@ namespace ColunaPronta.Model
             var cantoneiraInicial = new CantoneiraGuardaCorpo( new Point2d(X,Y), this.Posicao, bCantoneiraInicio );
 
             bCantoneiraInicio = false;
+            comprimento = comprimento - ((this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga));
 
             if (bVertical)
             {
                 Y = Y - ( ( this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga ));
-            }
+            } else
             {
                 X = X +( ( this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga ) );
             }
@@ -202,10 +237,10 @@ namespace ColunaPronta.Model
 
             if (bVertical)
             {
-                Y = Y - ( comprimento - this.Settings.CantoneiraLargura ) ;
-            }
+                Y = Y - ( comprimento - this.Settings.CantoneiraLargura + (this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga)) ;
+            } else
             {
-                X = X + ( comprimento - ( this.Settings.CantoneiraLargura -  (this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga ))  ) ;
+                X = X + ( comprimento - this.Settings.CantoneiraLargura + this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga ) ;
             }
 
             var cantoneiraFinal = new CantoneiraGuardaCorpo(new Point2d(X, Y), this.Posicao, bCantoneiraInicio);

@@ -30,10 +30,10 @@ namespace ColunaPronta.Model
 
             Posicao posicaoCantoneira = GetPosicaoEleCantoneira();
             Point2d pontoInicialdoELe = GetPontoInicialL();
-
+            Point2d pontoInicialCantoneira = GetPontoInicial();
             SetPontosCantoneiraL(posicaoCantoneira, pontoInicialdoELe, lado, espessura);
 
-            this.Retangulo = new Retangulo(Settings.CantoneiraLargura, Settings.CantoneiraComprimento,pontoInicial, GetPosicaoRetangulo());
+            this.Retangulo = new Retangulo(Settings.CantoneiraLargura, Settings.CantoneiraComprimento, pontoInicialCantoneira, GetPosicaoRetangulo());
 
             SetLinha();
         }
@@ -46,13 +46,13 @@ namespace ColunaPronta.Model
                     posicaoCantoneira = bInicio ? Posicao.CimaEsquerda : Posicao.CimaDireita;
                     break;
                 case Posicao.VoltadoDireita:
-                    posicaoCantoneira = bInicio ? Posicao.CimaDireita : Posicao.CimaEsquerda;
+                    posicaoCantoneira = bInicio ? Posicao.CimaEsquerda : Posicao.BaixoEsquerda;
                     break;
                 case Posicao.VoltadoCima:
                     posicaoCantoneira = bInicio ? Posicao.BaixoEsquerda : Posicao.BaixoDireita;
                     break;
                 default: // Posicao.Esquerda
-                    posicaoCantoneira = bInicio ? Posicao.CimaEsquerda : Posicao.CimaDireita;
+                    posicaoCantoneira = bInicio ? Posicao.CimaDireita : Posicao.BaixoDireita;
                     break;
             }
 
@@ -65,25 +65,49 @@ namespace ColunaPronta.Model
             {
                 case Posicao.VoltadoBaixo:
                     Y = Y - Settings.DistanciaCantoneiraGC + Settings.CantoneiraEspessura;
-                    //X = X + Settings.CantoneiraEspessura + Settings.CantoneiraFolga;
                     break;
                 case Posicao.VoltadoDireita:
-                    X = X + Settings.DistanciaCantoneiraL ;
-                    //Y = Y + Settings.CantoneiraEspessura + Settings.CantoneiraFolga;
+                    X = X + (Settings.DistanciaCantoneiraGC - Settings.CantoneiraEspessura); 
                     break;
                 case Posicao.VoltadoCima:
-                    Y = Y + Settings.DistanciaCantoneiraL ;
-                    //X = X + Settings.CantoneiraEspessura + Settings.CantoneiraFolga;
+                    Y = Y - Settings.CantoneiraComprimento + Settings.CantoneiraLargura + Settings.DistanciaCantoneiraGC - +Settings.CantoneiraEspessura;
                     break;
                 case Posicao.VoltadoEsqueda:
-                    X = X - Settings.DistanciaCantoneiraL ;
-                    //Y = Y + Settings.CantoneiraEspessura + Settings.CantoneiraFolga;
+                    X =  X - (Settings.CantoneiraLargura)- Settings.DistanciaCantoneiraGC + Settings.CantoneiraEspessura;
                     break;
                 default:
                     break;
             }
 
+            return new Point2d(X, Y);
+        }
 
+        private Point2d GetPontoInicial()
+        {
+            double X = pontoInicial.X, Y = pontoInicial.Y;
+            
+
+            switch (Posicao)
+            {
+                //case Posicao.VoltadoBaixo:
+                //    //Y = Y - Settings.DistanciaCantoneiraGC + Settings.CantoneiraEspessura;
+                //    //X = X + Settings.CantoneiraEspessura + Settings.CantoneiraFolga;
+                //    break;
+                //case Posicao.VoltadoDireita:
+                //    X = X;// - ( Settings.DistanciaCantoneiraGC + Settings.CantoneiraEspessura);
+                //    //Y = this.bInicio == true ? Y : Y ;
+                //    break;
+                //case Posicao.VoltadoCima:
+                //    Y = Y + Settings.DistanciaCantoneiraL;
+                //    //X = X + Settings.CantoneiraEspessura + Settings.CantoneiraFolga;
+                //    break;
+                case Posicao.VoltadoEsqueda:
+                    X = X - Settings.CantoneiraComprimento;
+                    //Y = Y + Settings.CantoneiraEspessura + Settings.CantoneiraFolga;
+                    break;
+                default:
+                    break;
+            }
 
             return new Point2d(X, Y);
         }
@@ -117,12 +141,12 @@ namespace ColunaPronta.Model
             {
                 case Posicao.BaixoDireita:
 
-                    p1 = new Point2d(X, Y);
-                    p2 = new Point2d(X, Y - (lado));
-                    p3 = new Point2d(X - (lado), Y - (lado));
-                    p4 = new Point2d(X - (lado), Y - ((lado - espessura)));
-                    p5 = new Point2d(X - (espessura), Y - ((lado - espessura)));
-                    p6 = new Point2d(X - (espessura), Y);
+                    p1 = new Point2d(X, Y - (lado));
+                    p2 = new Point2d(X + (lado), Y - (lado));
+                    p3 = new Point2d(X + (lado), Y );
+                    p4 = new Point2d(X + (lado-espessura), Y);
+                    p5 = new Point2d(X + (lado - espessura), Y - ((lado - espessura)));
+                    p6 = new Point2d(X, Y - ((lado - espessura)));
                     break;
                 case Posicao.BaixoEsquerda:
                     p1 = new Point2d(X, Y);
@@ -172,7 +196,7 @@ namespace ColunaPronta.Model
                     break;
                 case Posicao.VoltadoDireita:
                     X1 = pontoInicial.X;
-                    Y1 = bInicio ?  pontoInicial.Y - Settings.CantoneiraEspessura : pontoInicial.Y + Settings.CantoneiraEspessura;
+                    Y1 = bInicio ?  pontoInicial.Y - Settings.CantoneiraEspessura : pontoInicial.Y + Settings.CantoneiraEspessura - Settings.CantoneiraLargura;
                     X2 = pontoInicial.X + Settings.CantoneiraComprimento; ;
                     Y2 = Y1;
                     break;
@@ -184,8 +208,8 @@ namespace ColunaPronta.Model
                     break;
                 default: // Posicao.Esquerda
                     X1 = pontoInicial.X;
-                    Y1 = bInicio ? pontoInicial.Y - Settings.CantoneiraEspessura : pontoInicial.Y + Settings.CantoneiraEspessura;
-                    X2 = pontoInicial.X + Settings.CantoneiraComprimento; ;
+                    Y1 = bInicio ? pontoInicial.Y - Settings.CantoneiraEspessura : pontoInicial.Y + Settings.CantoneiraEspessura - Settings.CantoneiraLargura;
+                    X2 = pontoInicial.X - Settings.CantoneiraComprimento; 
                     Y2 = Y1;
                     break;
             }

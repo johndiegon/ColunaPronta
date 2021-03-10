@@ -145,7 +145,7 @@ namespace ColunaPronta.Viewer
                     CommandParameter = "GeraListaCorte",
                     CommandHandler = new SimpleButtonCmdHandler()
                 };
-
+                
                 buttons.Add(GeraListaCorte);
 
                 return new Aba

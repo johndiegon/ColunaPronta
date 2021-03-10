@@ -5,13 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ColunaPronta.Viewer"
              Title="Guarda Corpo"
-             mc:Ignorable="d" d:DesignWidth="400" Height="430">
+             mc:Ignorable="d" d:DesignWidth="400" Height="425">
 
     <Grid >
-        <StackPanel HorizontalAlignment="Left" Height="400"  VerticalAlignment="Top" Width="400">
+        <StackPanel HorizontalAlignment="Left" Height="400"  VerticalAlignment="Top" Width="400" >
             <TabControl Height="399" >
-                <TabItem Header="Guarda Corpo" >
-                    <Grid Height="356" Margin="0,0,0.4,0" >
+                <TabItem Header="Guarda Corpo" BorderBrush="White">
+                    <Grid Height="356" Margin="0,0,0.4,0"  >
                         <StackPanel Margin="0,0,0,1"  >
                             <TextBlock><Run Text="Qual lado você deseja gerar ?"/></TextBlock>
                             <TextBlock/>
@@ -41,7 +41,7 @@
                     </Grid>
 
                 </TabItem>
-                <TabItem Header="Configurações" >
+                <TabItem Header="Configurações" BorderBrush="White">
                     <StackPanel>
                         <TextBlock  x:Name="TextBlock_altura">Altura:</TextBlock>
                         <TextBox x:Name="textBox_altura"></TextBox>
@@ -56,7 +56,7 @@
                     </StackPanel>
 
                 </TabItem>
-                <TabItem Header="Poste e Cantoneira">
+                <TabItem Header="Poste e Cantoneira" BorderBrush="White">
                     <Grid>
                         <StackPanel>
                             <TextBlock x:Name="textBlock_comprimentoPoste">Comprimento do Poste:</TextBlock>
