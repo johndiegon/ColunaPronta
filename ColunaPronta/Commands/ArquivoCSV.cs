@@ -70,7 +70,7 @@ namespace ColunaPronta.Commands
                 Logger.Error(e.ToString());
             }
         }
-        public static void Registra(List<EspecificacaoLayer> layers)
+        public static void Registra(List<EspecificacaoLayer.Detalhe> layers)
         {
             try
             {
@@ -199,36 +199,8 @@ namespace ColunaPronta.Commands
                 return null;
             }
         }
-        public static List<EspecificacaoLayer> GetEspecificacaoLayers()
-        {
-            try
-            {
-                string nomeArquivo = "C:\\Autodesk\\ColunaPronta\\Settings\\especificaolayers.csv";
+    
 
-                if (File.Exists(nomeArquivo))
-                {
-
-                    List<EspecificacaoLayer> values = File.ReadAllLines(nomeArquivo)
-                                                       .Skip(1)
-                                                       .Select(v => EspecificacaoLayer.FromCsv(v))
-                                                       .ToList();
-                    return values;
-                }
-                else
-                {
-                    return null;
-                }
-
-
-            }
-            catch (Exception e)
-            {
-                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\FundoViga\NLog.config");
-                Logger.Error(e.ToString());
-                return null;
-            }
-        }
         #endregion
     }
 }

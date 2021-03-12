@@ -9,22 +9,36 @@ namespace ColunaPronta.Model
 {
     public class CantoneiraGuardaCorpo
     {
+        private TipoCantoneira tipoCantoneira { get; set; }
         private Settings Settings { get; }
         private Posicao Posicao { get; }
-        private bool bInicio { get; }
         private Point2d pontoInicial { get; }
-        public Point2dCollection PontosL { get; }
-        public Retangulo Retangulo { get; }
-        public Point2dCollection Linha { get; }
-        public CantoneiraGuardaCorpo(Point2d pontoInicial, Posicao posicao, bool bInicio)
+        public Point2dCollection PontosL { get; set; }
+        public Retangulo Retangulo { get; set; }
+        public Point2dCollection Linha { get; set; }
+        public CantoneiraGuardaCorpo(Point2d pontoInicial, Posicao posicao, TipoCantoneira tipo)
+        {
+            this.tipoCantoneira = tipo;
+            this.Posicao = posicao;
+            this.pontoInicial = pontoInicial;
+            this.Settings = new Settings();
+
+            switch(tipo)
+            {
+                case TipoCantoneira.Cantoneira38MM:
+                    SetCantoneira38MM();
+                    break;
+                default:
+                    SetCantoneiraNormal();
+                    break;
+            }
+        }
+
+        private void SetCantoneiraNormal()
         {
             PontosL = new Point2dCollection();
             Linha = new Point2dCollection();
-            this.pontoInicial = pontoInicial;
 
-            this.Posicao = posicao;
-            this.Settings = new Settings();
-            this.bInicio = bInicio;
             var lado = Settings.CantoneiraLargura;
             var espessura = Settings.CantoneiraEspessura;
 
@@ -37,9 +51,22 @@ namespace ColunaPronta.Model
 
             SetLinha();
         }
+
+        private void SetCantoneira38MM()
+        {
+
+            Linha = new Point2dCollection();
+
+            //Point2d pontoInicialCantoneira = GetPontoInicial();
+            this.Retangulo = new Retangulo(Settings.CantoneiraPosteLargura, Settings.CantoneiraPosteComprimento, this.pontoInicial, GetPosicaoRetangulo()) ;
+            SetLinha();
+        }
+  
         private Posicao GetPosicaoEleCantoneira()
         {
             Posicao posicaoCantoneira;
+
+            var bInicio = this.tipoCantoneira == TipoCantoneira.NormalInicio ? true : false;
             switch (Posicao)
             {
                 case Posicao.VoltadoBaixo:
@@ -55,7 +82,7 @@ namespace ColunaPronta.Model
                     posicaoCantoneira = bInicio ? Posicao.CimaDireita : Posicao.BaixoDireita;
                     break;
             }
-
+        
             return posicaoCantoneira;
         }
         private Point2d GetPontoInicialL()
@@ -81,34 +108,13 @@ namespace ColunaPronta.Model
 
             return new Point2d(X, Y);
         }
-
         private Point2d GetPontoInicial()
         {
             double X = pontoInicial.X, Y = pontoInicial.Y;
             
-
-            switch (Posicao)
-            {
-                //case Posicao.VoltadoBaixo:
-                //    //Y = Y - Settings.DistanciaCantoneiraGC + Settings.CantoneiraEspessura;
-                //    //X = X + Settings.CantoneiraEspessura + Settings.CantoneiraFolga;
-                //    break;
-                //case Posicao.VoltadoDireita:
-                //    X = X;// - ( Settings.DistanciaCantoneiraGC + Settings.CantoneiraEspessura);
-                //    //Y = this.bInicio == true ? Y : Y ;
-                //    break;
-                //case Posicao.VoltadoCima:
-                //    Y = Y + Settings.DistanciaCantoneiraL;
-                //    //X = X + Settings.CantoneiraEspessura + Settings.CantoneiraFolga;
-                //    break;
-                case Posicao.VoltadoEsqueda:
-                    X = X - Settings.CantoneiraComprimento;
-                    //Y = Y + Settings.CantoneiraEspessura + Settings.CantoneiraFolga;
-                    break;
-                default:
-                    break;
-            }
-
+            if (Posicao == Posicao.VoltadoEsqueda)
+                X = X - Settings.CantoneiraComprimento;
+                
             return new Point2d(X, Y);
         }
         private Posicao GetPosicaoRetangulo()
@@ -185,37 +191,78 @@ namespace ColunaPronta.Model
         private void SetLinha()
         {
             double X1, Y1 , X2, Y2;
-
-            switch (Posicao)
+          
+            if(this.tipoCantoneira == TipoCantoneira.Cantoneira38MM)
             {
-                case Posicao.VoltadoBaixo:
-                    X1 = bInicio ? pontoInicial.X + Settings.CantoneiraEspessura : pontoInicial.X + Settings.CantoneiraLargura - Settings.CantoneiraEspessura;
-                    Y1 = pontoInicial.Y;
-                    X2 = X1;
-                    Y2 = pontoInicial.Y - Settings.CantoneiraComprimento;
-                    break;
-                case Posicao.VoltadoDireita:
-                    X1 = pontoInicial.X;
-                    Y1 = bInicio ?  pontoInicial.Y - Settings.CantoneiraEspessura : pontoInicial.Y + Settings.CantoneiraEspessura - Settings.CantoneiraLargura;
-                    X2 = pontoInicial.X + Settings.CantoneiraComprimento; ;
-                    Y2 = Y1;
-                    break;
-                case Posicao.VoltadoCima:
-                    X1 = bInicio ? pontoInicial.X - Settings.CantoneiraEspessura : pontoInicial.X + Settings.CantoneiraEspessura;
-                    Y1 = pontoInicial.Y;
-                    X2 = X1;
-                    Y2 = pontoInicial.Y - Settings.CantoneiraComprimento;
-                    break;
-                default: // Posicao.Esquerda
-                    X1 = pontoInicial.X;
-                    Y1 = bInicio ? pontoInicial.Y - Settings.CantoneiraEspessura : pontoInicial.Y + Settings.CantoneiraEspessura - Settings.CantoneiraLargura;
-                    X2 = pontoInicial.X - Settings.CantoneiraComprimento; 
-                    Y2 = Y1;
-                    break;
+                switch (Posicao)
+                {
+                    case Posicao.VoltadoBaixo:
+                        X1 = pontoInicial.X;
+                        Y1 = pontoInicial.Y - Settings.CantoneiraEspessura ;
+                        X2 = pontoInicial.X + Settings.CantoneiraPosteLargura; 
+                        Y2 = Y1;
+                        break;
+                    case Posicao.VoltadoDireita:
+                        X1 = pontoInicial.X + Settings.CantoneiraEspessura;
+                        Y1 = pontoInicial.Y;
+                        X2 = X1;
+                        Y2 = pontoInicial.Y - Settings.CantoneiraPosteLargura;
+                        break;
+                    case Posicao.VoltadoCima:
+                        X1 = pontoInicial.X;
+                        Y1 = pontoInicial.Y + Settings.CantoneiraEspessura;
+                        X2 = pontoInicial.X + Settings.CantoneiraPosteLargura;
+                        Y2 = Y1;
+                        break;
+                    default:
+                        X1 = pontoInicial.X + Settings.CantoneiraEspessura;
+                        Y1 = pontoInicial.Y;
+                        X2 = X1;
+                        Y2 = pontoInicial.Y + Settings.CantoneiraPosteLargura;
+                        break;
+                }
             }
+            else
+            {
+                var bInicio = this.tipoCantoneira == TipoCantoneira.NormalInicio ? true : false;
 
+                switch (Posicao)
+                {
+                    case Posicao.VoltadoBaixo:
+                        X1 = bInicio ? pontoInicial.X + Settings.CantoneiraEspessura : pontoInicial.X + Settings.CantoneiraLargura - Settings.CantoneiraEspessura;
+                        Y1 = pontoInicial.Y;
+                        X2 = X1;
+                        Y2 = pontoInicial.Y - Settings.CantoneiraComprimento;
+                        break;
+                    case Posicao.VoltadoDireita:
+                        X1 = pontoInicial.X;
+                        Y1 = bInicio ? pontoInicial.Y - Settings.CantoneiraEspessura : pontoInicial.Y + Settings.CantoneiraEspessura - Settings.CantoneiraLargura;
+                        X2 = pontoInicial.X + Settings.CantoneiraComprimento; ;
+                        Y2 = Y1;
+                        break;
+                    case Posicao.VoltadoCima:
+                        X1 = bInicio ? pontoInicial.X - Settings.CantoneiraEspessura : pontoInicial.X + Settings.CantoneiraEspessura;
+                        Y1 = pontoInicial.Y;
+                        X2 = X1;
+                        Y2 = pontoInicial.Y - Settings.CantoneiraComprimento;
+                        break;
+                    default:
+                        X1 = pontoInicial.X;
+                        Y1 = bInicio ? pontoInicial.Y - Settings.CantoneiraEspessura : pontoInicial.Y + Settings.CantoneiraEspessura - Settings.CantoneiraLargura;
+                        X2 = pontoInicial.X - Settings.CantoneiraComprimento;
+                        Y2 = Y1;
+                        break;
+                }
+            }
+            
             Linha.Add(new Point2d(X1, Y1));
             Linha.Add(new Point2d(X2, Y2));
         }
+    }
+    public enum TipoCantoneira
+    {
+        NormalInicio,
+        NormalFim,
+        Cantoneira38MM
     }
 }

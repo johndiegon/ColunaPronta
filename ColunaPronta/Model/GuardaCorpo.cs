@@ -23,7 +23,7 @@ namespace ColunaPronta.Model
         public Point2d PontoB { get; set; }
         public bool bPosteInicial { get; set; }
         public bool bPosteFinal { get; set; }
-        public List<Retangulo> Postes { get; set; }
+        public List<Poste> Postes { get; set; }
         public List<Retangulo> Cantoneira { get; set; }
         public List<GuardaCorpoFilho> GuardaCorpos { get; set; }
         public Posicao Posicao { get; set; }
@@ -82,15 +82,10 @@ namespace ColunaPronta.Model
             var comprimentoRestante = this.Comprimento ;
             var X = this.PontoInicio.X;
             var Y = Posicao == Posicao.VoltadoCima ? this.PontoInicio.Y + Settings.CantoneiraComprimento : this.PontoInicio.Y;
-            var posicaoPoste = Posicao.Horizontal;
 
-            this.Postes= new List<Retangulo>();
+            this.Postes= new List<Poste>();
             this.GuardaCorpos = new List<GuardaCorpoFilho>();
 
-            if (this.Posicao == Posicao.VoltadoBaixo || this.Posicao == Posicao.VoltadoCima)
-            {
-                posicaoPoste = Posicao.Vertical;
-            }
 
             if (this.bPosteInicial)
             {
@@ -101,7 +96,7 @@ namespace ColunaPronta.Model
                     posteX = posteX - Settings.PosteComprimento;
                 }
 
-                var poste = new Retangulo(Settings.PosteLargura, Settings.PosteComprimento, new Point2d(posteX, postesY), posicaoPoste);
+                var poste = new Poste( new Point2d(posteX, postesY), this.Posicao, TipoPoste.Normal);
 
                 this.Postes.Add(poste);
 
@@ -138,7 +133,7 @@ namespace ColunaPronta.Model
 
                     #region >> Add Cantoneira 
 
-                    var poste = new Retangulo(Settings.PosteLargura, this.Settings.PosteComprimento, new Point2d(X, Y), posicaoPoste);
+                    var poste = new Poste(new Point2d(X, Y), this.Posicao, TipoPoste.Normal);
 
                     this.Postes.Add(poste);
 
@@ -195,7 +190,7 @@ namespace ColunaPronta.Model
                                 break;
                         }
 
-                        var poste = new Retangulo(this.Settings.PosteLargura, this.Settings.PosteComprimento, new Point2d(posteX, posteY), posicaoPoste);
+                        var poste = new Poste(new Point2d(posteX, posteY), this.Posicao, TipoPoste.Normal);
                         this.Postes.Add(poste);
                     }
 
@@ -208,13 +203,11 @@ namespace ColunaPronta.Model
         private void AddGuardaCorpo(double comprimento, double largura, Point2d pontoInicial)
         {
             Double X = pontoInicial.X, Y = pontoInicial.Y;
-            bool bCantoneiraInicio = true;
        
             #region >> Cantoneira Inicial
 
-            var cantoneiraInicial = new CantoneiraGuardaCorpo( new Point2d(X,Y), this.Posicao, bCantoneiraInicio );
+            var cantoneiraInicial = new CantoneiraGuardaCorpo( new Point2d(X,Y), this.Posicao, TipoCantoneira.NormalInicio );
 
-            bCantoneiraInicio = false;
             comprimento = comprimento - ((this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga));
 
             if (bVertical)
@@ -243,7 +236,7 @@ namespace ColunaPronta.Model
                 X = X + ( comprimento - this.Settings.CantoneiraLargura + this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga ) ;
             }
 
-            var cantoneiraFinal = new CantoneiraGuardaCorpo(new Point2d(X, Y), this.Posicao, bCantoneiraInicio);
+            var cantoneiraFinal = new CantoneiraGuardaCorpo(new Point2d(X, Y), this.Posicao, TipoCantoneira.NormalFim);
 
             #endregion
             var cantoneiras = new List<CantoneiraGuardaCorpo>();

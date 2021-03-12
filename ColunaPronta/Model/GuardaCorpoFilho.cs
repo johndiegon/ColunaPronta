@@ -8,7 +8,7 @@ namespace ColunaPronta.Model
         public Retangulo retangulo { get; }
         public double Largura { get; }
         public double Comprimento { get; }
-        public Retangulo PosteReforco { get; }
+        public Poste PosteReforco { get; }
         public List<CantoneiraGuardaCorpo> Cantoneiras { get; set; }
         public GuardaCorpoFilho(double largura, double comprimento, Point2d pontoA, Posicao posicao, double distanciaCantoneiraGC)
         {
@@ -42,33 +42,28 @@ namespace ColunaPronta.Model
             if (comprimento >= settings.ComprimentoMinimoReforco)
             {
                 double PosteX, PosteY;
-                var posicaoReforco = Posicao.Horizontal;
 
                 switch (posicao)
                 {
                     case Posicao.VoltadoBaixo:
-                        posicaoReforco = Posicao.Vertical;
                         PosteX = X + ((comprimento / 2) - (settings.PosteReforcaoLargura / 2));
                         PosteY = Y + (settings.PosteReforcoDistancia);
                         break;
                     case Posicao.VoltadoDireita:
-                        posicaoReforco = Posicao.Horizontal;
                         PosteX = X - settings.PosteReforcoDistancia;
                         PosteY = Y - ((comprimento / 2) - (settings.PosteReforcaoLargura / 2));
                         break;
                     case Posicao.VoltadoCima:
-                        posicaoReforco = Posicao.Vertical;
                         PosteX = X + ((comprimento / 2) - (settings.PosteReforcaoLargura / 2));
                         PosteY = Y - settings.CantoneiraComprimento + (settings.PosteReforcoComprimento - settings.PosteReforcoDistancia );
                         break;
                     default:
-                        posicaoReforco = Posicao.Horizontal;
                         PosteX = X - (settings.PosteReforcoComprimento  -   settings.PosteReforcoDistancia - settings.Largura);
                         PosteY = Y - +((comprimento / 2) - (settings.PosteReforcaoLargura / 2));
                         break;
                 }
 
-                this.PosteReforco = new Retangulo(settings.PosteReforcaoLargura, settings.PosteReforcoComprimento, new Point2d(PosteX, PosteY), posicaoReforco);
+                this.PosteReforco = new Poste(new Point2d(PosteX, PosteY), posicao, TipoPoste.Reforco);
             }
 
             this.retangulo = new Retangulo(largura, comprimento, new Point2d(X, Y), posicaoRetangulo);

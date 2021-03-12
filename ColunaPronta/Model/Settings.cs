@@ -24,6 +24,10 @@ namespace ColunaPronta.Model
         private double posteReforcaoLargura;
         private double posteReforcoComprimento;
         private double posteReforcoDistancia;
+        private double cantoneiraPosteLargura;
+        private double cantoneiraPosteComprimento;
+        private double parafusoRaio;
+
         public int Escala {  get { return _escala; } }
         public double Largura 
         { 
@@ -106,7 +110,23 @@ namespace ColunaPronta.Model
             get { return posteReforcoDistancia / _escala; }
             set { posteReforcoDistancia  = value; }
         }
-        
+
+        public double CantoneiraPosteLargura
+        {
+            get { return cantoneiraPosteLargura / _escala; }
+            set { cantoneiraPosteLargura = value; }
+        }
+        public double CantoneiraPosteComprimento
+        {
+            get { return cantoneiraPosteComprimento / _escala; }
+            set { cantoneiraPosteComprimento = value; }
+        }
+
+        public double ParafusoRaio
+        {
+            get { return parafusoRaio / _escala; }
+            set { parafusoRaio = value; }
+        }
         public Settings()
         {
             _escala = 1000;
@@ -149,6 +169,9 @@ namespace ColunaPronta.Model
                     this.DistanciaCantoneiraGC = Convert.ToDouble(values[13]);
                     this.DistanciaCantoneiraL = Convert.ToDouble(values[14]);
                     this.CantoneiraComprimento = Convert.ToDouble(values[15]);
+                    this.CantoneiraPosteLargura = Convert.ToDouble(values[16]); 
+                    this.CantoneiraPosteComprimento = Convert.ToDouble(values[17]); ;
+                    this.ParafusoRaio = Convert.ToDouble(values[18]); 
 
                 }
                 else
@@ -170,8 +193,10 @@ namespace ColunaPronta.Model
                     this.DistanciaCantoneiraGC = 18;
                     this.DistanciaCantoneiraL = 10;
                     this.CantoneiraComprimento = 70;
+                    this.cantoneiraPosteLargura = 30;
+                    this.cantoneiraPosteComprimento = 38;
+                    this.parafusoRaio = 3;
                 }
-
 
             }
             catch (Exception e)
@@ -192,13 +217,12 @@ namespace ColunaPronta.Model
 
                 if (File.Exists(nomeArquivo))
                 {
-                    writer = File.AppendText(nomeArquivo);
+                    File.Delete(nomeArquivo);
                 }
-                else
-                {
-                    writer = File.CreateText(nomeArquivo);
-                    writer.WriteLine( "Altura;Largura;ComprimentoPadrao;ComprimentoMaxima;ComprimentoMinimoReforco;PosteComprimento;PosteLargura;PosteReforcaoLargura;PosteReforcoComprimento;PosteReforcoDistancia;CantoneiraEspessura;CantoneiraFolga;CantoneiraLargura;DistanciaCantoneiraGC;DistanciaCantoneiraL;CantoneiraComprimento" );
-                }
+                
+                writer = File.CreateText(nomeArquivo);
+                writer.WriteLine("Altura;Largura;ComprimentoPadrao;ComprimentoMaxima;ComprimentoMinimoReforco;PosteComprimento;PosteLargura;PosteReforcaoLargura;PosteReforcoComprimento;PosteReforcoDistancia;CantoneiraEspessura;CantoneiraFolga;CantoneiraLargura;DistanciaCantoneiraGC;DistanciaCantoneiraL;CantoneiraComprimento;CantoneiraPosteLargura;CantoneiraPosteComprimento;ParafusoRaio;");
+
 
                 var settings = string.Concat(this.Altura.ToString(), ";"
                                            , this.Largura.ToString(), ";"
@@ -216,6 +240,9 @@ namespace ColunaPronta.Model
                                            , this.DistanciaCantoneiraGC.ToString(), ";"
                                            , this.DistanciaCantoneiraL.ToString(), ";"
                                            , this.CantoneiraComprimento.ToString(), ";"
+                                           , this.cantoneiraPosteLargura.ToString(), ";"
+                                           , this.cantoneiraPosteComprimento.ToString(), ";"
+                                           , this.parafusoRaio.ToString(), ";"
                                            ); 
                 writer.WriteLine(settings);
                 writer.Close();

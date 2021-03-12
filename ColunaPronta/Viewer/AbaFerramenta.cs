@@ -22,7 +22,7 @@ namespace ColunaPronta.Viewer
 
     public class AbaFerramenta
     {
-        private Aba GetAba
+        private Aba GetAbaColuna
         {
             get
             {
@@ -148,45 +148,110 @@ namespace ColunaPronta.Viewer
                 
                 buttons.Add(GeraListaCorte);
 
-                return new Aba
+                return  new Aba
                 {
                     Nome = "Coluna Pronta",
                     Id = "Coluna_Pronta_ID",
                     NomePainel = "Coluna Pronta",
                     Comandos = buttons
                 };
+
+                
+                
+            }
+        }
+
+        private Aba GetAbaGuardaCorpo
+        {
+            get
+            {
+                var buttons = new List<RibbonButton>();
+
+                // Botão para gerar coluna
+
+                Uri uriImage = new Uri(@"C:\Autodesk\ColunaPronta\Icones\coluna.png");
+                Uri uriImage2 = new Uri(@"C:\Autodesk\ColunaPronta\Icones\coluna.png");
+                BitmapImage image = new BitmapImage(uriImage);
+                BitmapImage largeImage = new BitmapImage(uriImage2);
+
+                Autodesk.Windows.RibbonButton geracp = new RibbonButton()
+                {
+                    Text = "Gera Guarda Corpo",
+                    Size = RibbonItemSize.Large,
+                    Image = image,
+                    LargeImage = largeImage,
+                    ShowText = true,
+                    CommandParameter = "geragc",
+                    CommandHandler = new SimpleButtonCmdHandler()
+                };
+                buttons.Add(geracp);
+
+                return new Aba
+                {
+                    Nome = "Guarda Corpo Pronto",
+                    Id = "Gurda_Corpo_ID",
+                    NomePainel = "Guarda Corpo Pronto",
+                    Comandos = buttons
+                };
+
+
+
             }
         }
 
         public void Add()
         {
-            var aba = GetAba;
+            var abaColuna = GetAbaColuna;
+            var abaGuardaCorpo = GetAbaGuardaCorpo;
 
             Autodesk.Windows.RibbonControl ribbonControl = Autodesk.Windows.ComponentManager.Ribbon;
             RibbonTab Tab = new RibbonTab()
             {
-                Title = aba.Nome,
-                Id = aba.Id
+                Title = abaColuna.Nome,
+                Id = abaColuna.Id
             };
 
             ribbonControl.Tabs.Add(Tab);
 
-            Autodesk.Windows.RibbonPanelSource srcPanel = new RibbonPanelSource()
+            #region >> Painel Coluna
+
+            Autodesk.Windows.RibbonPanelSource srcPanelColuna = new RibbonPanelSource()
             {
-                Title = aba.NomePainel
+                Title = abaColuna.NomePainel
             };
 
             RibbonPanel Panel = new RibbonPanel()
             {
-                Source = srcPanel
+                Source = srcPanelColuna
             };
 
+
+            foreach (RibbonButton button in abaColuna.Comandos)
+            {
+                srcPanelColuna.Items.Add(button);
+            }
+            #endregion
+
+
+            Autodesk.Windows.RibbonPanelSource srcPanelGuardaCorpo= new RibbonPanelSource()
+            {
+                Title = abaGuardaCorpo.NomePainel
+            };
+
+            RibbonPanel PanelGuardaCorpo = new RibbonPanel()
+            {
+                Source = srcPanelGuardaCorpo
+            };
+
+
+            foreach (RibbonButton button in abaGuardaCorpo.Comandos)
+            {
+                srcPanelGuardaCorpo.Items.Add(button);
+            }
+
+            Tab.Panels.Add(PanelGuardaCorpo);
             Tab.Panels.Add(Panel);
 
-            foreach (RibbonButton button in aba.Comandos)
-            {
-                srcPanel.Items.Add(button);
-            }
 
             Tab.IsActive = true;
 
@@ -221,6 +286,14 @@ namespace ColunaPronta.Viewer
                         {
                             MessageBox.Show("Favor selecionar a coluna!", "Atenção!");
                         }
+                    }
+
+                    if (button.CommandParameter.ToString() == "geragc")
+                    {
+                        WPFGuardaCorpo window = new WPFGuardaCorpo();
+                        window.MaxHeight = 430;
+                        window.MaxWidth = 430;
+                        window.Show();
                     }
 
                     if (button.CommandParameter.ToString() == "geraucp")
