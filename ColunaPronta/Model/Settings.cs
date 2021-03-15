@@ -254,7 +254,6 @@ namespace ColunaPronta.Model
                 Logger.Error(e.ToString());
             }
         }
-     
        
     }
 

@@ -55,7 +55,7 @@ namespace ColunaPronta.Model
                         break;
                     case Posicao.VoltadoCima:
                         PosteX = X + ((comprimento / 2) - (settings.PosteReforcaoLargura / 2));
-                        PosteY = Y - settings.CantoneiraComprimento + (settings.PosteReforcoComprimento - settings.PosteReforcoDistancia );
+                        PosteY = Y + ( settings.PosteComprimento - settings.PosteReforcoDistancia);
                         break;
                     default:
                         PosteX = X - (settings.PosteReforcoComprimento  -   settings.PosteReforcoDistancia - settings.Largura);

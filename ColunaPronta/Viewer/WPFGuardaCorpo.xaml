@@ -5,11 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ColunaPronta.Viewer"
              Title="Guarda Corpo"
-             mc:Ignorable="d" d:DesignWidth="400" Height="425">
+             mc:Ignorable="d" Height="425" Width="389.6">
 
     <Grid >
         <StackPanel HorizontalAlignment="Left" Height="400"  VerticalAlignment="Top" Width="400" >
-            <TabControl Height="399" >
+            <TabControl Height="399" BorderBrush="White" Margin="0,0,20,0">
                 <TabItem Header="Guarda Corpo" BorderBrush="White">
                     <Grid Height="356" Margin="0,0,0.4,0"  >
                         <StackPanel Margin="0,0,0,1"  >

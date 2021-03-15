@@ -1,9 +1,5 @@
 ﻿using Autodesk.AutoCAD.Geometry;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ColunaPronta.Model
 {
@@ -40,7 +36,7 @@ namespace ColunaPronta.Model
                 case Posicao.VoltadoCima:
                     posicao = Posicao.Vertical;
                     X = pointInicial.X;
-                    Y = pointInicial.Y + settings.PosteComprimento;
+                    Y = pointInicial.Y + settings.CantoneiraPosteComprimento;
                     break;
                 case Posicao.VoltadoDireita:
                     posicao = Posicao.Horizontal;
@@ -49,7 +45,7 @@ namespace ColunaPronta.Model
                     break;
                 default:
                     posicao = Posicao.Horizontal;
-                    X = pointInicial.X - settings.PosteComprimento;
+                    X = pointInicial.X - settings.CantoneiraPosteComprimento;
                     Y = pointInicial.Y;
                     break;
             }

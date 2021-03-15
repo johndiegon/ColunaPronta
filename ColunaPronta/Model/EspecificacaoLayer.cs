@@ -8,7 +8,11 @@ namespace ColunaPronta.Model
 {
     public enum Layer
     {
-
+        Cantoneira, 
+        CantoneiraL,
+        Tubo, 
+        Poste, 
+        PosteReforco
     }
     public class EspecificacaoLayer
     {
@@ -27,15 +31,15 @@ namespace ColunaPronta.Model
             string[] values = csvLine.Split(';');
             Detalhe detalhe = new Detalhe();
 
-            detalhe .Objeto = values[0];
-            detalhe.Nome = (values[1]).ToUpper();
+            detalhe.Objeto = (values[0]).ToUpper();
+            detalhe.Nome = values[1];
 
             return detalhe;
         }
         public string GetNomeLayer(Layer layer)
         {
             var nomeLayers = (from detalhe in Detalhes
-                              where detalhe.Objeto == layer.ToString()
+                              where detalhe.Objeto == layer.ToString().ToUpper()
                               select new Detalhe
                               {
                                   Nome = detalhe.Nome,

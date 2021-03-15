@@ -1,9 +1,5 @@
 ﻿using Autodesk.AutoCAD.Geometry;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ColunaPronta.Model
 {
@@ -16,6 +12,7 @@ namespace ColunaPronta.Model
         public Point2dCollection PontosL { get; set; }
         public Retangulo Retangulo { get; set; }
         public Point2dCollection Linha { get; set; }
+        public List<Circulo> Parafusos { get; set; } 
         public CantoneiraGuardaCorpo(Point2d pontoInicial, Posicao posicao, TipoCantoneira tipo)
         {
             this.tipoCantoneira = tipo;
@@ -33,7 +30,7 @@ namespace ColunaPronta.Model
                     break;
             }
         }
-
+        public string Layer { get; set; }
         private void SetCantoneiraNormal()
         {
             PontosL = new Point2dCollection();
@@ -45,23 +42,41 @@ namespace ColunaPronta.Model
             Posicao posicaoCantoneira = GetPosicaoEleCantoneira();
             Point2d pontoInicialdoELe = GetPontoInicialL();
             Point2d pontoInicialCantoneira = GetPontoInicial();
+
             SetPontosCantoneiraL(posicaoCantoneira, pontoInicialdoELe, lado, espessura);
 
             this.Retangulo = new Retangulo(Settings.CantoneiraLargura, Settings.CantoneiraComprimento, pontoInicialCantoneira, GetPosicaoRetangulo());
 
+            AddParafuso();
             SetLinha();
         }
+        private void AddParafuso()
+        {
+            Parafusos = new List<Circulo>();
 
+            if (TipoCantoneira.Cantoneira38MM == tipoCantoneira)
+            {
+                var circulo = new Circulo
+                {
+                    Raio = Settings.ParafusoRaio,
+                    Point = new Point3d(this.Retangulo.Meio.X, this.Retangulo.Meio.Y, 0)
+                };
+
+                this.Parafusos.Add(circulo);
+            }
+            else
+            {
+
+            }
+        }
         private void SetCantoneira38MM()
         {
-
             Linha = new Point2dCollection();
-
-            //Point2d pontoInicialCantoneira = GetPontoInicial();
             this.Retangulo = new Retangulo(Settings.CantoneiraPosteLargura, Settings.CantoneiraPosteComprimento, this.pontoInicial, GetPosicaoRetangulo()) ;
+
+            AddParafuso();
             SetLinha();
         }
-  
         private Posicao GetPosicaoEleCantoneira()
         {
             Posicao posicaoCantoneira;
@@ -210,15 +225,15 @@ namespace ColunaPronta.Model
                         break;
                     case Posicao.VoltadoCima:
                         X1 = pontoInicial.X;
-                        Y1 = pontoInicial.Y + Settings.CantoneiraEspessura;
+                        Y1 = pontoInicial.Y - (Settings.CantoneiraPosteComprimento - Settings.CantoneiraEspessura );
                         X2 = pontoInicial.X + Settings.CantoneiraPosteLargura;
                         Y2 = Y1;
                         break;
                     default:
-                        X1 = pontoInicial.X + Settings.CantoneiraEspessura;
+                        X1 = pontoInicial.X + (Settings.CantoneiraPosteComprimento - Settings.CantoneiraEspessura);
                         Y1 = pontoInicial.Y;
                         X2 = X1;
-                        Y2 = pontoInicial.Y + Settings.CantoneiraPosteLargura;
+                        Y2 = pontoInicial.Y - Settings.CantoneiraPosteLargura;
                         break;
                 }
             }

@@ -65,6 +65,47 @@ namespace ColunaPronta.Helper
                 Logger.Error(e.ToString());
             }
         }
+
+        public static void AddLinha(Document doc, Point3d point1, Point3d point2, Layer layer)
+        {
+            try
+            {
+                Point3d pnt1 = new Point3d(point1.X, point1.Y, point1.Z);
+                Point3d pnt2 = new Point3d(point2.X, point2.Y, point2.Z);
+
+                Database database = doc.Database;
+                Transaction transaction = database.TransactionManager.StartTransaction();
+                using (DocumentLock documentLock = doc.LockDocument())
+                {
+                    BlockTable blockTable = transaction.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
+                    BlockTableRecord blockTableRecord = transaction.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+                    Line line = new Line(pnt1, pnt2);
+
+                    var especificaolayer = new EspecificacaoLayer();
+                    var nomeLayer = especificaolayer.GetNomeLayer(layer);
+
+                    LayerTable layerTable = transaction.GetObject(database.LayerTableId, OpenMode.ForRead) as LayerTable;
+
+                    if (nomeLayer != "" && layerTable.Has(nomeLayer))
+                    {
+                        line.Layer = nomeLayer;
+                    }
+
+                    blockTableRecord.AppendEntity(line);
+                    transaction.AddNewlyCreatedDBObject(line, true);
+                    transaction.Commit();
+                }
+            }
+            catch (Exception e)
+            {
+                Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
+                editor.WriteMessage(e.ToString());
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+            }
+        }
+
         public static ObjectIdCollection GetEntitiesOnLayer(string layerName)
         {
             try
@@ -235,6 +276,51 @@ namespace ColunaPronta.Helper
                 Logger.Error(e.ToString());
             }
         }
+        public static void AddCircle(Document document, Point3d center, double radiusCircle, Layer layer)
+        {
+            try
+            {
+                Database database = document.Database;
+                Transaction transaction = database.TransactionManager.StartTransaction();
+
+                using (DocumentLock documentLock = document.LockDocument())
+                {
+                    BlockTable blockTable = transaction.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
+                    BlockTableRecord blockTableRecord = transaction.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+
+                    Circle acCirc = new Circle()
+                    {
+                        Center = center,
+                        Radius = radiusCircle,
+                        ColorIndex = (int)ColorIndex.vermelho //vermelho
+                    };
+
+                    var especificaolayer = new EspecificacaoLayer();
+                    var nomeLayer = especificaolayer.GetNomeLayer(layer);
+
+                    LayerTable layerTable = transaction.GetObject(database.LayerTableId, OpenMode.ForRead) as LayerTable;
+
+                    if (nomeLayer != "" && layerTable.Has(nomeLayer))
+                    {
+                        acCirc.Layer = nomeLayer;
+                    }
+
+                    blockTableRecord.AppendEntity(acCirc);
+                    transaction.AddNewlyCreatedDBObject(acCirc, true);
+                }
+
+                transaction.Commit();
+            }
+            catch (Exception e)
+            {
+                Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
+                editor.WriteMessage(e.ToString());
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+            }
+        }
+
         public static void AddNumeracao(Document document, Point3d point, int i)
         {
             AddTexto(document, point, i.ToString(), ColorIndex.verde);
@@ -312,6 +398,55 @@ namespace ColunaPronta.Helper
                         polyline.AddVertexAt(i, pt, 0, 0, 0);
                         i++;
                     }
+
+                    blockTableRecord.AppendEntity(polyline);
+                    transaction.AddNewlyCreatedDBObject(polyline, true);
+
+                    transaction.Commit();
+                }
+            }
+            catch (Exception e)
+            {
+                Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
+                editor.WriteMessage(e.ToString());
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+            }
+        }
+
+        public static void AddPolyline(Document document, Point2dCollection points, Layer layer)
+        {
+            try
+            {
+                Database database = document.Database;
+
+                Transaction transaction = document.TransactionManager.StartTransaction();
+
+                // polyline do fundo de Viga
+                using (DocumentLock documentLock = document.LockDocument())
+                {
+                    BlockTable blockTable = transaction.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
+                    BlockTableRecord blockTableRecord = transaction.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+
+                    var polyline = new Polyline(points.Count);
+
+                    var i = 0;
+                    foreach (var pt in points)
+                    {
+                        polyline.AddVertexAt(i, pt, 0, 0, 0);
+                        i++;
+                    }
+
+                    var especificaolayer = new EspecificacaoLayer();
+                    var nomeLayer = especificaolayer.GetNomeLayer(layer);
+
+                    LayerTable layerTable = transaction.GetObject(database.LayerTableId, OpenMode.ForRead) as LayerTable;
+
+                    if (nomeLayer != "" && layerTable.Has(nomeLayer))
+                    {
+                        polyline.Layer = nomeLayer;
+                    } 
 
                     blockTableRecord.AppendEntity(polyline);
                     transaction.AddNewlyCreatedDBObject(polyline, true);
