@@ -8,9 +8,8 @@ namespace ColunaPronta.Model
         public double Comprimento { get; set; }
         public double Area { get { return Largura * Comprimento; } }
         public Point2d PontoInicial { get; set; }
-        private Posicao Posicao { get; set; }
+        public Posicao Posicao { get; set; }
         public Point2dCollection Pontos { get; set; }
-        public Point2d Meio { get; set; }
         public Retangulo(double largura, double comprimento, Point2d pontoInicial, Posicao posicao)
         {
             this.Largura = largura;
@@ -39,19 +38,7 @@ namespace ColunaPronta.Model
             
             this.Pontos = collection;
 
-            SetMeio();
         }
-        private void SetMeio()
-        {
-            switch (Posicao)
-            {
-                case Posicao.Vertical:
-                    Meio = new Point2d(PontoInicial.X + (this.Largura /2 ), PontoInicial.Y - (this.Comprimento / 2));
-                    break;
-                case Posicao.Horizontal:
-                    Meio = new Point2d(PontoInicial.X + (this.Comprimento / 2 ), PontoInicial.Y - (this.Largura /2));
-                    break;
-            }
-        }
+      
     }
 }

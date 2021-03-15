@@ -132,6 +132,7 @@
     <Compile Include="Helper\IntegraLayout.cs" />
     <Compile Include="Model\Circulo.cs" />
     <Compile Include="Model\EspecificacaoLayer.cs" />
+    <Compile Include="Model\ObjetosSelecionados.cs" />
     <Compile Include="Model\Poste.cs" />
     <Compile Include="Model\Retangulo.cs" />
     <Compile Include="Model\Cantoneira.cs" />

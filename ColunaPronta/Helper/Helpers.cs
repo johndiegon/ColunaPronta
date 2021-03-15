@@ -320,7 +320,6 @@ namespace ColunaPronta.Helper
                 Logger.Error(e.ToString());
             }
         }
-
         public static void AddNumeracao(Document document, Point3d point, int i)
         {
             AddTexto(document, point, i.ToString(), ColorIndex.verde);
@@ -414,7 +413,6 @@ namespace ColunaPronta.Helper
                 Logger.Error(e.ToString());
             }
         }
-
         public static void AddPolyline(Document document, Point2dCollection points, Layer layer)
         {
             try
@@ -678,6 +676,123 @@ namespace ColunaPronta.Helper
 
                     tr.Commit();
                 }
+            }
+        }
+
+        public static ObjetosSelecionados GetObjetos()
+        {
+            Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
+            Document document = Application.DocumentManager.MdiActiveDocument;
+            PromptSelectionResult acSSPrompt = editor.GetSelection();
+            var objetos = new ObjetosSelecionados();
+
+            Database acCurDb = document.Database;
+
+            if (acSSPrompt.Status == PromptStatus.OK)
+            {
+                objetos.Polylines = Helpers.GetPolylines(document, acSSPrompt);
+                objetos.Circles   = Helpers.GetCircles(document, acSSPrompt);
+            }
+
+            return objetos;
+        }
+        public static List<Polyline> GetPolylines(Document document , PromptSelectionResult acSSPrompt)
+        {
+            try
+            {
+                var ListPolylines = new List<Polyline>();
+                var areaPolyline = new List<double>();
+                Database acCurDb = document.Database;
+
+                Transaction acTrans = acCurDb.TransactionManager.StartTransaction();
+                using (DocumentLock documentLock = document.LockDocument())
+                {
+                    // Request for objects to be selected in the drawing area
+
+                    // If the prompt status is OK, objects were selected
+                    if (acSSPrompt.Status == PromptStatus.OK)
+                    {
+                        SelectionSet acSSet = acSSPrompt.Value;
+
+                        // Step through the objects in the selection set
+                        foreach (SelectedObject acSSObj in acSSet)
+                        {
+                            // Check to make sure a valid SelectedObject object was returned
+                            if (acSSObj != null)
+                            {
+                                // Open the selected object for write
+                                var entity = acTrans.GetObject(acSSObj.ObjectId,
+                                                                 OpenMode.ForWrite) as Polyline;
+
+                                if (entity != null)
+                                {
+                                    ListPolylines.Add(entity);
+
+                                }
+                            }
+                        }
+                    }
+                }
+                return ListPolylines;
+            }
+            catch (Exception e)
+            {
+                Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
+                editor.WriteMessage(e.ToString());
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+                return null;
+            }
+        }
+
+        public static List<Circle> GetCircles(Document document, PromptSelectionResult acSSPrompt)
+        {
+            try
+            {
+                var ListCircles = new List<Circle>();
+                Database acCurDb = document.Database;
+
+                Transaction acTrans = acCurDb.TransactionManager.StartTransaction();
+                using (DocumentLock documentLock = document.LockDocument())
+                {
+                    // Request for objects to be selected in the drawing area
+
+                    // If the prompt status is OK, objects were selected
+                    if (acSSPrompt.Status == PromptStatus.OK)
+                    {
+                        SelectionSet acSSet = acSSPrompt.Value;
+
+                        // Step through the objects in the selection set
+                        foreach (SelectedObject acSSObj in acSSet)
+                        {
+                            // Check to make sure a valid SelectedObject object was returned
+                            if (acSSObj != null)
+                            {
+                                // Open the selected object for write
+                                var entity = acTrans.GetObject(acSSObj.ObjectId,
+                                                                 OpenMode.ForWrite) as Circle;
+
+                                if (entity != null)
+                                {
+                                    ListCircles.Add(entity);
+
+                                }
+                            }
+                        }
+                    }
+                }
+                return ListCircles;
+
+            }
+            catch (Exception e)
+            {
+                Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
+                editor.WriteMessage(e.ToString());
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+                return null;
             }
         }
     }

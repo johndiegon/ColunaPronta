@@ -3,11 +3,14 @@ using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Geometry;
 using ColunaPronta.Helper;
 using ColunaPronta.Model;
+using System.Collections.Generic;
+using Autodesk.AutoCAD.DatabaseServices;
 
 namespace ColunaPronta.Commands
 {
     public static class IntegraGuardaCorpo 
     {
+        #region >> Comandos 
         public static void Add(Posicao posicao, bool bPosteInicial, bool bPosteFinal)
         {
        
@@ -41,6 +44,16 @@ namespace ColunaPronta.Commands
             Integra(guardaCorpo);
         }
 
+        public static void GeraListaCorte()
+        {
+            var objetos = Helpers.GetObjetos();
+            GeraArquivoListaCorte(objetos);
+
+        }
+
+        #endregion
+
+        #region >> Métodos
         private static void Integra(GuardaCorpo guardaCorpo)
         {
             var document = Application.DocumentManager.MdiActiveDocument;
@@ -92,10 +105,31 @@ namespace ColunaPronta.Commands
                         Helpers.AddLinha(document, pnt1, pnt2, Layer.Cantoneira);
                     }
 
+                    if (cantoneira.Parafusos != null)
+                    {
+                        foreach (var parafuso in cantoneira.Parafusos)
+                        {
+                            Helpers.AddCircle(document, parafuso.Point, parafuso.Raio, Layer.Cantoneira);
+                        }
+                    }
                     Helpers.AddPolyline(document, cantoneira.PontosL, Layer.CantoneiraL);
 
                 }
             };
-        }  
+        }
+        
+        private static void GeraArquivoListaCorte(ObjetosSelecionados objetos )
+        {
+
+            if (objetos.Polylines != null)
+            {
+                var countpolylines = objetos.Polylines.Count;
+            }
+            if (objetos.Circles != null)
+            {
+                var countcircles = objetos.Circles.Count;
+            }
+        }
+        #endregion
     }
 }

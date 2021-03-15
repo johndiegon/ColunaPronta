@@ -53,20 +53,62 @@ namespace ColunaPronta.Model
         private void AddParafuso()
         {
             Parafusos = new List<Circulo>();
-
+            
             if (TipoCantoneira.Cantoneira38MM == tipoCantoneira)
             {
+                double X, Y;
+                switch (this.Retangulo.Posicao)
+                {
+                    case Posicao.Vertical:
+                        X = this.Retangulo.PontoInicial.X + (Settings.CantoneiraPosteComprimento / 2);
+                        Y = this.Retangulo.PontoInicial.Y - (Settings.CantoneiraPosteLargura / 2);
+
+                        break;
+                    default://case Posicao.Horizontal:
+                        X = this.Retangulo.PontoInicial.X + (Settings.CantoneiraPosteLargura / 2);
+                        Y = this.Retangulo.PontoInicial.Y - (Settings.CantoneiraPosteComprimento / 2);
+                        break;
+                }
                 var circulo = new Circulo
                 {
                     Raio = Settings.ParafusoRaio,
-                    Point = new Point3d(this.Retangulo.Meio.X, this.Retangulo.Meio.Y, 0)
+                    Point = new Point3d(X, Y, 0)
                 };
 
                 this.Parafusos.Add(circulo);
             }
             else
             {
+                double X1, X2, Y1, Y2;
+                switch (this.Retangulo.Posicao)
+                {
+                    case Posicao.Vertical:
+                        X1 = this.Retangulo.PontoInicial.X + (Settings.CantoneiraPosteComprimento / 4);
+                        Y1 = this.Retangulo.PontoInicial.Y - (Settings.CantoneiraPosteLargura / 2);
+                        X2 = X1;
+                        Y2 = this.Retangulo.PontoInicial.Y - (Settings.CantoneiraPosteComprimento / 2);
+                        break;
+                    default://case Posicao.Horizontal:
+                        X1 = this.Retangulo.PontoInicial.X + (Settings.CantoneiraPosteComprimento / 2);
+                        Y1 = this.Retangulo.PontoInicial.Y - (Settings.CantoneiraPosteLargura / 4);
+                        X2 = this.Retangulo.PontoInicial.X + (Settings.CantoneiraPosteLargura / 2);
+                        Y2 = Y1;
+                        break;
+                }
+                var circulo1 = new Circulo
+                {
+                    Raio = Settings.ParafusoRaio,
+                    Point = new Point3d(X1, Y1, 0)
+                };
 
+                this.Parafusos.Add(circulo1);
+                var circulo2 = new Circulo
+                {
+                    Raio = Settings.ParafusoRaio,
+                    Point = new Point3d(X2, Y2, 0)
+                };
+
+                this.Parafusos.Add(circulo2);
             }
         }
         private void SetCantoneira38MM()

@@ -186,6 +186,26 @@ namespace ColunaPronta.Viewer
                 };
                 buttons.Add(geracp);
 
+                // Botão para Lista de corte
+                uriImage = new Uri(@"C:\Autodesk\ColunaPronta\Icones\listacorte.png");
+                uriImage2 = new Uri(@"C:\Autodesk\ColunaPronta\Icones\listacorte.png");
+
+                image = new BitmapImage(uriImage);
+                largeImage = new BitmapImage(uriImage2);
+
+                Autodesk.Windows.RibbonButton GeraListaCorte = new RibbonButton()
+                {
+                    Text = "Lista de Corte",
+                    Size = RibbonItemSize.Large,
+                    Image = image,
+                    LargeImage = largeImage,
+                    ShowText = true,
+                    CommandParameter = "geralcgc",
+                    CommandHandler = new SimpleButtonCmdHandler()
+                };
+
+                buttons.Add(GeraListaCorte);
+
                 return new Aba
                 {
                     Nome = "Guarda Corpo Pronto",
@@ -193,9 +213,6 @@ namespace ColunaPronta.Viewer
                     NomePainel = "Guarda Corpo Pronto",
                     Comandos = buttons
                 };
-
-
-
             }
         }
 
@@ -358,6 +375,10 @@ namespace ColunaPronta.Viewer
                        IntegraColuna.GeraRelatorioExcel(TipoLista.ListaEntrega);
                     }
 
+                    if (button.CommandParameter.ToString() == "geralcgc")
+                    {
+                        IntegraGuardaCorpo.GeraListaCorte();
+                    }
                 }
             }
 

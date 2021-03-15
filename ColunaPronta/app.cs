@@ -119,7 +119,14 @@ namespace ColunaPronta
             window.Show();
 
         }
+        [CommandMethod("geralcgc")]
+        public void GeraListaCorteGuardaCorpo()
+        {
+            IntegraGuardaCorpo.GeraListaCorte();
 
+        }
+
+        
         #endregion
         public void AbreAbaFerramenta()
         {
