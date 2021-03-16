@@ -8,7 +8,8 @@ namespace ColunaPronta.Model
 {
     public enum TipoLista
     {
-        ListaEntrega,
-        ListaCorte
+        ListaEntregaColuna,
+        ListaCorteColuna, 
+        ListaCorteGuardaCorpo
     }
 }

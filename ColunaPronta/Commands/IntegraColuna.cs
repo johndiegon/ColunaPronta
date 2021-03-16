@@ -799,7 +799,7 @@ namespace ColunaPronta.Commands
                 var nomeProjeto = document.Window.Text;
                 var especificacoes = ArquivoCSV.GetEspecificacao();
                 var dadosRelatorio = GetDadosRelatorio(nomeProjeto);
-                int fatorTpRelatorio = tipoLista == TipoLista.ListaCorte ? 2 : 1;
+                int fatorTpRelatorio = tipoLista == TipoLista.ListaCorteColuna ? 2 : 1;
 
                 if (dadosRelatorio == null)
                 {
@@ -1225,7 +1225,7 @@ namespace ColunaPronta.Commands
 
                 #endregion
 
-                GeraArquivoExcel(arquivoExcel, nomeProjeto, tipoLista);
+                Helpers.GeraArquivoExcel(arquivoExcel, nomeProjeto, tipoLista);
 
             }
             catch (Exception e)
@@ -1237,86 +1237,6 @@ namespace ColunaPronta.Commands
         }
 
   
-        private static void GeraArquivoExcel(List<Planilha> arquivoExcel, string nomeProjeto, TipoLista tipoLista)
-        {
-            var excelApp = new Excel.Application();
-            // Make the object visible.
-            excelApp.Visible = true;
-            string path;
-
-            path = tipoLista == TipoLista.ListaEntrega ? string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\listaEntrega", nomeProjeto, ".xlsx") 
-                                                       : string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\ListaCorte", nomeProjeto, ".xlsx");
-
-            if(File.Exists(path))
-            {
-                File.Delete(path);
-            }
-
-            if (tipoLista == TipoLista.ListaEntrega)
-            {
-                File.Copy(@"C:\Autodesk\ColunaPronta\Template\ListaDeEntrega.xlsx", path);
-            }
-            else
-            {
-                File.Copy(@"C:\Autodesk\ColunaPronta\Template\ListaDeCorte.xlsx",path);
-            }
-
-           
-            // Create a new, empty workbook and add it to the collection returned
-            // by property Workbooks. The new workbook becomes the active workbook.
-            // Add has an optional parameter for specifying a praticular template.
-            // Because no argument is sent in this example, Add creates a new workbook.
-            excelApp.Workbooks.Open(path);
-
-            // This example uses a single workSheet. The explicit type casting is
-            // removed in a later procedure.
-            Excel._Worksheet workSheet = (Excel.Worksheet)excelApp.ActiveSheet;
-
-            if (tipoLista == TipoLista.ListaEntrega)
-            {
-                var row = 18;
-                foreach (var linha in arquivoExcel)
-                {
-                    if(
-                        linha.Peca.ToUpper() != ("CANTONEIRA").ToUpper() &&
-                        linha.Peca.ToUpper() != ("SAPATA").ToUpper() &&
-                        linha.Peca.ToUpper() != ("cantoneirapassante").ToUpper()
-                        )
-                    {
-                        row++;
-                        workSheet.Cells[row, "B"] = linha.Item.ToUpper();
-                        workSheet.Cells[row, "E"] = linha.Especificao.ToUpper();
-                        workSheet.Cells[row, "G"] = linha.Comprimento;
-                        workSheet.Cells[row, "H"] = linha.Quantidade;
-                        workSheet.Cells[row, "I"] = linha.Observacao.ToUpper();
-                    }
-              
-                }
-            }
-            else
-            {
-                var row = 9;
-                foreach (var linha in arquivoExcel)
-                {
-                    if( linha.Peca.ToUpper() == ("Coluna"              ).ToUpper()|| 
-                        linha.Peca.ToUpper() == ("colunaPassante").ToUpper()||
-                        linha.Peca.ToUpper() == ("CANTONEIRA").ToUpper()||
-                        linha.Peca.ToUpper() == ("SAPATA").ToUpper()  ||
-                        linha.Peca.ToUpper() == ("cantoneirapassante").ToUpper()
-
-
-                        )
-                    {
-                        row++;
-                        workSheet.Cells[row, "C"] = linha.Especificao.ToUpper();
-                        workSheet.Cells[row, "D"] = linha.Comprimento;
-                        workSheet.Cells[row, "E"] = linha.Quantidade;
-                        workSheet.Cells[row, "F"] = linha.Item.ToUpper();
-                    }
-                }
-            }         
-        }
-
         private static Sapata GetSapata(Point2d point1, Point2d point2)
         {
             //distanciaSapata

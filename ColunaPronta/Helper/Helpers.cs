@@ -7,6 +7,8 @@ using NLog.Config;
 using System;
 using Autodesk.AutoCAD.Colors;
 using ColunaPronta.Model;
+using Excel = Microsoft.Office.Interop.Excel;
+using System.IO;
 
 namespace ColunaPronta.Helper
 {
@@ -678,7 +680,6 @@ namespace ColunaPronta.Helper
                 }
             }
         }
-
         public static ObjetosSelecionados GetObjetos()
         {
             Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
@@ -745,7 +746,6 @@ namespace ColunaPronta.Helper
                 return null;
             }
         }
-
         public static List<Circle> GetCircles(Document document, PromptSelectionResult acSSPrompt)
         {
             try
@@ -795,6 +795,106 @@ namespace ColunaPronta.Helper
                 return null;
             }
         }
+
+        public static void GeraArquivoExcel(List<Planilha> arquivoExcel, string nomeProjeto, TipoLista tipoLista)
+        {
+            var excelApp = new Excel.Application();
+            // Make the object visible.
+            excelApp.Visible = true;
+            string path;
+
+            switch(tipoLista)
+            {
+                case TipoLista.ListaEntregaColuna:
+
+                    path = string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\listaEntrega", nomeProjeto, ".xlsx");
+                    File.Copy(@"C:\Autodesk\ColunaPronta\Template\ListaDeEntrega.xlsx", path);
+                    break;
+                case TipoLista.ListaCorteColuna:
+                    path = string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\ListaCorte", nomeProjeto, ".xlsx");
+                    File.Copy(@"C:\Autodesk\ColunaPronta\Template\ListaDeCorte.xlsx", path);
+                    break;
+                default: //ListaCorteGuardaCOrpo
+                    path = string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\ListaCorte", nomeProjeto, ".xlsx");
+                    File.Copy(@"C:\Autodesk\ColunaPronta\Template\ListaDeCorteGuardaCorpo.xlsx", path);
+                    break;
+            }   
+
+         
+
+            // Create a new, empty workbook and add it to the collection returned
+            // by property Workbooks. The new workbook becomes the active workbook.
+            // Add has an optional parameter for specifying a praticular template.
+            // Because no argument is sent in this example, Add creates a new workbook.
+            excelApp.Workbooks.Open(path);
+
+            // This example uses a single workSheet. The explicit type casting is
+            // removed in a later procedure.
+            Excel._Worksheet workSheet = (Excel.Worksheet)excelApp.ActiveSheet;
+
+            int row;
+
+            switch (tipoLista)
+            {
+                case TipoLista.ListaEntregaColuna:
+
+                    row = 18;
+                    foreach (var linha in arquivoExcel)
+                    {
+                        if (
+                            linha.Peca.ToUpper() != ("CANTONEIRA").ToUpper() &&
+                            linha.Peca.ToUpper() != ("SAPATA").ToUpper() &&
+                            linha.Peca.ToUpper() != ("cantoneirapassante").ToUpper()
+                            )
+                        {
+                            row++;
+                            workSheet.Cells[row, "B"] = linha.Item.ToUpper();
+                            workSheet.Cells[row, "E"] = linha.Especificao.ToUpper();
+                            workSheet.Cells[row, "G"] = linha.Comprimento;
+                            workSheet.Cells[row, "H"] = linha.Quantidade;
+                            workSheet.Cells[row, "I"] = linha.Observacao.ToUpper();
+                        }
+
+                    }
+
+                    break;
+                case TipoLista.ListaCorteColuna:
+                    row = 9;
+                    foreach (var linha in arquivoExcel)
+                    {
+                        if (linha.Peca.ToUpper() == ("Coluna").ToUpper() ||
+                            linha.Peca.ToUpper() == ("colunaPassante").ToUpper() ||
+                            linha.Peca.ToUpper() == ("CANTONEIRA").ToUpper() ||
+                            linha.Peca.ToUpper() == ("SAPATA").ToUpper() ||
+                            linha.Peca.ToUpper() == ("cantoneirapassante").ToUpper()
+
+
+                            )
+                        {
+                            row++;
+                            workSheet.Cells[row, "C"] = linha.Especificao.ToUpper();
+                            workSheet.Cells[row, "D"] = linha.Comprimento;
+                            workSheet.Cells[row, "E"] = linha.Quantidade;
+                            workSheet.Cells[row, "F"] = linha.Item.ToUpper();
+                        }
+                    }
+
+                    break;
+                default: //ListaCorteGuardaCOrpo
+                    row = 11;
+                    foreach (var linha in arquivoExcel)
+                    {
+                       workSheet.Cells[row, "C"] = linha.Especificao.ToUpper();
+                       workSheet.Cells[row, "D"] = linha.Comprimento;
+                       workSheet.Cells[row, "E"] = linha.Quantidade;
+                       workSheet.Cells[row, "F"] = linha.Observacao.ToUpper();
+                       row++;
+                    }
+                    break;
+            }
+
+        }
+
     }
 
 }

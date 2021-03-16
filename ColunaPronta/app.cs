@@ -98,13 +98,13 @@ namespace ColunaPronta
         [CommandMethod("GeraListaCorte")]
         public void GeraListaCorte()
         {
-            IntegraColuna.GeraRelatorioExcel(TipoLista.ListaCorte);
+            IntegraColuna.GeraRelatorioExcel(TipoLista.ListaCorteColuna);
         }
 
         [CommandMethod("GeraListaEntrega")]
         public void GeraListaEntrega()
         {
-            IntegraColuna.GeraRelatorioExcel(TipoLista.ListaEntrega);
+            IntegraColuna.GeraRelatorioExcel(TipoLista.ListaEntregaColuna);
         }
         #endregion
 

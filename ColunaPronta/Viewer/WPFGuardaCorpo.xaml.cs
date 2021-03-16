@@ -59,7 +59,7 @@ namespace ColunaPronta.Viewer
             textbox_cantoneiraComprimento.Text = settings.CantoneiraComprimento.ToString();   
             textBox_cantoneiraFolga.Text = settings.CantoneiraFolga.ToString();         
             textBox_cantoneiraEspessura.Text = settings.CantoneiraEspessura.ToString();     
-            textbox_reforcoLargura.Text = settings.PosteReforcaoLargura.ToString();          
+            textbox_reforcoLargura.Text = settings.PosteReforcoLargura.ToString();          
             textbox_reforcoComprimento.Text = settings.PosteReforcoComprimento.ToString();      
         }
 

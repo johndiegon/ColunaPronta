@@ -367,12 +367,12 @@ namespace ColunaPronta.Viewer
 
                     if (button.CommandParameter.ToString() == "GeraListaCorte")
                     {
-                        IntegraColuna.GeraRelatorioExcel(TipoLista.ListaCorte);
+                        IntegraColuna.GeraRelatorioExcel(TipoLista.ListaCorteColuna);
                     }
 
                     if (button.CommandParameter.ToString() == "GeraListaEntrega")
                     {
-                       IntegraColuna.GeraRelatorioExcel(TipoLista.ListaEntrega);
+                       IntegraColuna.GeraRelatorioExcel(TipoLista.ListaEntregaColuna);
                     }
 
                     if (button.CommandParameter.ToString() == "geralcgc")

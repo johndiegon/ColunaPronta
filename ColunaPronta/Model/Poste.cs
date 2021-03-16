@@ -71,8 +71,7 @@ namespace ColunaPronta.Model
                 posicao = Posicao.Horizontal;
             }
 
-            PosteRetangulo = new Retangulo(settings.PosteReforcaoLargura, settings.PosteReforcoComprimento, pointInicial, posicao);
-
+            PosteRetangulo = new Retangulo(settings.PosteReforcoLargura, settings.PosteReforcoComprimento, pointInicial, posicao);
         }
 
     }
