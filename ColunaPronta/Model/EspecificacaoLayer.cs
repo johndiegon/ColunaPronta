@@ -24,6 +24,7 @@ namespace ColunaPronta.Model
         {
             public string Objeto { get; set; }
             public string Nome { get; set; }
+            public string Perfil { get; set; }
         }
         public List<Detalhe> Detalhes { get; set;}
         public static EspecificacaoLayer.Detalhe FromCsv(string csvLine)
@@ -33,6 +34,7 @@ namespace ColunaPronta.Model
 
             detalhe.Objeto = (values[0]).ToUpper();
             detalhe.Nome = values[1];
+            detalhe.Perfil = values[2];
 
             return detalhe;
         }
@@ -49,6 +51,21 @@ namespace ColunaPronta.Model
 
             return nomeLayers == null ? "" : nomeLayers.Nome;
         }
+        public string GetDescricaoLayer(Layer layer)
+        {
+            var nomeLayers = (from detalhe in Detalhes
+                              where detalhe.Objeto == layer.ToString().ToUpper()
+                              select new Detalhe
+                              {
+                                  Nome = detalhe.Nome,
+                                  Objeto = detalhe.Objeto,
+                                  Perfil = detalhe.Perfil
+                              }
+                            ).FirstOrDefault();
+
+            return nomeLayers == null ? "" : nomeLayers.Perfil;
+        }
+
         private static List<EspecificacaoLayer.Detalhe> GetDetalhes()
         {
             try
@@ -78,6 +95,19 @@ namespace ColunaPronta.Model
                 Logger.Error(e.ToString());
                 return null;
             }
+        }
+  
+        public Layer GetLayer(string nome)
+        {
+            
+            var nomeLayer = (from detalhe in Detalhes
+                             where detalhe.Nome.ToUpper() == nome.ToUpper()
+                             select detalhe.Objeto
+                             ).FirstOrDefault();
+
+            Layer layer = (Layer)Enum.Parse(typeof(Layer), nomeLayer, true);
+
+            return layer;
         }
     }
     

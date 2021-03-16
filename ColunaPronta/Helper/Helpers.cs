@@ -808,14 +808,26 @@ namespace ColunaPronta.Helper
                 case TipoLista.ListaEntregaColuna:
 
                     path = string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\listaEntrega", nomeProjeto, ".xlsx");
+                    if(File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
                     File.Copy(@"C:\Autodesk\ColunaPronta\Template\ListaDeEntrega.xlsx", path);
                     break;
                 case TipoLista.ListaCorteColuna:
                     path = string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\ListaCorte", nomeProjeto, ".xlsx");
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
                     File.Copy(@"C:\Autodesk\ColunaPronta\Template\ListaDeCorte.xlsx", path);
                     break;
                 default: //ListaCorteGuardaCOrpo
                     path = string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\ListaCorte", nomeProjeto, ".xlsx");
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
                     File.Copy(@"C:\Autodesk\ColunaPronta\Template\ListaDeCorteGuardaCorpo.xlsx", path);
                     break;
             }   
@@ -887,7 +899,7 @@ namespace ColunaPronta.Helper
                        workSheet.Cells[row, "C"] = linha.Especificao.ToUpper();
                        workSheet.Cells[row, "D"] = linha.Comprimento;
                        workSheet.Cells[row, "E"] = linha.Quantidade;
-                       workSheet.Cells[row, "F"] = linha.Observacao.ToUpper();
+                       //workSheet.Cells[row, "F"] = linha.Observacao.ToUpper();
                        row++;
                     }
                     break;
