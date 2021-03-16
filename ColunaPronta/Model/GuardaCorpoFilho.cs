@@ -132,10 +132,10 @@ namespace ColunaPronta.Model
             }
 
             var posteExterno = new Retangulo(settings.PosteReforcoLargura, settings.PosteReforcoComprimento, new Point2d(X, Y), posicaoRetangulo);
-            var posteInterno = new Retangulo(settings.PosteReforcoLargura - ( settings.PosteEspessura * 2), settings.PosteReforcoComprimento - (settings.PosteEspessura * 2), new Point2d(X + settings.PosteEspessura, Y -settings.PosteEspessura), posicaoRetangulo);
+            //var posteInterno = new Retangulo(settings.PosteReforcoLargura - ( settings.PosteEspessura * 2), settings.PosteReforcoComprimento - (settings.PosteEspessura * 2), new Point2d(X + settings.PosteEspessura, Y -settings.PosteEspessura), posicaoRetangulo);
 
             poste.Add(posteExterno);
-            poste.Add(posteInterno);
+            //poste.Add(posteInterno);
 
             Poste = poste;
 
