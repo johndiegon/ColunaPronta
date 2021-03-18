@@ -67,25 +67,25 @@ namespace ColunaPronta.Viewer
 
                 buttons.Add(geraucp);
 
-                //// Botão para gerar coluna identificada
-                //uriImage = new Uri(@"C:\Autodesk\ColunaPronta\Icones\iconei.png");
-                //uriImage2 = new Uri(@"C:\Autodesk\ColunaPronta\Icones\iconei.png");
+                // Botão para gerar coluna identificada
+                uriImage = new Uri(@"C:\Autodesk\ColunaPronta\Icones\iconei.png");
+                uriImage2 = new Uri(@"C:\Autodesk\ColunaPronta\Icones\iconei.png");
 
-                //image = new BitmapImage(uriImage);
-                //largeImage = new BitmapImage(uriImage2);
+                image = new BitmapImage(uriImage);
+                largeImage = new BitmapImage(uriImage2);
 
-                //Autodesk.Windows.RibbonButton geraicp = new RibbonButton()
-                //{
-                //    Text = "Gera ",
-                //    Size = RibbonItemSize.Large,
-                //    Image = image,
-                //    LargeImage = largeImage,
-                //    ShowText = true,
-                //    CommandParameter = "geraicp",
-                //    CommandHandler = new SimpleButtonCmdHandler()
-                //};
+                Autodesk.Windows.RibbonButton geraicp = new RibbonButton()
+                {
+                    Text = "Gera ",
+                    Size = RibbonItemSize.Large,
+                    Image = image,
+                    LargeImage = largeImage,
+                    ShowText = true,
+                    CommandParameter = "geraicp",
+                    CommandHandler = new SimpleButtonCmdHandler()
+                };
 
-                //buttons.Add(geraicp);
+                buttons.Add(geraicp);
 
                 // Botão para gerar coluna identificada
                 uriImage = new Uri(@"C:\Autodesk\ColunaPronta\Icones\relatorio.png");
@@ -250,7 +250,7 @@ namespace ColunaPronta.Viewer
             #endregion
 
 
-            Autodesk.Windows.RibbonPanelSource srcPanelGuardaCorpo= new RibbonPanelSource()
+            Autodesk.Windows.RibbonPanelSource srcPanelGuardaCorpo = new RibbonPanelSource()
             {
                 Title = abaGuardaCorpo.NomePainel
             };

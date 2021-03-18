@@ -807,7 +807,7 @@ namespace ColunaPronta.Helper
             {
                 case TipoLista.ListaEntregaColuna:
 
-                    path = string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\listaEntrega", nomeProjeto, ".xlsx");
+                    path = string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\listaEntrega", nomeProjeto, System.Guid.NewGuid().ToString(), ".xlsx");
                     if(File.Exists(path))
                     {
                         File.Delete(path);
@@ -815,7 +815,7 @@ namespace ColunaPronta.Helper
                     File.Copy(@"C:\Autodesk\ColunaPronta\Template\ListaDeEntrega.xlsx", path);
                     break;
                 case TipoLista.ListaCorteColuna:
-                    path = string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\ListaCorte", nomeProjeto, ".xlsx");
+                    path = string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\ListaCorte", nomeProjeto, System.Guid.NewGuid().ToString(), ".xlsx");
                     if (File.Exists(path))
                     {
                         File.Delete(path);
@@ -823,7 +823,7 @@ namespace ColunaPronta.Helper
                     File.Copy(@"C:\Autodesk\ColunaPronta\Template\ListaDeCorte.xlsx", path);
                     break;
                 default: //ListaCorteGuardaCOrpo
-                    path = string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\ListaCorte", nomeProjeto, ".xlsx");
+                    path = string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\ListaCorte", nomeProjeto, System.Guid.NewGuid().ToString(), ".xlsx");
                     if (File.Exists(path))
                     {
                         File.Delete(path);
@@ -870,6 +870,7 @@ namespace ColunaPronta.Helper
                     }
 
                     break;
+
                 case TipoLista.ListaCorteColuna:
                     row = 9;
                     foreach (var linha in arquivoExcel)
@@ -904,6 +905,7 @@ namespace ColunaPronta.Helper
                     }
                     break;
             }
+  
 
         }
 

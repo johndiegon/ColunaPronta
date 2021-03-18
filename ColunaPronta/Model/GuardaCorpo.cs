@@ -82,12 +82,7 @@ namespace ColunaPronta.Model
             if (this.bPosteInicial)
             {
                 double posteX = X, postesY = Y;
-
-                if(Posicao == Posicao.VoltadoEsqueda)
-                {
-                    posteX = posteX - Settings.PosteComprimento;
-                }
-
+              
                 var poste = new Poste( new Point2d(posteX, postesY), this.Posicao, TipoPoste.Normal);
 
                 this.Postes.Add(poste);
@@ -133,7 +128,7 @@ namespace ColunaPronta.Model
 
                     if (bVertical)
                     {
-                        Y = Y - (this.Settings.PosteLargura );
+                        Y = Y - (this.Settings.PosteLargura);
                     } else
                     {
                         X = X + (this.Settings.PosteLargura);
@@ -161,27 +156,12 @@ namespace ColunaPronta.Model
                     {
                         double posteX = X, posteY = Y;
 
-                        if (Posicao == Posicao.VoltadoEsqueda)
-                        {
-                            posteX = posteX - Settings.PosteComprimento;
-                        }
+                        //if (Posicao == Posicao.VoltadoEsqueda)
+                        //{
+                        //    posteX = posteX - Settings.PosteComprimento;
+                        //}
 
-                        switch (this.Posicao)
-                        {
-                            case Posicao.VoltadoBaixo:
-                                posteX = X + (Settings.CantoneiraFolga + Settings.CantoneiraEspessura) ;
-                                break;
-                            case Posicao.VoltadoDireita:
-                                posteY = Y - ( ( Settings.CantoneiraFolga + Settings.CantoneiraEspessura) ) ;
-                                break;
-                            case Posicao.VoltadoCima:
-                                posteX = X + (Settings.CantoneiraFolga + Settings.CantoneiraEspessura) ;
-                                break;
-                            default:
-                                posteY = Y - ((Settings.CantoneiraFolga + Settings.CantoneiraEspessura));
-                                break;
-                        }
-
+                        
                         var poste = new Poste(new Point2d(posteX, posteY), this.Posicao, TipoPoste.Normal);
                         this.Postes.Add(poste);
                     }
@@ -200,7 +180,7 @@ namespace ColunaPronta.Model
 
             var cantoneiraInicial = new CantoneiraGuardaCorpo( new Point2d(X,Y), this.Posicao, TipoCantoneira.NormalInicio );
 
-            comprimento = comprimento - ((this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga));
+            comprimento = comprimento - ((this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga)*2);
 
             if (bVertical)
             {

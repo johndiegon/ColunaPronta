@@ -22,38 +22,47 @@ namespace ColunaPronta.Model
         }
         private void SetPosteNormal(Point2d pointInicial, Posicao posicao)
         {
-            double X, Y;
+            double posteX, posteY, cantoneiraX, cantoneiraY;
             var settings = new Settings();
             var cantoneiras = new List<CantoneiraGuardaCorpo>();
             var posicaoCantoneira = posicao;
+            
             switch (posicao)
             {
                 case Posicao.VoltadoBaixo:
                     posicao = Posicao.Vertical;
-                    X = pointInicial.X;
-                    Y = pointInicial.Y - settings.PosteComprimento;
+                    posteX = pointInicial.X;
+                    posteY = pointInicial.Y; 
+                    cantoneiraX = posteX;
+                    cantoneiraY = posteY - settings.PosteComprimento;
                     break;
                 case Posicao.VoltadoCima:
                     posicao = Posicao.Vertical;
-                    X = pointInicial.X;
-                    Y = pointInicial.Y + settings.CantoneiraPosteComprimento;
+                    posteX = pointInicial.X;
+                    posteY = pointInicial.Y; 
+                    cantoneiraX = posteX;
+                    cantoneiraY = posteY + settings.CantoneiraPosteComprimento;
+
                     break;
                 case Posicao.VoltadoDireita:
                     posicao = Posicao.Horizontal;
-                    X = pointInicial.X + settings.PosteComprimento;
-                    Y = pointInicial.Y;
+                    posteX = pointInicial.X;
+                    posteY = pointInicial.Y;
+                    cantoneiraX = posteX + settings.PosteComprimento;
+                    cantoneiraY = posteY;
                     break;
                 default:
                     posicao = Posicao.Horizontal;
-                    X = pointInicial.X - settings.CantoneiraPosteComprimento;
-                    Y = pointInicial.Y;
+                    posteX = pointInicial.X -settings.PosteComprimento;
+                    posteY = pointInicial.Y;
+                    cantoneiraX = posteX - settings.CantoneiraPosteComprimento;
+                    cantoneiraY = posteY;
                     break;
             }
-       
         
-            PosteRetangulo = new Retangulo(settings.PosteLargura, settings.PosteComprimento, pointInicial, posicao);
+            PosteRetangulo = new Retangulo(settings.PosteLargura, settings.PosteComprimento, new Point2d(posteX, posteY), posicao);
 
-            var cantoneira = new CantoneiraGuardaCorpo(new Point2d(X, Y), posicaoCantoneira, TipoCantoneira.Cantoneira38MM);
+            var cantoneira = new CantoneiraGuardaCorpo(new Point2d(cantoneiraX, cantoneiraY), posicaoCantoneira, TipoCantoneira.Cantoneira38MM);
             cantoneiras.Add(cantoneira);
             this.Cantoneiras = cantoneiras;
         }

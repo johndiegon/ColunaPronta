@@ -15,7 +15,7 @@ namespace ColunaPronta.Model
             this.Largura = largura;
             this.Comprimento = comprimento;
             this.PontoInicial = pontoInicial;
-
+            this.Posicao = posicao;
             var collection = new Point2dCollection();
 
             switch (posicao)

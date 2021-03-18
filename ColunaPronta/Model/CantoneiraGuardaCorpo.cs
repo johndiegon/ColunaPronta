@@ -60,13 +60,13 @@ namespace ColunaPronta.Model
                 switch (this.Retangulo.Posicao)
                 {
                     case Posicao.Vertical:
-                        X = this.Retangulo.PontoInicial.X + (Settings.CantoneiraPosteComprimento / 2);
-                        Y = this.Retangulo.PontoInicial.Y - (Settings.CantoneiraPosteLargura / 2);
+                        X = this.Retangulo.PontoInicial.X + (Settings.CantoneiraPosteLargura / 2f);
+                        Y = this.Retangulo.PontoInicial.Y - (Settings.CantoneiraPosteComprimento / 2f);
 
                         break;
                     default://case Posicao.Horizontal:
-                        X = this.Retangulo.PontoInicial.X + (Settings.CantoneiraPosteLargura / 2);
-                        Y = this.Retangulo.PontoInicial.Y - (Settings.CantoneiraPosteComprimento / 2);
+                        X = this.Retangulo.PontoInicial.X + (Settings.CantoneiraPosteComprimento / 2f);
+                        Y = this.Retangulo.PontoInicial.Y - (Settings.CantoneiraPosteLargura / 2f);
                         break;
                 }
                 var circulo = new Circulo
@@ -80,18 +80,22 @@ namespace ColunaPronta.Model
             else
             {
                 double X1, X2, Y1, Y2;
+                float distancia1 = (26f / 1000f);
+                float distancia2 = (26f + 20f) / 1000f;
+
                 switch (this.Retangulo.Posicao)
                 {
                     case Posicao.Vertical:
-                        X1 = this.Retangulo.PontoInicial.X + (Settings.CantoneiraPosteComprimento / 4);
-                        Y1 = this.Retangulo.PontoInicial.Y - (Settings.CantoneiraPosteLargura / 2);
+                   
+                        X1 = this.Retangulo.PontoInicial.X + (this.Retangulo.Largura/ 2);
+                        Y1 = this.Retangulo.PontoInicial.Y - distancia1;
                         X2 = X1;
-                        Y2 = this.Retangulo.PontoInicial.Y - (Settings.CantoneiraPosteComprimento / 2);
+                        Y2 = this.Retangulo.PontoInicial.Y - distancia2;
                         break;
                     default://case Posicao.Horizontal:
-                        X1 = this.Retangulo.PontoInicial.X + (Settings.CantoneiraPosteComprimento / 2);
-                        Y1 = this.Retangulo.PontoInicial.Y - (Settings.CantoneiraPosteLargura / 4);
-                        X2 = this.Retangulo.PontoInicial.X + (Settings.CantoneiraPosteLargura / 2);
+                        X1 = this.Retangulo.PontoInicial.X + distancia1;
+                        Y1 = this.Retangulo.PontoInicial.Y - (Settings.CantoneiraPosteLargura / 2f);
+                        X2 = this.Retangulo.PontoInicial.X + distancia2;
                         Y2 = Y1;
                         break;
                 }
@@ -102,6 +106,7 @@ namespace ColunaPronta.Model
                 };
 
                 this.Parafusos.Add(circulo1);
+              
                 var circulo2 = new Circulo
                 {
                     Raio = Settings.ParafusoRaio,

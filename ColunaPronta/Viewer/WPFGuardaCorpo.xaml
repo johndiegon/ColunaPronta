@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ColunaPronta.Viewer"
              Title="Guarda Corpo"
-             mc:Ignorable="d" Height="425" Width="389.6">
+             mc:Ignorable="d" Height="417.8" Width="400">
 
     <Grid >
         <StackPanel HorizontalAlignment="Left" Height="400"  VerticalAlignment="Top" Width="400" >
@@ -43,38 +43,38 @@
                 </TabItem>
                 <TabItem Header="Configurações" BorderBrush="White">
                     <StackPanel>
-                        <TextBlock  x:Name="TextBlock_altura">Altura:</TextBlock>
-                        <TextBox x:Name="textBox_altura"></TextBox>
-                        <TextBlock x:Name="TextBlock_largura">Largura do Guarda Corpo:</TextBlock>
-                        <TextBox x:Name="textbox_largura"></TextBox>
-                        <TextBlock x:Name="TextBlock_comprimentoPadrao">Comprimento Padrão do Guarda Corpo:</TextBlock>
-                        <TextBox x:Name="textbox_comprimentoPadrao"></TextBox>
-                        <TextBlock x:Name="TextBlock_comprimentoMaximo">Comprimento Maximo do Guarda Corpo:</TextBlock>
-                        <TextBox   x:Name="TextBox_comprimentoMaximo"></TextBox>
-                        <TextBlock x:Name="textBlock_comprimentoMinimoReforco">Comprimento Minimo do Guarda Corpo para Reforço:</TextBlock>
-                        <TextBox   x:Name="textbox_comprimentoMinimoReforco"></TextBox>
+                        <TextBlock  x:Name="TextBlock_altura">Altura (m):</TextBlock>
+                        <TextBox x:Name="textBox_altura" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+                        <TextBlock x:Name="TextBlock_largura">Largura (mm) do Guarda Corpo:</TextBlock>
+                        <TextBox x:Name="textbox_largura" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+                        <TextBlock x:Name="TextBlock_comprimentoPadrao">Comprimento (mm) Padrão do Guarda Corpo:</TextBlock>
+                        <TextBox x:Name="textbox_comprimentoPadrao" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+                        <TextBlock x:Name="TextBlock_comprimentoMaximo">Comprimento (mm) Maximo do Guarda Corpo:</TextBlock>
+                        <TextBox   x:Name="TextBox_comprimentoMaximo" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+                        <TextBlock x:Name="textBlock_comprimentoMinimoReforco">Comprimento (mm) Minimo do Guarda Corpo para Reforço:</TextBlock>
+                        <TextBox   x:Name="textbox_comprimentoMinimoReforco" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
                     </StackPanel>
 
                 </TabItem>
                 <TabItem Header="Poste e Cantoneira" BorderBrush="White">
                     <Grid>
                         <StackPanel>
-                            <TextBlock x:Name="textBlock_comprimentoPoste">Comprimento do Poste:</TextBlock>
-                            <TextBox   x:Name="textbox_comprimentoPoste"></TextBox>
-                            <TextBlock x:Name="textBlock_larguraPoste">Largura do Poste:</TextBlock>
-                            <TextBox   x:Name="textbox_larguraPoste"></TextBox>
-                            <TextBlock x:Name="textBlock_cantoneiraLargura">Largura da Cantoneira:</TextBlock>
-                            <TextBox   x:Name="textbox_cantoneiraLargura"></TextBox>
-                            <TextBlock x:Name="textBlock_cantoneiraComprimento">Comprimento da Cantoneira</TextBlock>
-                            <TextBox   x:Name="textbox_cantoneiraComprimento"></TextBox>
-                            <TextBlock x:Name="textBlock_cantoneiraFolga">Folga da Cantoneira</TextBlock>
-                            <TextBox   x:Name="textBox_cantoneiraFolga"></TextBox>
-                            <TextBlock x:Name="textBlock_cantoneiraEspessura">Espessura da Cantoneira:</TextBlock>
-                            <TextBox   x:Name="textBox_cantoneiraEspessura"></TextBox>
-                            <TextBlock x:Name="textBlock_reforcoLargura">Largura do Poste de Reforço:</TextBlock>
-                            <TextBox   x:Name="textbox_reforcoLargura"></TextBox>
-                            <TextBlock x:Name="textBlock_reforcoComprimento">Comprimento do Poste de Reforço:</TextBlock>
-                            <TextBox   x:Name="textbox_reforcoComprimento"></TextBox>
+                            <TextBlock x:Name="textBlock_comprimentoPoste">Comprimento (mm) do Poste:</TextBlock>
+                            <TextBox   x:Name="textbox_comprimentoPoste" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+                            <TextBlock x:Name="textBlock_larguraPoste">Largura (mm) do Poste:</TextBlock>
+                            <TextBox   x:Name="textbox_larguraPoste" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+                            <TextBlock x:Name="textBlock_cantoneiraLargura" PreviewTextInput="TextBox_PreviewTextInput">Largura da Cantoneira:</TextBlock>
+                            <TextBox   x:Name="textbox_cantoneiraLargura" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+                            <TextBlock x:Name="textBlock_cantoneiraComprimento">Comprimento (mm) da Cantoneira</TextBlock>
+                            <TextBox   x:Name="textbox_cantoneiraComprimento" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+                            <TextBlock x:Name="textBlock_cantoneiraFolga">Folga (mm) da Cantoneira</TextBlock>
+                            <TextBox   x:Name="textBox_cantoneiraFolga" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+                            <TextBlock x:Name="textBlock_cantoneiraEspessura">Espessura (mm) da Cantoneira:</TextBlock>
+                            <TextBox   x:Name="textBox_cantoneiraEspessura" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+                            <TextBlock x:Name="textBlock_reforcoLargura">Largura (mm) do Poste de Reforço:</TextBlock>
+                            <TextBox   x:Name="textbox_reforcoLargura" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+                            <TextBlock x:Name="textBlock_reforcoComprimento">Comprimento (mm) do Poste de Reforço:</TextBlock>
+                            <TextBox   x:Name="textbox_reforcoComprimento" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
                         </StackPanel>
                     </Grid>
                 </TabItem>
