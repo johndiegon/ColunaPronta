@@ -4,7 +4,14 @@
     {
         padrao = 999,
         verde = 3,
-        vermelho = 1
+        Azul  = 5,
+        vermelho = 1, 
+        AzulEscuro = 170,
+        AzulClaro = 150,
+        Branco = 7,
+        AzulPersonalizado,
+        AzulEscuroPersonalizado
+       
     }
 }
 

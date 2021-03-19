@@ -126,7 +126,19 @@ namespace ColunaPronta
 
         }
 
-        
+        [CommandMethod("testevertical")]
+        public void TesteVertical()
+        {
+            IntegraGuardaCorpoVertical.Integra();
+        }
+
+
+        [CommandMethod("testehatch")]
+        public void TesteTraceBoundaryAndHatch()
+        {
+            Helpers.TraceBoundaryAndHatch();
+        }
+
         #endregion
         public void AbreAbaFerramenta()
         {

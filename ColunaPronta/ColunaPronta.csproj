@@ -117,6 +117,7 @@
     <Compile Include="Commands\IntegraGuardaCorpo.cs" />
     <Compile Include="Commands\IntegraColuna.cs" />
     <Compile Include="app.cs" />
+    <Compile Include="Commands\IntegraGuardaCorpoVertical.cs" />
     <Compile Include="Commands\LayoutCreation.cs" />
     <Compile Include="Commands\teste\Class1.cs" />
     <Compile Include="Commands\teste\Plott.cs" />
@@ -126,6 +127,7 @@
     <Compile Include="Helper\IntegraLayout.cs" />
     <Compile Include="Model\Circulo.cs" />
     <Compile Include="Model\EspecificacaoLayer.cs" />
+    <Compile Include="Model\GuardaCorpoVertical.cs" />
     <Compile Include="Model\ObjetosSelecionados.cs" />
     <Compile Include="Model\Poste.cs" />
     <Compile Include="Model\Retangulo.cs" />

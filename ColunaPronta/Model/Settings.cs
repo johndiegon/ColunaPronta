@@ -23,11 +23,14 @@ namespace ColunaPronta.Model
         private double distanciaCantoneiraL;
         private double posteReforcoLargura;
         private double posteReforcoComprimento;
+        private double posteReforcoAltura;
         private double posteReforcoDistancia;
         private double cantoneiraPosteLargura;
         private double cantoneiraPosteComprimento;
         private double parafusoRaio;
         private double posteEspessura;
+        private double posteReforcoCantoneira;
+        private double cantoneiraPosteFolga;
 
         public int Escala {  get { return _escala; } }
         public double Largura 
@@ -106,6 +109,12 @@ namespace ColunaPronta.Model
             set { posteReforcoComprimento = value; }
         }
 
+        public double PosteReforcoAltura
+        {
+            get { return posteReforcoAltura / _escala; }
+            set { posteReforcoAltura = value; }
+        }
+
         public double PosteReforcoDistancia
         {
             get { return posteReforcoDistancia / _escala; }
@@ -123,6 +132,17 @@ namespace ColunaPronta.Model
             set { cantoneiraPosteComprimento = value; }
         }
 
+        public double PosteReforcoCantoneira
+        {
+            get { return posteReforcoCantoneira / _escala; }
+            set { posteReforcoCantoneira = value; }
+        }
+        public double CantoneiraPosteFolga
+        {
+            get { return cantoneiraPosteFolga / _escala; }
+            set { cantoneiraPosteFolga = value; }
+        }
+        
         public double ParafusoRaio
         {
             get { return parafusoRaio / _escala; }
@@ -179,12 +199,13 @@ namespace ColunaPronta.Model
                     this.CantoneiraPosteComprimento = Convert.ToDouble(values[17]); ;
                     this.ParafusoRaio = Convert.ToDouble(values[18]);
                     this.PosteEspessura = Convert.ToDouble(values[19]);
-
+                    this.PosteReforcoAltura = Convert.ToDouble(values[20]);
+                    this.PosteReforcoCantoneira = Convert.ToDouble(values[21]);
                 }
                 else
                 {
 
-                    this.Altura = 1.75;
+                    this.Altura = 961.9;
                     this.Largura = 30;
                     this.ComprimentoPadrao = 3000;
                     this.ComprimentoMaxima = 4000;
@@ -202,8 +223,11 @@ namespace ColunaPronta.Model
                     this.CantoneiraComprimento = 70;
                     this.cantoneiraPosteLargura = 30;
                     this.cantoneiraPosteComprimento = 38;
+                    this.cantoneiraPosteFolga = 6;
                     this.parafusoRaio = 3;
                     this.posteEspessura = 1.5;
+                    this.PosteReforcoAltura = 961.9;
+                    this.PosteReforcoCantoneira = 35;
                 }
 
             }
@@ -229,7 +253,7 @@ namespace ColunaPronta.Model
                 }
                 
                 writer = File.CreateText(nomeArquivo);
-                writer.WriteLine("Altura;Largura;ComprimentoPadrao;ComprimentoMaxima;ComprimentoMinimoReforco;PosteComprimento;PosteLargura;PosteReforcoLargura;PosteReforcoComprimento;PosteReforcoDistancia;CantoneiraEspessura;CantoneiraFolga;CantoneiraLargura;DistanciaCantoneiraGC;DistanciaCantoneiraL;CantoneiraComprimento;CantoneiraPosteLargura;CantoneiraPosteComprimento;ParafusoRaio;posteEspessura;");
+                writer.WriteLine("Altura;Largura;ComprimentoPadrao;ComprimentoMaxima;ComprimentoMinimoReforco;PosteComprimento;PosteLargura;PosteReforcoLargura;PosteReforcoComprimento;PosteReforcoDistancia;CantoneiraEspessura;CantoneiraFolga;CantoneiraLargura;DistanciaCantoneiraGC;DistanciaCantoneiraL;CantoneiraComprimento;CantoneiraPosteLargura;CantoneiraPosteComprimento;ParafusoRaio;posteEspessura;posteReforcoAltura;posteReforcoCantoneira;cantoneiraPosteFolga;");
 
 
                 var settings = string.Concat(this.Altura.ToString(), ";"
@@ -252,6 +276,9 @@ namespace ColunaPronta.Model
                                            , this.cantoneiraPosteComprimento.ToString(), ";"
                                            , this.parafusoRaio.ToString(), ";"
                                            , this.posteEspessura.ToString(),";"
+                                           , this.posteReforcoAltura.ToString(), ";" 
+                                           , this.posteReforcoCantoneira.ToString(), ";"
+                                           , this.cantoneiraPosteFolga.ToString(),";"
                                            ); 
                 writer.WriteLine(settings);
                 writer.Close();

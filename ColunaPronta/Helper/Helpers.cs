@@ -463,6 +463,144 @@ namespace ColunaPronta.Helper
                 Logger.Error(e.ToString());
             }
         }
+        public static void AddPolylineHatch(Document document, Point2dCollection colPt, Layer layer, ColorIndex color)
+        {
+            try
+            {
+                Database database = document.Database;
+
+                // polyline do fundo de Viga
+                using (Transaction acTrans = database.TransactionManager.StartTransaction())
+                {
+                    BlockTable acBt;
+                    acBt = acTrans.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
+
+                    BlockTableRecord acBtr;
+                    acBtr = acTrans.GetObject(acBt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+
+                   
+                    using (Polyline acPoly = new Polyline())
+                    {
+
+                        int i = 0;
+                        foreach (Point2d point in colPt)
+                        {
+                            acPoly.AddVertexAt(i, point, 0, 0, 0);
+                        }
+
+                        int last = colPt.Count;
+
+                        acPoly.AddVertexAt(i, colPt[0], 0, 0, 0);
+
+                        ObjectId oid = new ObjectId();
+                        oid = acBtr.AppendEntity(acPoly);
+                        acTrans.AddNewlyCreatedDBObject(acPoly, true);
+
+                        acPoly.Closed = true;
+
+                        ObjectIdCollection oidCol = new ObjectIdCollection();
+                        oidCol.Add(oid);
+
+                        using (Hatch acHatch = new Hatch())
+                        {
+                            acBtr.AppendEntity(acHatch);
+                            acTrans.AddNewlyCreatedDBObject(acHatch, true);
+
+                            acHatch.SetHatchPattern(HatchPatternType.PreDefined, "SOLID");
+                            acHatch.Associative = true;
+                            acHatch.AppendLoop(HatchLoopTypes.External, oidCol);
+                            acHatch.EvaluateHatch(true);
+
+                            switch(color)
+                            {
+                                case ColorIndex.AzulPersonalizado:
+                                    acHatch.Color = Color.FromRgb(69, 84, 165);
+                                    break;
+                                case ColorIndex.AzulEscuroPersonalizado:
+                                    acHatch.Color = Color.FromRgb(33, 40, 48);
+                                    break;
+                                default:
+                                    acHatch.ColorIndex = (int)color;
+                                    break;
+                            }
+
+
+                            //using (DBText acLabel = new DBText())
+                            //{
+                            //    acLabel.TextString = acHatch.Area.ToString();
+                            //    acLabel.Position = new Point3d(colPt[3].X + 15, colPt[3].Y, 0);
+                            //    acLabel.Height = 25;
+
+                            //    acBtr.AppendEntity(acLabel);
+                            //    acTrans.AddNewlyCreatedDBObject(acLabel, true);
+                            //}
+                        }
+                    }
+
+                    acTrans.Commit();
+                }
+
+
+            }
+            catch (Exception e)
+            {
+                Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
+                editor.WriteMessage(e.ToString());
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+            }
+        }
+        //public static void AddPolylineCurve(Document document, Point2dCollection points, Layer layer)
+        //{
+        //    try
+        //    {
+        //        Database database = document.Database;
+
+        //        Transaction transaction = document.TransactionManager.StartTransaction();
+
+        //        // polyline do fundo de Viga
+        //        using (DocumentLock documentLock = document.LockDocument())
+        //        {
+        //            BlockTable blockTable = transaction.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
+        //            BlockTableRecord blockTableRecord = transaction.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+
+        //            var polyline = new Polyline(points.Count);
+
+        //            var i = 0;
+        //            foreach (var pt in points)
+        //            {
+        //                polyline.AddVertexAt(i, pt, 0, 0, 0);
+        //                i++;
+        //            }
+        //            polyline.cu
+
+        //            var especificaolayer = new EspecificacaoLayer();
+        //            var nomeLayer = especificaolayer.GetNomeLayer(layer);
+
+        //            LayerTable layerTable = transaction.GetObject(database.LayerTableId, OpenMode.ForRead) as LayerTable;
+
+        //            if (nomeLayer != "" && layerTable.Has(nomeLayer))
+        //            {
+        //                polyline.Layer = nomeLayer;
+        //            }
+
+        //            blockTableRecord.AppendEntity(polyline);
+        //            transaction.AddNewlyCreatedDBObject(polyline, true);
+
+        //            transaction.Commit();
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
+        //        editor.WriteMessage(e.ToString());
+        //        NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        //        NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+        //        Logger.Error(e.ToString());
+        //    }
+        //}
+
         public static ObjectId GetTableStyle(TipoRelatorio tipoRelatorio)
         {
             try
@@ -679,6 +817,77 @@ namespace ColunaPronta.Helper
                     tr.Commit();
                 }
             }
+        }
+
+        public static void TraceBoundaryAndHatch(Entity ent)
+        {
+            //DBObjectCollection objs
+            Document doc = Application.DocumentManager.MdiActiveDocument;
+            Database db = doc.Database;
+            Editor ed = doc.Editor;
+            Transaction tr = doc.TransactionManager.StartTransaction();
+     
+            using (tr)
+            {
+                // We'll add the objects to the model space
+                BlockTable bt =  (BlockTable)tr.GetObject( doc.Database.BlockTableId, OpenMode.ForRead );
+
+                BlockTableRecord btr =  (BlockTableRecord)tr.GetObject( bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite );
+
+                ent.ColorIndex = 1;
+
+                // Set our transparency to 50% (=127)
+                // Alpha value is Truncate(255 * (100-n)/100)
+
+                ent.Transparency = new Transparency(127);
+
+                // Add each boundary object to the modelspace
+                // and add its ID to a collection
+
+                btr.AppendEntity(ent);
+                tr.AddNewlyCreatedDBObject(ent, true);
+
+                // Create our hatch
+
+                Hatch hat = new Hatch();
+
+                // Solid fill of our auto-incremented colour index
+
+                hat.SetHatchPattern(
+                  HatchPatternType.PreDefined,
+                  "SOLID"
+                );
+                hat.ColorIndex = 1;
+
+                // Set our transparency to 50% (=127)
+                // Alpha value is Truncate(255 * (100-n)/100)
+
+                hat.Transparency = new Transparency(127);
+
+                // Add the hatch to the modelspace & transaction
+
+                ObjectId hatId = btr.AppendEntity(hat);
+                tr.AddNewlyCreatedDBObject(hat, true);
+
+                // Add the hatch loops and complete the hatch
+
+                ObjectIdCollection ids = new ObjectIdCollection();
+                ids.Add(ent.ObjectId);
+
+                hat.Associative = true;
+                hat.AppendLoop(
+                  HatchLoopTypes.Default,
+                  ids
+                );
+
+                hat.EvaluateHatch(true);
+
+                // Commit the transaction
+
+                tr.Commit();
+
+            }
+
         }
         public static ObjetosSelecionados GetObjetos()
         {
