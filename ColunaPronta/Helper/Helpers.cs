@@ -14,7 +14,6 @@ namespace ColunaPronta.Helper
 {
     public static class Helpers
     {
-
         public static void AddLinha(Document doc, Point3d point1, Point3d point2, bool trace, ColorIndex color)
         {
             try
@@ -67,7 +66,6 @@ namespace ColunaPronta.Helper
                 Logger.Error(e.ToString());
             }
         }
-
         public static void AddLinha(Document doc, Point3d point1, Point3d point2, Layer layer)
         {
             try
@@ -107,7 +105,49 @@ namespace ColunaPronta.Helper
                 Logger.Error(e.ToString());
             }
         }
+        public static void AddLinha(Document doc, Point2dCollection pontos, Layer layer)
+        {
+            try
+            {
+                if (pontos.Count == 2)
+                {
+                    Point3d pnt1 = new Point3d(pontos[0].X, pontos[0].Y, 0);
+                    Point3d pnt2 = new Point3d(pontos[1].X, pontos[1].Y, 0);
 
+                    Database database = doc.Database;
+                    Transaction transaction = database.TransactionManager.StartTransaction();
+                    using (DocumentLock documentLock = doc.LockDocument())
+                    {
+                        BlockTable blockTable = transaction.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
+                        BlockTableRecord blockTableRecord = transaction.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+                        Line line = new Line(pnt1, pnt2);
+
+                        var especificaolayer = new EspecificacaoLayer();
+                        var nomeLayer = especificaolayer.GetNomeLayer(layer);
+
+                        LayerTable layerTable = transaction.GetObject(database.LayerTableId, OpenMode.ForRead) as LayerTable;
+
+                        if (nomeLayer != "" && layerTable.Has(nomeLayer))
+                        {
+                            line.Layer = nomeLayer;
+                        }
+
+                        blockTableRecord.AppendEntity(line);
+                        transaction.AddNewlyCreatedDBObject(line, true);
+                        transaction.Commit();
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
+                editor.WriteMessage(e.ToString());
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+            }
+        }
         public static ObjectIdCollection GetEntitiesOnLayer(string layerName)
         {
             try
@@ -213,7 +253,7 @@ namespace ColunaPronta.Helper
                 Logger.Error(e.ToString());
             }
         }
-        public static void AddDimension(Document document, Point3d point1, Point3d point2, Point3d point3)
+        public static void AddDimension(Document document, Point2d point1, Point2d point2, Point2d point3)
         {
             try
             {
@@ -227,7 +267,7 @@ namespace ColunaPronta.Helper
 
                     DimStyleTable dst = (DimStyleTable)transaction.GetObject(database.DimStyleTableId, OpenMode.ForWrite);
 
-                    AlignedDimension dimension = new AlignedDimension(new Point3d(point1.X, point1.Y, 0), new Point3d(point2.X, point2.Y, 0), point3, string.Empty, database.Dimstyle);
+                    AlignedDimension dimension = new AlignedDimension(new Point3d(point1.X, point1.Y, 0), new Point3d(point2.X, point2.Y, 0), new Point3d(point3.X, point3.Y, 0), string.Empty, database.Dimstyle);
                     blockTableRecord.AppendEntity(dimension);
                     transaction.AddNewlyCreatedDBObject(dimension, true);
                 }
@@ -400,6 +440,63 @@ namespace ColunaPronta.Helper
                         i++;
                     }
 
+                    if ( color != ColorIndex.padrao)
+                    {
+                        polyline.ColorIndex = (int)color;
+                    }
+
+                    blockTableRecord.AppendEntity(polyline);
+                    transaction.AddNewlyCreatedDBObject(polyline, true);
+
+                    transaction.Commit();
+                }
+            }
+            catch (Exception e)
+            {
+                Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
+                editor.WriteMessage(e.ToString());
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+            }
+        }
+        public static void AddPolyline(Document document, Point2dCollection points, Layer layer, ColorIndex color)
+        {
+            try
+            {
+                Database database = document.Database;
+
+                Transaction transaction = document.TransactionManager.StartTransaction();
+                var especificaolayer = new EspecificacaoLayer();
+                var nomeLayer = especificaolayer.GetNomeLayer(layer);
+                // polyline do fundo de Viga
+                using (DocumentLock documentLock = document.LockDocument())
+                {
+                    BlockTable blockTable = transaction.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
+                    BlockTableRecord blockTableRecord = transaction.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+
+                    var polyline = new Polyline(points.Count);
+
+                    var i = 0;
+                    foreach (var pt in points)
+                    {
+                        polyline.AddVertexAt(i, pt, 0, 0, 0);
+                        i++;
+                    }
+
+                    if (color != ColorIndex.padrao)
+                    {
+                        polyline.ColorIndex = (int)color;
+                    }
+
+                    LayerTable layerTable = transaction.GetObject(database.LayerTableId, OpenMode.ForRead) as LayerTable;
+
+                    if (nomeLayer != "" && layerTable.Has(nomeLayer))
+                    {
+                        polyline.Layer = nomeLayer;
+                    }
+
+
                     blockTableRecord.AppendEntity(polyline);
                     transaction.AddNewlyCreatedDBObject(polyline, true);
 
@@ -468,17 +565,17 @@ namespace ColunaPronta.Helper
             try
             {
                 Database database = document.Database;
-
+                Transaction acTrans = database.TransactionManager.StartTransaction();
                 // polyline do fundo de Viga
-                using (Transaction acTrans = database.TransactionManager.StartTransaction())
+                using (DocumentLock documentLock = document.LockDocument())
                 {
-                    BlockTable acBt;
-                    acBt = acTrans.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
 
-                    BlockTableRecord acBtr;
-                    acBtr = acTrans.GetObject(acBt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+                    BlockTable acBt = acTrans.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
+                    BlockTableRecord acBtr = acTrans.GetObject(acBt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
-                   
+                    var especificaolayer = new EspecificacaoLayer();
+                    var nomeLayer = especificaolayer.GetNomeLayer(layer);
+
                     using (Polyline acPoly = new Polyline())
                     {
 
@@ -491,6 +588,15 @@ namespace ColunaPronta.Helper
                         int last = colPt.Count;
 
                         acPoly.AddVertexAt(i, colPt[0], 0, 0, 0);
+                        acPoly.ColorIndex = (int)ColorIndex.Branco;
+
+
+                        LayerTable layerTable = acTrans.GetObject(database.LayerTableId, OpenMode.ForRead) as LayerTable;
+
+                        if (nomeLayer != "" && layerTable.Has(nomeLayer))
+                        {
+                            acPoly.Layer = nomeLayer;
+                        }
 
                         ObjectId oid = new ObjectId();
                         oid = acBtr.AppendEntity(acPoly);
@@ -510,6 +616,7 @@ namespace ColunaPronta.Helper
                             acHatch.Associative = true;
                             acHatch.AppendLoop(HatchLoopTypes.External, oidCol);
                             acHatch.EvaluateHatch(true);
+                            
 
                             switch(color)
                             {
@@ -524,23 +631,11 @@ namespace ColunaPronta.Helper
                                     break;
                             }
 
-
-                            //using (DBText acLabel = new DBText())
-                            //{
-                            //    acLabel.TextString = acHatch.Area.ToString();
-                            //    acLabel.Position = new Point3d(colPt[3].X + 15, colPt[3].Y, 0);
-                            //    acLabel.Height = 25;
-
-                            //    acBtr.AppendEntity(acLabel);
-                            //    acTrans.AddNewlyCreatedDBObject(acLabel, true);
-                            //}
                         }
+                        acTrans.Commit();
+
                     }
-
-                    acTrans.Commit();
                 }
-
-
             }
             catch (Exception e)
             {
@@ -551,56 +646,6 @@ namespace ColunaPronta.Helper
                 Logger.Error(e.ToString());
             }
         }
-        //public static void AddPolylineCurve(Document document, Point2dCollection points, Layer layer)
-        //{
-        //    try
-        //    {
-        //        Database database = document.Database;
-
-        //        Transaction transaction = document.TransactionManager.StartTransaction();
-
-        //        // polyline do fundo de Viga
-        //        using (DocumentLock documentLock = document.LockDocument())
-        //        {
-        //            BlockTable blockTable = transaction.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
-        //            BlockTableRecord blockTableRecord = transaction.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
-
-        //            var polyline = new Polyline(points.Count);
-
-        //            var i = 0;
-        //            foreach (var pt in points)
-        //            {
-        //                polyline.AddVertexAt(i, pt, 0, 0, 0);
-        //                i++;
-        //            }
-        //            polyline.cu
-
-        //            var especificaolayer = new EspecificacaoLayer();
-        //            var nomeLayer = especificaolayer.GetNomeLayer(layer);
-
-        //            LayerTable layerTable = transaction.GetObject(database.LayerTableId, OpenMode.ForRead) as LayerTable;
-
-        //            if (nomeLayer != "" && layerTable.Has(nomeLayer))
-        //            {
-        //                polyline.Layer = nomeLayer;
-        //            }
-
-        //            blockTableRecord.AppendEntity(polyline);
-        //            transaction.AddNewlyCreatedDBObject(polyline, true);
-
-        //            transaction.Commit();
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
-        //        editor.WriteMessage(e.ToString());
-        //        NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        //        NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
-        //        Logger.Error(e.ToString());
-        //    }
-        //}
-
         public static ObjectId GetTableStyle(TipoRelatorio tipoRelatorio)
         {
             try
@@ -818,7 +863,6 @@ namespace ColunaPronta.Helper
                 }
             }
         }
-
         public static void TraceBoundaryAndHatch(Entity ent)
         {
             //DBObjectCollection objs
@@ -1004,7 +1048,6 @@ namespace ColunaPronta.Helper
                 return null;
             }
         }
-
         public static void GeraArquivoExcel(List<Planilha> arquivoExcel, string nomeProjeto, TipoLista tipoLista)
         {
             var excelApp = new Excel.Application();

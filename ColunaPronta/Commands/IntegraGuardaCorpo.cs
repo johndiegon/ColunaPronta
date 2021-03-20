@@ -108,6 +108,9 @@ namespace ColunaPronta.Commands
                     IntegraGuardaCorpoFilho(document, cantoneira);
                 }
             };
+
+            IntegraGuardaCorpoVertical.Integra(guardaCorpo.GuardaCorpoVertical);
+
         }
 
         private static void IntegraGuardaCorpoFilho( Document document , CantoneiraGuardaCorpo cantoneira)

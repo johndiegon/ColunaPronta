@@ -68,8 +68,7 @@ namespace ColunaPronta.Model
 
             this.retangulo = new Retangulo(largura, comprimento, new Point2d(X, Y), posicaoRetangulo);
         }
-      
-    }
+     }
     public class PosteReforco
     {
         public List<CantoneiraGuardaCorpo> Cantoneiras { get; set; }

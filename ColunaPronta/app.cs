@@ -1,10 +1,13 @@
-﻿using Autodesk.AutoCAD.Runtime;
+﻿using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoCAD.Geometry;
+using Autodesk.AutoCAD.Runtime;
 using ColunaPronta.Commands;
 using ColunaPronta.Helper;
 using ColunaPronta.Model;
 using ColunaPronta.Viewer;
 using System.ServiceModel.Channels;
 using System.Windows;
+using Application = Autodesk.AutoCAD.ApplicationServices.Application;
 
 namespace ColunaPronta
 {
@@ -129,7 +132,21 @@ namespace ColunaPronta
         [CommandMethod("testevertical")]
         public void TesteVertical()
         {
-            IntegraGuardaCorpoVertical.Integra();
+            var settings = new Settings();
+
+            Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
+
+            PromptPointOptions prPtOpt = new PromptPointOptions("\nIndique o ponto onde será gerado o relatório (EndPoint ): ")
+            {
+                AllowArbitraryInput = false,
+                AllowNone = true
+            };
+
+            PromptPointResult prPtRes = editor.GetPoint(prPtOpt);
+            var ponto = prPtRes.Value;
+
+            var gc = new GuardaCorpoVertical(settings.Altura, settings.ComprimentoPadrao, new Point2d(ponto.X, ponto.Y));
+            IntegraGuardaCorpoVertical.Integra(gc, new Point2d(ponto.X, ponto.Y));
         }
 
 

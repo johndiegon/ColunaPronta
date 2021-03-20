@@ -126,9 +126,12 @@
     <Compile Include="Helper\Helpers.cs" />
     <Compile Include="Helper\IntegraLayout.cs" />
     <Compile Include="Model\Circulo.cs" />
+    <Compile Include="Model\Dimension.cs" />
     <Compile Include="Model\EspecificacaoLayer.cs" />
+    <Compile Include="Model\EstruturaVertical.cs" />
     <Compile Include="Model\GuardaCorpoVertical.cs" />
     <Compile Include="Model\ObjetosSelecionados.cs" />
+    <Compile Include="Model\Point2D.cs" />
     <Compile Include="Model\Poste.cs" />
     <Compile Include="Model\Retangulo.cs" />
     <Compile Include="Model\Cantoneira.cs" />
