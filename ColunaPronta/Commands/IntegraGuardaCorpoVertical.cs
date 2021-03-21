@@ -4,6 +4,7 @@ using ColunaPronta.Model;
 using System.Collections.Generic;
 using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.EditorInput;
+using System.Linq;
 
 namespace ColunaPronta.Commands
 {
@@ -21,23 +22,23 @@ namespace ColunaPronta.Commands
 
             PromptPointResult prPtRes = editor.GetPoint(prPtOpt);
             var ponto = prPtRes.Value;
-            var settings = new Settings();
+            var settings = new Settings(true);
 
             double X = ponto.X, Y = ponto.Y, distanciaEntreGuardaCorpos = 300 / 1000f;
+            var listGC = guardaCorpos.GroupBy(s => s).Select(group => new { Comprimento = group.Key, Quantidade = group.Count() });
 
-            foreach (var comprimento in guardaCorpos)
+
+            foreach (var gc in listGC)
             {
-                var guardaCorpo = new GuardaCorpoVertical(settings.Altura, comprimento, new Point2d(X, Y));
+                var guardaCorpo = new GuardaCorpoVertical(settings.Altura, gc.Comprimento, new Point2d(X, Y));
                 GeraGuardaCorpo(guardaCorpo);
-                X = X + comprimento + distanciaEntreGuardaCorpos;
+                X = X + gc.Comprimento + distanciaEntreGuardaCorpos;
             }
         }
 
         private static void GeraGuardaCorpo(GuardaCorpoVertical guardaCorpo)
         {
             var document = Application.DocumentManager.MdiActiveDocument;
-
-           
 
             foreach (var ent in guardaCorpo.EstruturasVerticais)
             {

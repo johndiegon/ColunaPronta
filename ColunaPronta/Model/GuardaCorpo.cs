@@ -28,7 +28,7 @@ namespace ColunaPronta.Model
         {
             this.Posicao = posicao;
            
-            this.Settings = new Settings();
+            this.Settings = new Settings(true);
 
             bPosteInicial = bPInicial;// posteInical == MessageBoxResult.Yes ? true : false;
 

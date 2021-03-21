@@ -23,7 +23,7 @@ namespace ColunaPronta.Model
         private void SetPosteNormal(Point2d pointInicial, Posicao posicao)
         {
             double posteX, posteY, cantoneiraX, cantoneiraY;
-            var settings = new Settings();
+            var settings = new Settings(true);
             var cantoneiras = new List<CantoneiraGuardaCorpo>();
             var posicaoCantoneira = posicao;
             
@@ -69,7 +69,7 @@ namespace ColunaPronta.Model
 
         private void SetPosteReforco(Point2d pointInicial, Posicao posicao)
         {
-            var settings = new Settings();
+            var settings = new Settings(true);
 
             if (posicao == Posicao.VoltadoBaixo || posicao == Posicao.VoltadoCima)
             {

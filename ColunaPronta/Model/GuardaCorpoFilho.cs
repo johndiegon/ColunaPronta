@@ -17,7 +17,7 @@ namespace ColunaPronta.Model
             this.Comprimento = comprimento;
             double X = pontoA.X, Y = pontoA.Y;
        
-            var settings = new Settings();
+            var settings = new Settings(true);
 
             switch (posicao)
             {
@@ -79,7 +79,7 @@ namespace ColunaPronta.Model
             double X = PontoInicial.X;
             double Y = PontoInicial.Y;
 
-            var settings = new Settings();
+            var settings = new Settings(true);
             var cantoneiras = new List<CantoneiraGuardaCorpo>();
             var poste = new List<Retangulo>();
             var posicaoRetangulo = Posicao.Vertical;

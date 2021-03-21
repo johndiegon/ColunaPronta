@@ -18,7 +18,7 @@ namespace ColunaPronta.Model
             this.tipoCantoneira = tipo;
             this.Posicao = posicao;
             this.pontoInicial = pontoInicial;
-            this.Settings = new Settings();
+            this.Settings = new Settings(true);
 
             switch(tipo)
             {

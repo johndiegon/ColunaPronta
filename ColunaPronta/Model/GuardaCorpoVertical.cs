@@ -33,7 +33,7 @@ namespace ColunaPronta.Model
    
         private void SetEstruturasVerticais()
         {
-            var settings = new Settings();
+            var settings = new Settings(true);
             var estruturasVerticais = new List<Retangulo>();
 
             #region Estrutura do Inicio
@@ -77,7 +77,7 @@ namespace ColunaPronta.Model
         }
         private void SetEstruturasHorizontais()
         {
-            var settings = new Settings();
+            var settings = new Settings(true);
             var estruturasHorizontais = new List<Retangulo>();
             var alturaRestante = this.altura;
             var espacamentoPadrao = 170 / 1000f;
@@ -115,7 +115,7 @@ namespace ColunaPronta.Model
         }
         private void SetPosteReforco()
         {
-            var settings = new Settings();
+            var settings = new Settings(true);
 
             if (this.comprimento >= settings.ComprimentoMinimoReforco)
             {
@@ -125,7 +125,7 @@ namespace ColunaPronta.Model
 
                 X = X + (comprimento / 2) - (settings.PosteReforcoLargura / 2);
 
-                Y = Y + (folga / 2);
+                Y = Y + (folga);
                 this.CoberturaReforco = new Retangulo(settings.PosteLargura, settings.CantoneiraPosteFolga, new Point2d(X, Y), Posicao.Vertical);
                 
                 Y = Y - (folga) - (folga / 2);

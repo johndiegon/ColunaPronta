@@ -123,6 +123,7 @@
     <Compile Include="Commands\teste\Plott.cs" />
     <Compile Include="Commands\teste\PlottingApplication.cs" />
     <Compile Include="Commands\teste\ViewPlottColuna.cs" />
+    <Compile Include="Contracts\Settings.cs" />
     <Compile Include="Helper\Helpers.cs" />
     <Compile Include="Helper\IntegraLayout.cs" />
     <Compile Include="Model\Circulo.cs" />

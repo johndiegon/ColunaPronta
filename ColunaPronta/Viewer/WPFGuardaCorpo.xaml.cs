@@ -79,7 +79,7 @@ namespace ColunaPronta.Viewer
             settings.CantoneiraEspessura = Convert.ToDouble(textBox_cantoneiraEspessura.Text);
             settings.PosteReforcoLargura = Convert.ToDouble(textbox_reforcoLargura.Text);
             settings.PosteReforcoComprimento = Convert.ToDouble(textbox_reforcoComprimento.Text);
-            settings.ToCSV();
+            settings.Save();
 
         }
 
