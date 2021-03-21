@@ -182,29 +182,6 @@ namespace ColunaPronta.Model
                     var jsonLayout = File.ReadAllText(arquivoJson);
                     var arquivo = JsonConvert.DeserializeObject<Contracts.Settings>(jsonLayout);
 
-                    //this.Altura                     = Convert.ToDouble(values[0]);
-                    //this.Largura                    = Convert.ToDouble(values[1]);
-                    //this.ComprimentoPadrao          = Convert.ToDouble(values[2]);
-                    //this.ComprimentoMaxima          = Convert.ToDouble(values[3]);
-                    //this.ComprimentoMinimoReforco   = Convert.ToDouble(values[4]);
-                    //this.PosteComprimento           = Convert.ToDouble(values[5]);
-                    //this.PosteLargura               = Convert.ToDouble(values[6]);
-                    //this.PosteReforcoLargura        = Convert.ToDouble(values[7]);
-                    //this.PosteReforcoComprimento    = Convert.ToDouble(values[8]);
-                    //this.PosteReforcoDistancia      = Convert.ToDouble(values[9]);
-                    //this.CantoneiraEspessura        = Convert.ToDouble(values[10]);
-                    //this.CantoneiraFolga            = Convert.ToDouble(values[11]);
-                    //this.CantoneiraLargura          = Convert.ToDouble(values[12]);
-                    //this.DistanciaCantoneiraGC      = Convert.ToDouble(values[13]);
-                    //this.DistanciaCantoneiraL       = Convert.ToDouble(values[14]);
-                    //this.CantoneiraComprimento      = Convert.ToDouble(values[15]);
-                    //this.CantoneiraPosteLargura     = Convert.ToDouble(values[16]); 
-                    //this.CantoneiraPosteComprimento = Convert.ToDouble(values[17]); ;
-                    //this.ParafusoRaio               = Convert.ToDouble(values[18]);
-                    //this.PosteEspessura             = Convert.ToDouble(values[19]);
-                    //this.PosteReforcoAltura         = Convert.ToDouble(values[20]);
-                    //this.PosteReforcoCantoneira     = Convert.ToDouble(values[21]);
-
                     this.Altura = arquivo.Altura;
                     this.Largura = arquivo.Largura;
                     this.ComprimentoPadrao = arquivo.ComprimentoPadrao;
@@ -291,58 +268,7 @@ namespace ColunaPronta.Model
                 Logger.Error(e.ToString());
             }
         }
-        //public void ToCSV()
-        //{
-        //    try
-        //    {
-        //        StreamWriter writer;
-
-        //        string nomeArquivo = string.Concat("C:\\Autodesk\\ColunaPronta\\Settings\\settings.csv");
-
-        //        if (File.Exists(nomeArquivo))
-        //        {
-        //            File.Delete(nomeArquivo);
-        //        }
-                
-        //        writer = File.CreateText(nomeArquivo);
-        //        writer.WriteLine("Altura;Largura;ComprimentoPadrao;ComprimentoMaxima;ComprimentoMinimoReforco;PosteComprimento;PosteLargura;PosteReforcoLargura;PosteReforcoComprimento;PosteReforcoDistancia;CantoneiraEspessura;CantoneiraFolga;CantoneiraLargura;DistanciaCantoneiraGC;DistanciaCantoneiraL;CantoneiraComprimento;CantoneiraPosteLargura;CantoneiraPosteComprimento;ParafusoRaio;posteEspessura;posteReforcoAltura;posteReforcoCantoneira;cantoneiraPosteFolga;");
-
-
-        //        var settings = string.Concat(this.Altura.ToString(), ";"
-        //                                   , this.Largura.ToString(), ";"
-        //                                   , this.ComprimentoPadrao.ToString(), ";"
-        //                                   , this.ComprimentoMaxima.ToString(), ";"
-        //                                   , this.ComprimentoMinimoReforco.ToString(), ";"
-        //                                   , this.PosteComprimento.ToString(), ";"
-        //                                   , this.PosteLargura.ToString(), ";"
-        //                                   , this.PosteReforcoLargura.ToString(), ";"
-        //                                   , this.PosteReforcoComprimento.ToString(), ";"
-        //                                   , this.PosteReforcoDistancia.ToString(), ";"
-        //                                   , this.CantoneiraEspessura.ToString(), ";"
-        //                                   , this.CantoneiraFolga.ToString(), ";"
-        //                                   , this.CantoneiraLargura.ToString(), ";"
-        //                                   , this.DistanciaCantoneiraGC.ToString(), ";"
-        //                                   , this.DistanciaCantoneiraL.ToString(), ";"
-        //                                   , this.CantoneiraComprimento.ToString(), ";"
-        //                                   , this.cantoneiraPosteLargura.ToString(), ";"
-        //                                   , this.cantoneiraPosteComprimento.ToString(), ";"
-        //                                   , this.parafusoRaio.ToString(), ";"
-        //                                   , this.posteEspessura.ToString(),";"
-        //                                   , this.posteReforcoAltura.ToString(), ";" 
-        //                                   , this.posteReforcoCantoneira.ToString(), ";"
-        //                                   , this.cantoneiraPosteFolga.ToString(),";"
-        //                                   ); 
-        //        writer.WriteLine(settings);
-        //        writer.Close();
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        //        NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
-        //        Logger.Error(e.ToString());
-        //    }
-        //}
-       
+      
     }
 
 }

@@ -5,13 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ColunaPronta.Viewer"
              Title="Guarda Corpo"
-             mc:Ignorable="d" Height="417.8" Width="400">
+             mc:Ignorable="d" Height="435.4" Width="494">
 
     <Grid >
-        <StackPanel HorizontalAlignment="Left" Height="400"  VerticalAlignment="Top" Width="400" >
-            <TabControl Height="399" BorderBrush="White" Margin="0,0,20,0">
+        <StackPanel HorizontalAlignment="Left" Height="400"  VerticalAlignment="Top" Width="400" Grid.ColumnSpan="2" Margin="0,0,0,-12" >
+            <TabControl BorderBrush="White" Margin="0,0,-7,0">
                 <TabItem Header="Guarda Corpo" BorderBrush="White">
-                    <Grid Height="356" Margin="0,0,0.4,0"  >
+                    <Grid  >
                         <StackPanel Margin="0,0,0,1"  >
                             <TextBlock><Run Text="Qual lado você deseja gerar ?"/></TextBlock>
                             <TextBlock/>
@@ -30,16 +30,35 @@
                             <RadioButton Name="RadioButtonPosteFimSim" Content="Sim" GroupName="PosteFim" IsChecked="True"/>
                             <RadioButton Name="RadioButtonPosteFimNao" Content="Não" GroupName="PosteFim"/>
                             <TextBlock/>
-                            <TextBlock/>
-                            <TextBlock/>
+                            <TextBlock><Run Text="Gerar poste Configurável?"/></TextBlock>
+                            <CheckBox Name="CheckBoxPosteFimSim" Content="Com Abertura para Direita"/>
+                            <CheckBox Name="CheckBoxPosteFimNao" Content="Com Abertura para esquerda"/>
                             <TextBlock/>
                             <Button Click="Button_Click">Gerar Guarda Corpo</Button>
                         </StackPanel>
 
-                        <Image x:Name="image" Margin="143,-4,9,221" Source="C:\Autodesk\ColunaPronta\Image\gcorpo.png"/>
+                        <Image x:Name="image" Margin="180,-4,9,221" Source="C:\Autodesk\ColunaPronta\Image\gcorpo.png"/>
 
                     </Grid>
 
+                </TabItem>
+                <TabItem Header="Configurárvel"  BorderBrush="White">
+                    <StackPanel VerticalAlignment="Top">
+
+                        <Image x:Name="image2" HorizontalAlignment="Center" VerticalAlignment="Top"  Source="C:\Autodesk\ColunaPronta\Image\gcorpoConfiguravel.png" Height="119" Width="309"/>
+                        <TextBlock></TextBlock>
+                        <TextBlock  x:Name="TextBlock_ComprimentoGCInicio">Comprimento Inicial (mm) :</TextBlock>
+                        <TextBox x:Name="textBox_ComprimentoGCInicio" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+                        <TextBlock  x:Name="TextBlock_ComprimentoTuboInterno">Comprimento do Tubo Interno (mm) :</TextBlock>
+                        <TextBox x:Name="textBox_ComprimentoTuboInterno" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+                        <TextBlock  x:Name="TextBlock_LarguraTuboInterno">Largura do Tubo Interno (mm) :</TextBlock>
+                        <TextBox x:Name="textBox_LarguraTuboInterno" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+                        <TextBlock  x:Name="TextBlock_ComprimentoTuboExterno">Comprimento do Tubo Externo (mm) :</TextBlock>
+                        <TextBox x:Name="textBox_ComprimentoTuboExterno" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+                        <TextBlock  x:Name="TextBlock_LarguraTuboExterno">Largura do Tubo Externo (mm) :</TextBlock>
+                        <TextBox x:Name="textBox_LarguraTuboExterno" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+
+                    </StackPanel>
                 </TabItem>
                 <TabItem Header="Configurações" BorderBrush="White">
                     <StackPanel>

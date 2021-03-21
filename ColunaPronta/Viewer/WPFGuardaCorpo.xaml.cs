@@ -88,5 +88,6 @@ namespace ColunaPronta.Viewer
             var textBox = sender as TextBox;
             e.Handled = Regex.IsMatch(e.Text, "^[^0-9.?!]+$");//"[^0-9]+[.]");
         }
+
     }
 }
