@@ -129,25 +129,25 @@ namespace ColunaPronta
 
         }
 
-        [CommandMethod("testevertical")]
-        public void TesteVertical()
-        {
-            var settings = new Settings();
+        //[CommandMethod("testevertical")]
+        //public void TesteVertical()
+        //{
+        //    var settings = new Settings();
 
-            Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
+        //    Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
 
-            PromptPointOptions prPtOpt = new PromptPointOptions("\nIndique o ponto onde será gerado o relatório (EndPoint ): ")
-            {
-                AllowArbitraryInput = false,
-                AllowNone = true
-            };
+        //    PromptPointOptions prPtOpt = new PromptPointOptions("\nIndique o ponto onde será gerado o relatório (EndPoint ): ")
+        //    {
+        //        AllowArbitraryInput = false,
+        //        AllowNone = true
+        //    };
 
-            PromptPointResult prPtRes = editor.GetPoint(prPtOpt);
-            var ponto = prPtRes.Value;
+        //    PromptPointResult prPtRes = editor.GetPoint(prPtOpt);
+        //    var ponto = prPtRes.Value;
 
-            var gc = new GuardaCorpoVertical(settings.Altura, settings.ComprimentoPadrao, new Point2d(ponto.X, ponto.Y));
-            IntegraGuardaCorpoVertical.Integra(gc, new Point2d(ponto.X, ponto.Y));
-        }
+        //    var gc = new GuardaCorpoVertical(settings.Altura, settings.ComprimentoPadrao, new Point2d(ponto.X, ponto.Y));
+        //    IntegraGuardaCorpoVertical.Integra(gc, new Point2d(ponto.X, ponto.Y));
+        //}
 
 
         [CommandMethod("testehatch")]

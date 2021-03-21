@@ -12,7 +12,7 @@ namespace ColunaPronta.Model
         public List<Retangulo> EstruturasVerticais { get; set; }
         public List<Retangulo> EstruturasHorizontais { get; set; }
         public Retangulo PosteReforco { get; set; }
-        public Retangulo Retangulo { get; set; }
+        public Retangulo CoberturaReforco { get; set; }
         public Retangulo Cantoneira { get; set; }
         public List<Dimension> Dimensions { get; set; }
         public List<Point2dCollection> Linhas { get; set; }
@@ -30,22 +30,7 @@ namespace ColunaPronta.Model
             SetEstruturasHorizontais();
             SetPosteReforco();
         }
-        public GuardaCorpoVertical ( double comprimento, double altura)
-        {
-            this.altura = altura;
-            this.comprimento = comprimento;
-        }
-        public void SetGuardaCorpo(Point2d pontoInicial)
-        {
-            this.pontoInicial = pontoInicial;
-            this.Dimensions = new List<Dimension>();
-            this.Linhas = new List<Point2dCollection>();
-
-            SetEstruturasVerticais();
-            SetEstruturasHorizontais();
-            SetPosteReforco();
-        }
-
+   
         private void SetEstruturasVerticais()
         {
             var settings = new Settings();
@@ -60,7 +45,7 @@ namespace ColunaPronta.Model
                 PontoLinha2 = new Point2d(pontoInicial.X, pontoInicial.Y - settings.Altura),
                 PontoDimension = new Point2d(pontoInicial.X - distanciaDimension, pontoInicial.Y),
             };
-            Dimensions.Add(dimension);
+            this.Dimensions.Add(dimension);
 
             #endregion
             #region Estrutura do Fim
@@ -88,7 +73,7 @@ namespace ColunaPronta.Model
 
             #endregion
 
-            EstruturasVerticais = estruturasVerticais;
+            this.EstruturasVerticais = estruturasVerticais;
         }
         private void SetEstruturasHorizontais()
         {
@@ -106,8 +91,7 @@ namespace ColunaPronta.Model
                 PontoDimension = new Point2d(pontoInicial.X, pontoInicial.Y + distanciaDimension),
             };
 
-            Dimensions.Add(dimensionHorizontal);
-
+            this.Dimensions.Add(dimensionHorizontal);
 
             while (alturaRestante > 0)
             {
@@ -121,13 +105,13 @@ namespace ColunaPronta.Model
                     PontoLinha2 = new Point2d(X + distanciaDimension, Y - distanciaY),
                     PontoDimension = new Point2d(X + distanciaDimension, Y - settings.PosteLargura)
                 };
-                Dimensions.Add(dimensionVertical);
+                this.Dimensions.Add(dimensionVertical);
 
                 alturaRestante = alturaRestante - settings.PosteLargura - espacamentoPadrao;
                 Y = Y - settings.PosteLargura - espacamentoPadrao;
             }
 
-            EstruturasHorizontais = estruturasHorizontais;
+            this.EstruturasHorizontais = estruturasHorizontais;
         }
         private void SetPosteReforco()
         {
@@ -142,13 +126,13 @@ namespace ColunaPronta.Model
                 X = X + (comprimento / 2) - (settings.PosteReforcoLargura / 2);
 
                 Y = Y + (folga / 2);
-                Retangulo = new Retangulo(settings.PosteLargura, settings.CantoneiraPosteFolga, new Point2d(X, Y), Posicao.Vertical);
-
+                this.CoberturaReforco = new Retangulo(settings.PosteLargura, settings.CantoneiraPosteFolga, new Point2d(X, Y), Posicao.Vertical);
+                
                 Y = Y - (folga) - (folga / 2);
-                PosteReforco = new Retangulo(settings.PosteLargura, settings.PosteReforcoAltura, new Point2d(X, Y), Posicao.Vertical);
+                this.PosteReforco = new Retangulo(settings.PosteLargura, settings.PosteReforcoAltura, new Point2d(X, Y), Posicao.Vertical);
 
                 Y = Y - settings.PosteReforcoAltura;
-                Cantoneira = new Retangulo(settings.PosteLargura, settings.PosteReforcoCantoneira, new Point2d(X, Y), Posicao.Vertical);
+                this.Cantoneira = new Retangulo(settings.PosteLargura, settings.PosteReforcoCantoneira, new Point2d(X, Y), Posicao.Vertical);
             }
         }
 

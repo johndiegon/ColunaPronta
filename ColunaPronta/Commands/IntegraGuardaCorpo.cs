@@ -295,11 +295,7 @@ namespace ColunaPronta.Commands
                 var nomeProjeto = Application.DocumentManager.MdiActiveDocument.Window.Text;
                 Helpers.GeraArquivoExcel(arquivoExcel, nomeProjeto, TipoLista.ListaCorteGuardaCorpo);
             }
-            //if (objetos.Circles != null)
-            //{
-            //    var countcircles = objetos.Circles.Count;
-            //}
-
+  
            
 
         }

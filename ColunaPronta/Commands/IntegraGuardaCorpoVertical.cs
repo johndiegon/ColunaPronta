@@ -9,53 +9,65 @@ namespace ColunaPronta.Commands
 {
     public static class IntegraGuardaCorpoVertical
     {
-        public static void Integra(List<GuardaCorpoVertical> guardaCorpos)
+        public static void Integra(List<double> guardaCorpos)
         {
-      
+            Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
+
+            PromptPointOptions prPtOpt = new PromptPointOptions("\nIndique o ponto onde será gerado o relatório (EndPoint ): ")
+            {
+                AllowArbitraryInput = false,
+                AllowNone = true
+            };
+
+            PromptPointResult prPtRes = editor.GetPoint(prPtOpt);
+            var ponto = prPtRes.Value;
+            var settings = new Settings();
+
+            double X = ponto.X, Y = ponto.Y, distanciaEntreGuardaCorpos = 300 / 1000f;
+
+            foreach (var comprimento in guardaCorpos)
+            {
+                var guardaCorpo = new GuardaCorpoVertical(settings.Altura, comprimento, new Point2d(X, Y));
+                GeraGuardaCorpo(guardaCorpo);
+                X = X + comprimento + distanciaEntreGuardaCorpos;
+            }
         }
 
-        public static void Integra(GuardaCorpoVertical gc, Point2d ponto)
+        private static void GeraGuardaCorpo(GuardaCorpoVertical guardaCorpo)
         {
             var document = Application.DocumentManager.MdiActiveDocument;
 
            
-            double X = ponto.X, Y = ponto.Y, distanciaEntreGuardaCorpos = 300 / 1000f;
 
-            //var gc = new GuardaCorpoVertical(settings.Altura, settings.ComprimentoPadrao, new Point2d(ponto.X, ponto.Y));
+            foreach (var ent in guardaCorpo.EstruturasVerticais)
+            {
+                Helpers.AddPolylineHatch(document, ent.Pontos, Layer.Poste, ColorIndex.AzulClaro);
+            }
 
-            //foreach (var gc in guardaCorpos)
-            //{
+            foreach (var ent in guardaCorpo.EstruturasHorizontais)
+            {
+                Helpers.AddPolyline(document, ent.Pontos, Layer.Poste, ColorIndex.AzulEscuroPersonalizado);
+            }
 
-                gc.SetGuardaCorpo(new Point2d(X, Y));
+            foreach (var ent in guardaCorpo.Dimensions)
+            {
+                Helpers.AddDimension(document, ent.PontoLinha1, ent.PontoLinha2, ent.PontoDimension);
+            }
 
-                Helpers.AddPolylineHatch(document, gc.Retangulo.Pontos, Layer.Poste, ColorIndex.Branco);
+            if (guardaCorpo.PosteReforco != null)
+            {
+                Helpers.AddPolylineHatch(document, guardaCorpo.PosteReforco.Pontos, Layer.Poste, ColorIndex.AzulPersonalizado);
 
-                foreach (var ent in gc.EstruturasVerticais)
-                {
-                    Helpers.AddPolylineHatch(document, ent.Pontos, Layer.Poste, ColorIndex.AzulClaro);
-                }
+                Helpers.AddPolyline(document, guardaCorpo.Cantoneira.Pontos, Layer.Poste, ColorIndex.Branco);
 
-                foreach (var ent in gc.EstruturasHorizontais)
-                {
-                    Helpers.AddPolyline(document, ent.Pontos, Layer.Poste, ColorIndex.AzulEscuroPersonalizado);
-                }
+                Helpers.AddPolylineHatch(document, guardaCorpo.CoberturaReforco.Pontos, Layer.Poste, ColorIndex.Branco);
+            }
 
-                foreach (var ent in gc.Dimensions)
-                {
-                    Helpers.AddDimension(document, ent.PontoLinha1, ent.PontoLinha2, ent.PontoDimension);
-                }
-
-                Helpers.AddPolylineHatch(document, gc.PosteReforco.Pontos, Layer.Poste, ColorIndex.AzulPersonalizado);
-
-                Helpers.AddPolyline(document, gc.Cantoneira.Pontos, Layer.Poste, ColorIndex.Branco);
-
-                foreach (var pontos in gc.Linhas)
-                {
-                    Helpers.AddLinha(document, pontos, Layer.Cantoneira);
-                }
-
-                X = X + gc.Comprimento + distanciaEntreGuardaCorpos;
-            //}
+            foreach (var pontos in guardaCorpo.Linhas)
+            {
+                Helpers.AddLinha(document, pontos, Layer.Cantoneira);
+            }
         }
+
     }
 }

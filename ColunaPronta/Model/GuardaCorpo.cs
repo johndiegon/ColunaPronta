@@ -18,7 +18,7 @@ namespace ColunaPronta.Model
         public List<Poste> Postes { get; set; }
         public List<Retangulo> Cantoneira { get; set; }
         public List<GuardaCorpoFilho> GuardaCorpos { get; set; }
-        public List<GuardaCorpoVertical> GuardaCorpoVertical { get; set; }
+        public List<Double> GuardaCorpoVertical { get; set; }
 
         public Posicao Posicao { get; set; }
         public Settings Settings { get; set; }
@@ -34,7 +34,7 @@ namespace ColunaPronta.Model
 
             bPosteFinal = bPFinal; // posteFinal == MessageBoxResult.Yes ? true : false;
 
-            this.GuardaCorpoVertical = new List<GuardaCorpoVertical>();
+            this.GuardaCorpoVertical = new List<double>();
 
             switch(Posicao)
             {
@@ -108,7 +108,7 @@ namespace ColunaPronta.Model
 
                     AddGuardaCorpo(comprimento, Largura, new Point2d( X , Y ));
 
-                    this.GuardaCorpoVertical.Add(new GuardaCorpoVertical(comprimento, Settings.Altura));
+                    this.GuardaCorpoVertical.Add(comprimento);
 
 
                     if (bVertical)
@@ -147,7 +147,7 @@ namespace ColunaPronta.Model
                     double comprimento = bPosteFinal ? comprimentoRestante - this.Settings.PosteLargura - Settings.CantoneiraFolga - Settings.CantoneiraEspessura  : comprimentoRestante;
 
                     AddGuardaCorpo(comprimento, Largura, new Point2d(X, Y));
-                    this.GuardaCorpoVertical.Add(new GuardaCorpoVertical(comprimento, Settings.Altura));
+                    this.GuardaCorpoVertical.Add(comprimento);
 
                     if (bVertical)
                     {
