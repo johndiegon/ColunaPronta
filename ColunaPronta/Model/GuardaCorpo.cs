@@ -15,6 +15,8 @@ namespace ColunaPronta.Model
         public Point2d PontoB { get; set; }
         public bool bPosteInicial { get; set; }
         public bool bPosteFinal { get; set; }
+        public bool bGcConfiguravelInicial { get; set; }
+        public bool bGConfiguravelFinal     { get; set; }
         public List<Poste> Postes { get; set; }
         public List<Retangulo> Cantoneira { get; set; }
         public List<GuardaCorpoFilho> GuardaCorpos { get; set; }
@@ -24,15 +26,14 @@ namespace ColunaPronta.Model
         public Settings Settings { get; set; }
 
         #region >> Construtor
-        public GuardaCorpo(Point2d point1 , Point2d point2, Posicao posicao, bool bPInicial, bool bPFinal)
+        public GuardaCorpo(Point2d point1 , Point2d point2, Posicao posicao, bool bPInicial, bool bPFinal, bool gcConfiguravelInicial, bool gcConfiguravelFinal) 
         {
-            this.Posicao = posicao;
-           
+            this.Posicao = posicao;          
             this.Settings = new Settings(true);
-
-            bPosteInicial = bPInicial;// posteInical == MessageBoxResult.Yes ? true : false;
-
-            bPosteFinal = bPFinal; // posteFinal == MessageBoxResult.Yes ? true : false;
+            this.bPosteInicial = bPInicial;// posteInical == MessageBoxResult.Yes ? true : false;
+            this.bPosteFinal = bPFinal; // posteFinal == MessageBoxResult.Yes ? true : false;
+            this.bGcConfiguravelInicial = gcConfiguravelInicial;
+            this.bGConfiguravelFinal = gcConfiguravelFinal;
 
             this.GuardaCorpoVertical = new List<double>();
 
@@ -223,7 +224,56 @@ namespace ColunaPronta.Model
             this.GuardaCorpos.Add(guardaCorpo);
         }
 
-      
+        private void AddGuardaCorpo(double comprimento, double largura, Point2d pontoInicial, bool bInicial)
+        {
+            double X = pontoInicial.X, Y = pontoInicial.Y;
+            double comprimentoTuboExterno = comprimento - Settings.TuboExternoDistanciaInicial - ((this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga) * 2);
+
+            #region >> Cantoneira Inicial
+
+            var cantoneiraInicial = new CantoneiraGuardaCorpo(new Point2d(X, Y), this.Posicao, TipoCantoneira.NormalInicio);
+
+            comprimento = comprimento - ((this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga) * 2);
+
+            if (bVertical)
+            {
+                Y = Y - ((this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga));
+            }
+            else
+            {
+                X = X + ((this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga));
+            }
+
+            #endregion
+
+            #region >> Guarda Corpo 
+
+            var guardaCorpo = new GuardaCorpoFilho(largura, comprimento, new Point2d(X, Y), this.Posicao, Settings.DistanciaCantoneiraGC);
+
+            #endregion
+
+            #region >> Cantoneira Final 
+
+            if (bVertical)
+            {
+                Y = Y - (comprimento - this.Settings.CantoneiraLargura + (this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga));
+            }
+            else
+            {
+                X = X + (comprimento - this.Settings.CantoneiraLargura + this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga);
+            }
+
+            var cantoneiraFinal = new CantoneiraGuardaCorpo(new Point2d(X, Y), this.Posicao, TipoCantoneira.NormalFim);
+
+            #endregion
+            var cantoneiras = new List<CantoneiraGuardaCorpo>();
+            cantoneiras.Add(cantoneiraInicial);
+            cantoneiras.Add(cantoneiraFinal);
+            guardaCorpo.Cantoneiras = cantoneiras;
+            this.GuardaCorpos.Add(guardaCorpo);
+        }
+
+
         #endregion
-    } 
+    }
 }

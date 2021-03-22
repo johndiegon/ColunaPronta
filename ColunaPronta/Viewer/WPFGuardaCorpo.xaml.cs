@@ -1,26 +1,13 @@
 ﻿using ColunaPronta.Commands;
 using ColunaPronta.Model;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ColunaPronta.Viewer
 {
-    /// <summary>
-    /// Interaction logic for WPFGuardaCorpo.xaml
-    /// </summary>
     public partial class WPFGuardaCorpo : Window
     {
         Settings settings = new Settings(1);
@@ -38,13 +25,15 @@ namespace ColunaPronta.Viewer
             var bPosteInicial = this.RadioButtonPosteInicioSim.IsChecked == true ? true : false;
             var bPosteFinal = this.RadioButtonPosteFimSim.IsChecked == true ? true : false;
             var posicao = Posicao.VoltadoBaixo;
+            var bConfiguravelInicial = this.CheckBoxPosteInicial.IsChecked == true ? true : false;
+            var bConfiguravelFinal = this.CheckBoxPosteFinal.IsChecked == true ? true : false;
 
             if (RadioButtonLadoA.IsChecked == true) { posicao = Posicao.VoltadoBaixo; }
             if (RadioButtonLadoB.IsChecked == true) { posicao = Posicao.VoltadoEsqueda; }
             if (RadioButtonLadoC.IsChecked == true) { posicao = Posicao.VoltadoCima; }
             if (RadioButtonLadoD.IsChecked == true) { posicao = Posicao.VoltadoDireita; }
 
-            IntegraGuardaCorpo.Add(posicao, bPosteInicial, bPosteFinal);
+            IntegraGuardaCorpo.Add(posicao, bPosteInicial, bPosteFinal, bConfiguravelInicial, bConfiguravelFinal);
         }
 
         private void SetTelaInicial()
@@ -61,7 +50,13 @@ namespace ColunaPronta.Viewer
             textBox_cantoneiraFolga.Text = settings.CantoneiraFolga.ToString();         
             textBox_cantoneiraEspessura.Text = settings.CantoneiraEspessura.ToString();     
             textbox_reforcoLargura.Text = settings.PosteReforcoLargura.ToString();          
-            textbox_reforcoComprimento.Text = settings.PosteReforcoComprimento.ToString();      
+            textbox_reforcoComprimento.Text = settings.PosteReforcoComprimento.ToString();
+
+            textBox_ComprimentoGCInicio.Text = settings.TuboExternoComprimentoInicial.ToString() ;
+            textBox_ComprimentoTuboInterno.Text  = settings.TuboInternoComprimento.ToString();
+            textBox_LarguraTuboInterno.Text      = settings.TuboInternoLargura.ToString();
+            textBox_LarguraTuboExterno.Text      = settings.TuboExternoLargura.ToString();
+            textBox_DistanciaTuboExterno.Text    = settings.TuboExternoComprimento.ToString();
         }
 
         private void SetSettings()
@@ -79,6 +74,12 @@ namespace ColunaPronta.Viewer
             settings.CantoneiraEspessura = Convert.ToDouble(textBox_cantoneiraEspessura.Text);
             settings.PosteReforcoLargura = Convert.ToDouble(textbox_reforcoLargura.Text);
             settings.PosteReforcoComprimento = Convert.ToDouble(textbox_reforcoComprimento.Text);
+            settings.TuboExternoComprimentoInicial = Convert.ToDouble(textBox_ComprimentoGCInicio.Text);
+            settings.TuboInternoComprimento = Convert.ToDouble(textBox_ComprimentoTuboInterno.Text);
+            settings.TuboInternoLargura = Convert.ToDouble(textBox_LarguraTuboInterno.Text);
+            settings.TuboExternoLargura = Convert.ToDouble(textBox_LarguraTuboExterno.Text);
+            settings.TuboExternoComprimento = Convert.ToDouble(textBox_DistanciaTuboExterno.Text);
+
             settings.Save();
 
         }

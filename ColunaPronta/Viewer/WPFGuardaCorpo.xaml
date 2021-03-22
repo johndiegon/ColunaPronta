@@ -31,8 +31,8 @@
                             <RadioButton Name="RadioButtonPosteFimNao" Content="Não" GroupName="PosteFim"/>
                             <TextBlock/>
                             <TextBlock><Run Text="Gerar poste Configurável?"/></TextBlock>
-                            <CheckBox Name="CheckBoxPosteFimSim" Content="Com Abertura para Direita"/>
-                            <CheckBox Name="CheckBoxPosteFimNao" Content="Com Abertura para esquerda"/>
+                            <CheckBox Name="CheckBoxPosteInicial" Content="Com Abertura para Direita"/>
+                            <CheckBox Name="CheckBoxPosteFinal" Content="Com Abertura para esquerda"/>
                             <TextBlock/>
                             <Button Click="Button_Click">Gerar Guarda Corpo</Button>
                         </StackPanel>
@@ -53,10 +53,10 @@
                         <TextBox x:Name="textBox_ComprimentoTuboInterno" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
                         <TextBlock  x:Name="TextBlock_LarguraTuboInterno">Largura do Tubo Interno (mm) :</TextBlock>
                         <TextBox x:Name="textBox_LarguraTuboInterno" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
-                        <TextBlock  x:Name="TextBlock_ComprimentoTuboExterno">Comprimento do Tubo Externo (mm) :</TextBlock>
-                        <TextBox x:Name="textBox_ComprimentoTuboExterno" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
                         <TextBlock  x:Name="TextBlock_LarguraTuboExterno">Largura do Tubo Externo (mm) :</TextBlock>
                         <TextBox x:Name="textBox_LarguraTuboExterno" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+                        <TextBlock  x:Name="TextBlock_DistanciaTuboExterno">Distancia do Tubo Externo (mm):</TextBlock>
+                        <TextBox x:Name="textBox_DistanciaTuboExterno" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
 
                     </StackPanel>
                 </TabItem>

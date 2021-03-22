@@ -13,7 +13,7 @@ namespace ColunaPronta.Commands
     public static class IntegraGuardaCorpo 
     {
         #region >> Comandos 
-        public static void Add(Posicao posicao, bool bPosteInicial, bool bPosteFinal)
+        public static void Add(Posicao posicao, bool bPosteInicial, bool bPosteFinal, bool gcConfiguravelInicial , bool gcConfiguravelFinal)
         {
        
             Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
@@ -41,6 +41,8 @@ namespace ColunaPronta.Commands
                                               , posicao
                                               , bPosteInicial
                                               , bPosteFinal
+                                              , gcConfiguravelInicial
+                                              , gcConfiguravelFinal
                                               );
 
             Integra(guardaCorpo);
