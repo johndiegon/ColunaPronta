@@ -5,18 +5,19 @@ namespace ColunaPronta.Model
 {
     public class GuardaCorpoFilho
     {
-        public Retangulo retangulo { get; }
+        public List<Retangulo> Tubos { get; }
         public double Largura { get; }
         public double Comprimento { get; }
         public PosteReforco PosteReforco { get; }
         public List<CantoneiraGuardaCorpo> Cantoneiras { get; set; }
+        public GuardaCorpoFilho() {}
         public GuardaCorpoFilho(double largura, double comprimento, Point2d pontoA, Posicao posicao, double distanciaCantoneiraGC)
         {
             var posicaoRetangulo = Posicao.Vertical;
             this.Largura = largura;
             this.Comprimento = comprimento;
             double X = pontoA.X, Y = pontoA.Y;
-       
+            this.Tubos = new List<Retangulo>();
             var settings = new Settings(true);
 
             switch (posicao)
@@ -66,9 +67,105 @@ namespace ColunaPronta.Model
                 this.PosteReforco = new PosteReforco(new Point2d(PosteX, PosteY), posicao);
             }
 
-            this.retangulo = new Retangulo(largura, comprimento, new Point2d(X, Y), posicaoRetangulo);
+            var retangulo = new Retangulo(largura, comprimento, new Point2d(X, Y), posicaoRetangulo);
+            this.Tubos.Add(retangulo);
         }
-     }
+        public GuardaCorpoFilho(double largura, double comprimento, Point2d pontoA, Posicao posicao, double distanciaCantoneiraGC, Abertura abertura)
+        {
+            var settings = new Settings(true);
+            var posicaoRetangulo = Posicao.Vertical;
+            this.Tubos = new List<Retangulo>();
+            this.Largura = largura;
+            this.Comprimento = comprimento ;
+            var comprimentoTuboExterno = comprimento - settings.TuboExternoDistanciaInicial;
+            
+            double X = pontoA.X, Y = pontoA.Y;
+            double tuboInternoX = pontoA.X, tuboInternoY = pontoA.Y;
+            double tuboExternoX = pontoA.X, tuboExternoY = pontoA.Y;
+            var distanciaTuboInterno = (largura - settings.TuboInternoLargura) / 2f;
+
+            switch (posicao)
+            {
+                case Posicao.VoltadoBaixo:
+                    posicaoRetangulo = Posicao.Horizontal;
+                    
+                    tuboExternoX = abertura == Abertura.aEsqueda ? X + settings.TuboExternoDistanciaInicial : X ;
+                    tuboExternoY = Y - distanciaCantoneiraGC;
+
+                    tuboInternoX = abertura == Abertura.aEsqueda ? X : X + comprimento - settings.TuboInternoComprimento;
+                    tuboInternoY = Y - distanciaCantoneiraGC - distanciaTuboInterno;
+                    
+                    break;
+                case Posicao.VoltadoDireita:
+                    posicaoRetangulo = Posicao.Vertical;
+
+                    tuboExternoX = X + distanciaCantoneiraGC;
+                    tuboExternoY = abertura == Abertura.aEsqueda ? Y : Y - settings.TuboExternoDistanciaInicial;
+
+                    tuboInternoX = X + distanciaCantoneiraGC + distanciaTuboInterno;
+                    tuboInternoY = abertura == Abertura.aEsqueda ? Y - comprimento + settings.TuboInternoComprimento : Y ; 
+
+                    break;
+                case Posicao.VoltadoCima:
+                    posicaoRetangulo = Posicao.Horizontal;
+                    
+                    tuboExternoX = abertura == Abertura.aEsqueda ? X + settings.TuboExternoDistanciaInicial : X; 
+                    tuboExternoY = Y - settings.CantoneiraComprimento + settings.Largura + distanciaCantoneiraGC;
+
+                    tuboInternoX = abertura == Abertura.aEsqueda ? X : X + comprimento - settings.TuboInternoComprimento;
+                    tuboInternoY = Y - settings.CantoneiraComprimento + settings.Largura + distanciaCantoneiraGC - distanciaTuboInterno;
+                    
+                    
+                    break;
+                default:
+
+                    posicaoRetangulo = Posicao.Vertical;
+
+                    tuboExternoX = X - distanciaCantoneiraGC - settings.Largura;
+                    tuboExternoY = abertura == Abertura.aEsqueda ? Y - settings.TuboExternoDistanciaInicial : Y;
+
+                    tuboInternoX = X - distanciaCantoneiraGC - settings.Largura + distanciaTuboInterno;
+                    tuboInternoY = abertura == Abertura.aEsqueda ? Y : Y - comprimento + settings.TuboInternoComprimento;
+
+                    break;
+            }
+
+            if (comprimento >= settings.ComprimentoMinimoReforco)
+            {
+                double PosteX, PosteY;
+
+                switch (posicao)
+                {
+                    case Posicao.VoltadoBaixo:
+                        PosteX = X + ((comprimento / 2) - (settings.PosteReforcoLargura / 2));
+                        PosteY = Y + (settings.PosteReforcoDistancia);
+                        break;
+                    case Posicao.VoltadoDireita:
+                        PosteX = X - settings.PosteReforcoDistancia;
+                        PosteY = Y - ((comprimento / 2) - (settings.PosteReforcoLargura / 2));
+                        break;
+                    case Posicao.VoltadoCima:
+                        PosteX = X + ((comprimento / 2) - (settings.PosteReforcoLargura / 2));
+                        PosteY = Y + (settings.PosteComprimento - settings.PosteReforcoDistancia);
+                        break;
+                    default:
+                        PosteX = X - (settings.PosteReforcoComprimento - settings.PosteReforcoDistancia - settings.Largura);
+                        PosteY = Y - +((comprimento / 2) - (settings.PosteReforcoLargura / 2));
+                        break;
+                }
+
+                this.PosteReforco = new PosteReforco(new Point2d(PosteX, PosteY), posicao);
+            }
+
+
+            var tuboInterno = new Retangulo(settings.TuboInternoLargura, settings.TuboInternoComprimento, new Point2d(tuboInternoX, tuboInternoY), posicaoRetangulo);
+            var tuboExterno = new Retangulo(largura, comprimentoTuboExterno, new Point2d(tuboExternoX, tuboExternoY), posicaoRetangulo);
+
+            this.Tubos.Add(tuboInterno);
+            this.Tubos.Add(tuboExterno);
+        }
+
+    }
     public class PosteReforco
     {
         public List<CantoneiraGuardaCorpo> Cantoneiras { get; set; }
@@ -131,11 +228,8 @@ namespace ColunaPronta.Model
             }
 
             var posteExterno = new Retangulo(settings.PosteReforcoLargura, settings.PosteReforcoComprimento, new Point2d(X, Y), posicaoRetangulo);
-            //var posteInterno = new Retangulo(settings.PosteReforcoLargura - ( settings.PosteEspessura * 2), settings.PosteReforcoComprimento - (settings.PosteEspessura * 2), new Point2d(X + settings.PosteEspessura, Y -settings.PosteEspessura), posicaoRetangulo);
-
             poste.Add(posteExterno);
-            //poste.Add(posteInterno);
-
+   
             Poste = poste;
 
             switch (posicao)

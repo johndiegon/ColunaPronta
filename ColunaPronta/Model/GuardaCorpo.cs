@@ -15,26 +15,22 @@ namespace ColunaPronta.Model
         public Point2d PontoB { get; set; }
         public bool bPosteInicial { get; set; }
         public bool bPosteFinal { get; set; }
-        public bool bGcConfiguravelInicial { get; set; }
-        public bool bGConfiguravelFinal     { get; set; }
         public List<Poste> Postes { get; set; }
         public List<Retangulo> Cantoneira { get; set; }
         public List<GuardaCorpoFilho> GuardaCorpos { get; set; }
         public List<Double> GuardaCorpoVertical { get; set; }
-
+        public Abertura Abertura { get; set; }
         public Posicao Posicao { get; set; }
         public Settings Settings { get; set; }
 
         #region >> Construtor
-        public GuardaCorpo(Point2d point1 , Point2d point2, Posicao posicao, bool bPInicial, bool bPFinal, bool gcConfiguravelInicial, bool gcConfiguravelFinal) 
+        public GuardaCorpo(Point2d point1 , Point2d point2, Posicao posicao, bool bPInicial, bool bPFinal, Abertura abertura) 
         {
             this.Posicao = posicao;          
             this.Settings = new Settings(true);
-            this.bPosteInicial = bPInicial;// posteInical == MessageBoxResult.Yes ? true : false;
-            this.bPosteFinal = bPFinal; // posteFinal == MessageBoxResult.Yes ? true : false;
-            this.bGcConfiguravelInicial = gcConfiguravelInicial;
-            this.bGConfiguravelFinal = gcConfiguravelFinal;
-
+            this.bPosteInicial = bPInicial;
+            this.bPosteFinal = bPFinal;    
+            this.Abertura = abertura;
             this.GuardaCorpoVertical = new List<double>();
 
             switch(Posicao)
@@ -107,17 +103,36 @@ namespace ColunaPronta.Model
                     #region >> Gera Guarda Corpo
                     var comprimento = Settings.ComprimentoPadrao ;
 
-                    AddGuardaCorpo(comprimento, Largura, new Point2d( X , Y ));
+
+                    var abertura = Abertura.fechado;
+                    
+                    switch(this.Abertura)
+                    {
+                        case Abertura.ambos:
+                            abertura = Abertura.aEsqueda;
+                            this.Abertura = Abertura.aDireita;
+                            break;
+                        case Abertura.aEsqueda:
+                            abertura = Abertura.aEsqueda;
+                            this.Abertura = Abertura.fechado;
+                            break;
+                        case Abertura.aDireita:
+                            abertura = Abertura.fechado;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    AddGuardaCorpo(comprimento, Largura, new Point2d(X, Y), abertura);
 
                     this.GuardaCorpoVertical.Add(comprimento);
 
-
                     if (bVertical)
                     {
-                        Y = Y - (comprimento); /// Settings.Escala
+                        Y = Y - (comprimento); 
                     }else
                     {
-                        X = X + (comprimento); //// Settings.Escala
+                        X = X + (comprimento); 
                     }
 
                     comprimentoRestante = comprimentoRestante - comprimento;
@@ -147,27 +162,42 @@ namespace ColunaPronta.Model
                     #region >> Gera Guarda Corpo
                     double comprimento = bPosteFinal ? comprimentoRestante - this.Settings.PosteLargura - Settings.CantoneiraFolga - Settings.CantoneiraEspessura  : comprimentoRestante;
 
-                    AddGuardaCorpo(comprimento, Largura, new Point2d(X, Y));
+
+                    var abertura = Abertura.fechado;
+
+                    switch (this.Abertura)
+                    {
+                        case Abertura.ambos:
+                            abertura = Abertura.aDireita;
+                            this.Abertura = Abertura.fechado;
+                            break;
+                        case Abertura.aEsqueda:
+                            abertura = Abertura.aEsqueda;
+                            this.Abertura = Abertura.fechado;
+                            break;
+                        case Abertura.aDireita:
+                            abertura = Abertura.aDireita;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    AddGuardaCorpo(comprimento, Largura, new Point2d(X, Y), abertura);
+                 
                     this.GuardaCorpoVertical.Add(comprimento);
 
                     if (bVertical)
                     {
-                        Y = Y - (comprimento); /// Settings.Escala
+                        Y = Y - (comprimento); 
                     } else
                     {
-                        X = X + (comprimento); //  / Settings.Escala
+                        X = X + (comprimento); 
                     }
 
                     if (bPosteFinal)
                     {
                         double posteX = X, posteY = Y;
-
-                        //if (Posicao == Posicao.VoltadoEsqueda)
-                        //{
-                        //    posteX = posteX - Settings.PosteComprimento;
-                        //}
-
-                        
+    
                         var poste = new Poste(new Point2d(posteX, posteY), this.Posicao, TipoPoste.Normal);
                         this.Postes.Add(poste);
                     }
@@ -178,10 +208,11 @@ namespace ColunaPronta.Model
 
             }
         }
-        private void AddGuardaCorpo(double comprimento, double largura, Point2d pontoInicial)
+        private void AddGuardaCorpo(double comprimento, double largura, Point2d pontoInicial, Abertura abertura)
         {
             Double X = pontoInicial.X, Y = pontoInicial.Y;
-       
+            var guardaCorpo = new GuardaCorpoFilho();
+
             #region >> Cantoneira Inicial
 
             var cantoneiraInicial = new CantoneiraGuardaCorpo( new Point2d(X,Y), this.Posicao, TipoCantoneira.NormalInicio );
@@ -200,7 +231,14 @@ namespace ColunaPronta.Model
 
             #region >> Guarda Corpo 
           
-            var guardaCorpo = new GuardaCorpoFilho(largura, comprimento, new Point2d(X, Y), this.Posicao, Settings.DistanciaCantoneiraGC);
+            if(abertura == Abertura.fechado)
+            {
+                guardaCorpo = new GuardaCorpoFilho(largura, comprimento, new Point2d(X, Y), this.Posicao, Settings.DistanciaCantoneiraGC);
+            }
+            else
+            {
+                guardaCorpo = new GuardaCorpoFilho(largura, comprimento, new Point2d(X, Y), this.Posicao, Settings.DistanciaCantoneiraGC, abertura);
+            }
 
             #endregion
 
@@ -224,56 +262,15 @@ namespace ColunaPronta.Model
             this.GuardaCorpos.Add(guardaCorpo);
         }
 
-        private void AddGuardaCorpo(double comprimento, double largura, Point2d pontoInicial, bool bInicial)
-        {
-            double X = pontoInicial.X, Y = pontoInicial.Y;
-            double comprimentoTuboExterno = comprimento - Settings.TuboExternoDistanciaInicial - ((this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga) * 2);
-
-            #region >> Cantoneira Inicial
-
-            var cantoneiraInicial = new CantoneiraGuardaCorpo(new Point2d(X, Y), this.Posicao, TipoCantoneira.NormalInicio);
-
-            comprimento = comprimento - ((this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga) * 2);
-
-            if (bVertical)
-            {
-                Y = Y - ((this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga));
-            }
-            else
-            {
-                X = X + ((this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga));
-            }
-
-            #endregion
-
-            #region >> Guarda Corpo 
-
-            var guardaCorpo = new GuardaCorpoFilho(largura, comprimento, new Point2d(X, Y), this.Posicao, Settings.DistanciaCantoneiraGC);
-
-            #endregion
-
-            #region >> Cantoneira Final 
-
-            if (bVertical)
-            {
-                Y = Y - (comprimento - this.Settings.CantoneiraLargura + (this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga));
-            }
-            else
-            {
-                X = X + (comprimento - this.Settings.CantoneiraLargura + this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga);
-            }
-
-            var cantoneiraFinal = new CantoneiraGuardaCorpo(new Point2d(X, Y), this.Posicao, TipoCantoneira.NormalFim);
-
-            #endregion
-            var cantoneiras = new List<CantoneiraGuardaCorpo>();
-            cantoneiras.Add(cantoneiraInicial);
-            cantoneiras.Add(cantoneiraFinal);
-            guardaCorpo.Cantoneiras = cantoneiras;
-            this.GuardaCorpos.Add(guardaCorpo);
-        }
-
-
         #endregion
+
+    }
+
+    public enum Abertura
+    {
+        aDireita,
+        aEsqueda,
+        ambos,
+        fechado
     }
 }

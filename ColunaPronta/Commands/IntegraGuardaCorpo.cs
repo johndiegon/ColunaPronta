@@ -13,7 +13,7 @@ namespace ColunaPronta.Commands
     public static class IntegraGuardaCorpo 
     {
         #region >> Comandos 
-        public static void Add(Posicao posicao, bool bPosteInicial, bool bPosteFinal, bool gcConfiguravelInicial , bool gcConfiguravelFinal)
+        public static void Add(Posicao posicao, bool bPosteInicial, bool bPosteFinal, Abertura abertura)
         {
        
             Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
@@ -41,8 +41,7 @@ namespace ColunaPronta.Commands
                                               , posicao
                                               , bPosteInicial
                                               , bPosteFinal
-                                              , gcConfiguravelInicial
-                                              , gcConfiguravelFinal
+                                              , abertura
                                               );
 
             Integra(guardaCorpo);
@@ -89,8 +88,10 @@ namespace ColunaPronta.Commands
 
             foreach (GuardaCorpoFilho gc in guardaCorpo.GuardaCorpos)
             {
-                
-                Helpers.AddPolyline(document, gc.retangulo.Pontos, Layer.Tubo);
+                foreach (var tubo in gc.Tubos)
+                {
+                    Helpers.AddPolyline(document, tubo.Pontos, Layer.PosteReforco);
+                }
 
                 if (gc.PosteReforco != null)
                 {
@@ -111,7 +112,7 @@ namespace ColunaPronta.Commands
                 }
             };
 
-            IntegraGuardaCorpoVertical.Integra(guardaCorpo.GuardaCorpoVertical);
+            //IntegraGuardaCorpoVertical.Integra(guardaCorpo.GuardaCorpoVertical);
 
         }
 

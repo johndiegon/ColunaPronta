@@ -31,8 +31,8 @@
                             <RadioButton Name="RadioButtonPosteFimNao" Content="Não" GroupName="PosteFim"/>
                             <TextBlock/>
                             <TextBlock><Run Text="Gerar poste Configurável?"/></TextBlock>
-                            <CheckBox Name="CheckBoxPosteInicial" Content="Com Abertura para Direita"/>
-                            <CheckBox Name="CheckBoxPosteFinal" Content="Com Abertura para esquerda"/>
+                            <CheckBox Name="CheckBoxPosteDireita" Content="Com Abertura para Direita"/>
+                            <CheckBox Name="CheckBoxPosteEsquerda" Content="Com Abertura para esquerda"/>
                             <TextBlock/>
                             <Button Click="Button_Click">Gerar Guarda Corpo</Button>
                         </StackPanel>
@@ -42,7 +42,7 @@
                     </Grid>
 
                 </TabItem>
-                <TabItem Header="Configurárvel"  BorderBrush="White">
+                <TabItem Header="Configurável"  BorderBrush="White">
                     <StackPanel VerticalAlignment="Top">
 
                         <Image x:Name="image2" HorizontalAlignment="Center" VerticalAlignment="Top"  Source="C:\Autodesk\ColunaPronta\Image\gcorpoConfiguravel.png" Height="119" Width="309"/>
@@ -55,7 +55,7 @@
                         <TextBox x:Name="textBox_LarguraTuboInterno" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
                         <TextBlock  x:Name="TextBlock_LarguraTuboExterno">Largura do Tubo Externo (mm) :</TextBlock>
                         <TextBox x:Name="textBox_LarguraTuboExterno" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
-                        <TextBlock  x:Name="TextBlock_DistanciaTuboExterno">Distancia do Tubo Externo (mm):</TextBlock>
+                        <TextBlock  x:Name="TextBlock_DistanciaTuboExterno">Abertura do Tubo Externo (mm):</TextBlock>
                         <TextBox x:Name="textBox_DistanciaTuboExterno" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
 
                     </StackPanel>

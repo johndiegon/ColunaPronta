@@ -25,15 +25,27 @@ namespace ColunaPronta.Viewer
             var bPosteInicial = this.RadioButtonPosteInicioSim.IsChecked == true ? true : false;
             var bPosteFinal = this.RadioButtonPosteFimSim.IsChecked == true ? true : false;
             var posicao = Posicao.VoltadoBaixo;
-            var bConfiguravelInicial = this.CheckBoxPosteInicial.IsChecked == true ? true : false;
-            var bConfiguravelFinal = this.CheckBoxPosteFinal.IsChecked == true ? true : false;
+
+            var abertura = Abertura.fechado;
+
+            if (this.CheckBoxPosteDireita.IsChecked == true  && this.CheckBoxPosteEsquerda.IsChecked == true ||
+                this.CheckBoxPosteDireita.IsChecked == false && this.CheckBoxPosteEsquerda.IsChecked == false
+                )
+            {
+                abertura = this.CheckBoxPosteEsquerda.IsChecked == true ?  Abertura.ambos : Abertura.fechado;
+            }
+            else
+            {
+                abertura = this.CheckBoxPosteEsquerda.IsChecked == true ? Abertura.aEsqueda : Abertura.aDireita;
+            }
+
 
             if (RadioButtonLadoA.IsChecked == true) { posicao = Posicao.VoltadoBaixo; }
             if (RadioButtonLadoB.IsChecked == true) { posicao = Posicao.VoltadoEsqueda; }
             if (RadioButtonLadoC.IsChecked == true) { posicao = Posicao.VoltadoCima; }
             if (RadioButtonLadoD.IsChecked == true) { posicao = Posicao.VoltadoDireita; }
 
-            IntegraGuardaCorpo.Add(posicao, bPosteInicial, bPosteFinal, bConfiguravelInicial, bConfiguravelFinal);
+            IntegraGuardaCorpo.Add(posicao, bPosteInicial, bPosteFinal, abertura);
         }
 
         private void SetTelaInicial()
