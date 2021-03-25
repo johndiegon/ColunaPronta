@@ -10,7 +10,8 @@ namespace ColunaPronta.Model
     {
         Cantoneira, 
         CantoneiraL,
-        Tubo, 
+        TuboExterno,
+        TuboInterno,
         Poste, 
         PosteReforco
     }
@@ -50,6 +51,18 @@ namespace ColunaPronta.Model
                             ).FirstOrDefault();
 
             return nomeLayers == null ? "" : nomeLayers.Nome;
+        }
+        public Detalhe GetDetalheLayer(Layer layer)
+        {
+            return (from detalhe in Detalhes
+                              where detalhe.Objeto == layer.ToString().ToUpper()
+                              select new Detalhe
+                              {
+                                  Nome   = detalhe.Nome,
+                                  Objeto = detalhe.Objeto,
+                                  Perfil = detalhe.Perfil
+                              }
+                            ).FirstOrDefault();
         }
         public string GetDescricaoLayer(Layer layer)
         {

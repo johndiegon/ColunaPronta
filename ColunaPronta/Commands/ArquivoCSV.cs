@@ -82,11 +82,12 @@ namespace ColunaPronta.Commands
                 {
                     File.Delete(nomeArquivo);
                     writer = File.AppendText(nomeArquivo);
+                    writer.WriteLine("objeto;nome;perfil");
                 }
                 else
                 {
                     writer = File.CreateText(nomeArquivo);
-                    writer.WriteLine("objeto;nome;");
+                    writer.WriteLine("objeto;nome;perfil");
                 }
 
                 foreach (var layer in layers)
@@ -94,6 +95,7 @@ namespace ColunaPronta.Commands
 
                     var linhaColuna = string.Concat(layer.Objeto.ToString(), ";"
                                                    , layer.Nome.ToString(), ";"
+                                                   , layer.Perfil.ToString(),";"
                                                    );
                     writer.WriteLine(linhaColuna);
                 }

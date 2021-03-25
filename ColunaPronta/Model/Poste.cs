@@ -60,7 +60,7 @@ namespace ColunaPronta.Model
                     break;
             }
         
-            PosteRetangulo = new Retangulo(settings.PosteLargura, settings.PosteComprimento, new Point2d(posteX, posteY), posicao);
+            PosteRetangulo = new Retangulo(settings.PosteLargura, settings.PosteComprimento, new Point2d(posteX, posteY), posicao, Model.Layer.PosteReforco);
 
             var cantoneira = new CantoneiraGuardaCorpo(new Point2d(cantoneiraX, cantoneiraY), posicaoCantoneira, TipoCantoneira.Cantoneira38MM);
             cantoneiras.Add(cantoneira);
@@ -80,7 +80,7 @@ namespace ColunaPronta.Model
                 posicao = Posicao.Horizontal;
             }
 
-            PosteRetangulo = new Retangulo(settings.PosteReforcoLargura, settings.PosteReforcoComprimento, pointInicial, posicao);
+            PosteRetangulo = new Retangulo(settings.PosteReforcoLargura, settings.PosteReforcoComprimento, pointInicial, posicao, Model.Layer.PosteReforco);
         }
 
     }

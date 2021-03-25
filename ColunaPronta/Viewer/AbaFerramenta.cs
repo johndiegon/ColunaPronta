@@ -67,26 +67,6 @@ namespace ColunaPronta.Viewer
 
                 buttons.Add(geraucp);
 
-                //// Botão para gerar coluna identificada
-                //uriImage = new Uri(@"C:\Autodesk\ColunaPronta\Icones\iconei.png");
-                //uriImage2 = new Uri(@"C:\Autodesk\ColunaPronta\Icones\iconei.png");
-
-                //image = new BitmapImage(uriImage);
-                //largeImage = new BitmapImage(uriImage2);
-
-                //Autodesk.Windows.RibbonButton geraicp = new RibbonButton()
-                //{
-                //    Text = "Gera ",
-                //    Size = RibbonItemSize.Large,
-                //    Image = image,
-                //    LargeImage = largeImage,
-                //    ShowText = true,
-                //    CommandParameter = "geraicp",
-                //    CommandHandler = new SimpleButtonCmdHandler()
-                //};
-
-                //buttons.Add(geraicp);
-
                 // Botão para gerar coluna identificada
                 uriImage = new Uri(@"C:\Autodesk\ColunaPronta\Icones\relatorio.png");
                 uriImage2 = new Uri(@"C:\Autodesk\ColunaPronta\Icones\relatorio.png");
@@ -205,6 +185,26 @@ namespace ColunaPronta.Viewer
                 };
 
                 buttons.Add(GeraListaCorte);
+
+                // Botão para Lista de corte
+                uriImage = new Uri(@"C:\Autodesk\ColunaPronta\Icones\listacorte.png");
+                uriImage2 = new Uri(@"C:\Autodesk\ColunaPronta\Icones\listacorte.png");
+
+                image = new BitmapImage(uriImage);
+                largeImage = new BitmapImage(uriImage2);
+
+                Autodesk.Windows.RibbonButton GeraListaVisual = new RibbonButton()
+                {
+                    Text = "Lista Visual",
+                    Size = RibbonItemSize.Large,
+                    Image = image,
+                    LargeImage = largeImage,
+                    ShowText = true,
+                    CommandParameter = "geralvgc",
+                    CommandHandler = new SimpleButtonCmdHandler()
+                };
+
+                buttons.Add(GeraListaVisual);
 
                 return new Aba
                 {
@@ -379,6 +379,12 @@ namespace ColunaPronta.Viewer
                     {
                         IntegraGuardaCorpo.GeraListaCorte();
                     }
+
+                    if (button.CommandParameter.ToString() == "geralvgc")
+                    {
+                        IntegraGuardaCorpoVertical.Integra();
+                    }
+                    
                 }
             }
 

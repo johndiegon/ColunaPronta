@@ -9,13 +9,15 @@ namespace ColunaPronta.Model
         public double Area { get { return Largura * Comprimento; } }
         public Point2d PontoInicial { get; set; }
         public Posicao Posicao { get; set; }
+        public Layer Layer { get; set; }
         public Point2dCollection Pontos { get; set; }
-        public Retangulo(double largura, double comprimento, Point2d pontoInicial, Posicao posicao)
+        public Retangulo(double largura, double comprimento, Point2d pontoInicial, Posicao posicao, Layer layer)
         {
             this.Largura = largura;
             this.Comprimento = comprimento;
             this.PontoInicial = pontoInicial;
             this.Posicao = posicao;
+            this.Layer = layer;
             var collection = new Point2dCollection();
 
             switch (posicao)

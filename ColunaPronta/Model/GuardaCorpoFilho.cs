@@ -67,7 +67,7 @@ namespace ColunaPronta.Model
                 this.PosteReforco = new PosteReforco(new Point2d(PosteX, PosteY), posicao);
             }
 
-            var retangulo = new Retangulo(largura, comprimento, new Point2d(X, Y), posicaoRetangulo);
+            var retangulo = new Retangulo(largura, comprimento, new Point2d(X, Y), posicaoRetangulo, Model.Layer.TuboExterno);
             this.Tubos.Add(retangulo);
         }
         public GuardaCorpoFilho(double largura, double comprimento, Point2d pontoA, Posicao posicao, double distanciaCantoneiraGC, Abertura abertura)
@@ -158,8 +158,8 @@ namespace ColunaPronta.Model
             }
 
 
-            var tuboInterno = new Retangulo(settings.TuboInternoLargura, settings.TuboInternoComprimento, new Point2d(tuboInternoX, tuboInternoY), posicaoRetangulo);
-            var tuboExterno = new Retangulo(largura, comprimentoTuboExterno, new Point2d(tuboExternoX, tuboExternoY), posicaoRetangulo);
+            var tuboInterno = new Retangulo(settings.TuboInternoLargura, settings.TuboInternoComprimento, new Point2d(tuboInternoX, tuboInternoY), posicaoRetangulo, Model.Layer.TuboInterno);
+            var tuboExterno = new Retangulo(largura, comprimentoTuboExterno, new Point2d(tuboExternoX, tuboExternoY), posicaoRetangulo, Model.Layer.TuboExterno);
 
             this.Tubos.Add(tuboInterno);
             this.Tubos.Add(tuboExterno);
@@ -227,7 +227,7 @@ namespace ColunaPronta.Model
                     break;
             }
 
-            var posteExterno = new Retangulo(settings.PosteReforcoLargura, settings.PosteReforcoComprimento, new Point2d(X, Y), posicaoRetangulo);
+            var posteExterno = new Retangulo(settings.PosteReforcoLargura, settings.PosteReforcoComprimento, new Point2d(X, Y), posicaoRetangulo, Model.Layer.PosteReforco);
             poste.Add(posteExterno);
    
             Poste = poste;

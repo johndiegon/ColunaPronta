@@ -9,6 +9,7 @@ using Autodesk.AutoCAD.Colors;
 using ColunaPronta.Model;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.IO;
+using System.Linq;
 
 namespace ColunaPronta.Helper
 {
@@ -273,7 +274,7 @@ namespace ColunaPronta.Helper
                 }
                 // Save the changes and dispose of the transaction
                 transaction.Commit();
-
+                
             }
             catch (Exception e)
             {
@@ -1058,6 +1059,30 @@ namespace ColunaPronta.Helper
                 return null;
             }
         }
+      
+        public static IEnumerable<String> GetLayers()
+        {
+            Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
+            Document document = Application.DocumentManager.MdiActiveDocument;
+            Database database = document.Database;
+
+            List<String> layers = new List<String>();
+            LayerTableRecord layerTableRecord;
+
+            using (Transaction transaction = database.TransactionManager.StartOpenCloseTransaction())
+            {
+                SymbolTable symTable = (SymbolTable)transaction.GetObject(database.LayerTableId, OpenMode.ForRead);
+                foreach (ObjectId id in symTable)
+                {
+                    LayerTableRecord symbol = (LayerTableRecord)transaction.GetObject(id, OpenMode.ForRead);
+                    layers.Add(symbol.Name);
+                }
+
+                transaction.Dispose();
+            }
+
+            return layers;
+         }
         public static void GeraArquivoExcel(List<Planilha> arquivoExcel, string nomeProjeto, TipoLista tipoLista)
         {
             var excelApp = new Excel.Application();
@@ -1171,6 +1196,41 @@ namespace ColunaPronta.Helper
 
         }
 
+        public static List<ItemRelatorio> GetTubos(ObjetosSelecionados objetos, Layer layer)
+        {
+            var listaTubo = new List<ItemRelatorio>();
+            var layers = new EspecificacaoLayer();
+            var nomeLayer = layers.GetNomeLayer(layer);
+            var descricaoLayer = layers.GetDescricaoLayer(layer);
+
+            if (objetos.Polylines != null)
+            {
+                foreach (var poly in objetos.Polylines)
+                {
+                    if (nomeLayer == poly.Layer.ToString())
+                    {
+                        var itemRelatorio = new ItemRelatorio(poly);
+                        itemRelatorio.Descricao = descricaoLayer;
+                        listaTubo.Add(itemRelatorio);
+                    }
+                }
+            }
+
+            return (from item in listaTubo
+                    group item by new
+                    {
+                        item.Comprimento,
+                        item.Largura,
+                        item.Descricao
+                    } into c
+                    select new ItemRelatorio
+                    {
+                        Descricao = c.Key.Descricao,
+                        Largura = c.Key.Largura,
+                        Comprimento = c.Key.Comprimento,
+                        QtdeColuna = c.Count()
+                    }).ToList();
+        }
     }
 
 }

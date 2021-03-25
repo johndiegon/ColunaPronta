@@ -46,13 +46,14 @@ namespace ColunaPronta.Commands
 
             Integra(guardaCorpo);
         }
-
         public static void GeraListaCorte()
         {
             var objetos = Helpers.GetObjetos();
             GeraArquivoListaCorte(objetos);
 
         }
+
+     
 
         #endregion
 
@@ -67,20 +68,20 @@ namespace ColunaPronta.Commands
                 
                 foreach(var cantoneira in poste.Cantoneiras)
                 {
-                    Helpers.AddPolyline(document, cantoneira.Retangulo.Pontos, Layer.Cantoneira);
+                    Helpers.AddPolyline(document, cantoneira.Retangulo.Pontos, cantoneira.Retangulo.Layer);
                     if (cantoneira.Linha.Count == 2)
                     {
                         Point3d pnt1 = new Point3d(cantoneira.Linha[0].X, cantoneira.Linha[0].Y, 0);
                         Point3d pnt2 = new Point3d(cantoneira.Linha[1].X, cantoneira.Linha[1].Y, 0);
 
-                        Helpers.AddLinha(document, pnt1, pnt2, Layer.Cantoneira);
+                        Helpers.AddLinha(document, pnt1, pnt2, cantoneira.Retangulo.Layer);
                     }
 
                     if(cantoneira.Parafusos != null)
                     {
                         foreach (var parafuso in cantoneira.Parafusos)
                         {
-                            Helpers.AddCircle(document, parafuso.Point, parafuso.Raio, Layer.Cantoneira);
+                            Helpers.AddCircle(document, parafuso.Point, parafuso.Raio, cantoneira.Retangulo.Layer);
                         }
                     }
                 }
@@ -90,14 +91,14 @@ namespace ColunaPronta.Commands
             {
                 foreach (var tubo in gc.Tubos)
                 {
-                    Helpers.AddPolyline(document, tubo.Pontos, Layer.PosteReforco);
+                    Helpers.AddPolyline(document, tubo.Pontos, tubo.Layer);
                 }
 
                 if (gc.PosteReforco != null)
                 {
                     foreach (var poste in gc.PosteReforco.Poste)
                     {
-                        Helpers.AddPolyline(document, poste.Pontos, Layer.PosteReforco);
+                        Helpers.AddPolyline(document, poste.Pontos, poste.Layer);
                     }
 
                     foreach (CantoneiraGuardaCorpo cantoneira in gc.PosteReforco.Cantoneiras)
@@ -112,27 +113,25 @@ namespace ColunaPronta.Commands
                 }
             };
 
-            IntegraGuardaCorpoVertical.Integra(guardaCorpo.GuardaCorpoVertical);
-
         }
 
         private static void IntegraGuardaCorpoFilho( Document document , CantoneiraGuardaCorpo cantoneira)
         {
-            Helpers.AddPolyline(document, cantoneira.Retangulo.Pontos, Layer.Cantoneira);
+            Helpers.AddPolyline(document, cantoneira.Retangulo.Pontos, cantoneira.Retangulo.Layer);
 
             if (cantoneira.Linha.Count == 2)
             {
                 Point3d pnt1 = new Point3d(cantoneira.Linha[0].X, cantoneira.Linha[0].Y, 0);
                 Point3d pnt2 = new Point3d(cantoneira.Linha[1].X, cantoneira.Linha[1].Y, 0);
 
-                Helpers.AddLinha(document, pnt1, pnt2, Layer.Cantoneira);
+                Helpers.AddLinha(document, pnt1, pnt2, cantoneira.Retangulo.Layer);
             }
 
             if (cantoneira.Parafusos != null)
             {
                 foreach (var parafuso in cantoneira.Parafusos)
                 {
-                    Helpers.AddCircle(document, parafuso.Point, parafuso.Raio, Layer.Cantoneira);
+                    Helpers.AddCircle(document, parafuso.Point, parafuso.Raio, cantoneira.Retangulo.Layer);
                 }
             }
             if (cantoneira.PontosL != null)
@@ -176,11 +175,19 @@ namespace ColunaPronta.Commands
 
                             break;
 
-                        case Layer.Tubo:
+                        case Layer.TuboExterno:
 
                             var itemRelatorio = new ItemRelatorio(poly);
                             itemRelatorio.Descricao = layers.GetDescricaoLayer(layer);
                             listaTubo.Add(itemRelatorio);
+
+                            break;
+
+                        case Layer.TuboInterno:
+
+                            var itemTuboInterno = new ItemRelatorio(poly);
+                            itemTuboInterno.Descricao = layers.GetDescricaoLayer(layer);
+                            listaTubo.Add(itemTuboInterno);
 
                             break;
 
@@ -302,6 +309,8 @@ namespace ColunaPronta.Commands
 
 
         }
+   
+            
         #endregion
     }
 }

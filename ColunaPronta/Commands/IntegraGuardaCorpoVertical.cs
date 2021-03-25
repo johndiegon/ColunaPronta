@@ -10,8 +10,13 @@ namespace ColunaPronta.Commands
 {
     public static class IntegraGuardaCorpoVertical
     {
-        public static void Integra(List<double> guardaCorpos)
+        public static void Integra()
         {
+            //List<double> guardaCorpos
+           var objetos = Helpers.GetObjetos();
+           var tubosExternos = Helpers.GetTubos(objetos, Layer.TuboExterno);
+
+
             Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
 
             PromptPointOptions prPtOpt = new PromptPointOptions("\nIndique o ponto onde será gerado o relatório (EndPoint ): ")
@@ -25,14 +30,22 @@ namespace ColunaPronta.Commands
             var settings = new Settings(true);
 
             double X = ponto.X, Y = ponto.Y, distanciaEntreGuardaCorpos = 300 / 1000f;
-            var listGC = guardaCorpos.GroupBy(s => s).Select(group => new { Comprimento = group.Key, Quantidade = group.Count() });
+            //var listGC = guardaCorpos.GroupBy(s => s).Select(group => new { Comprimento = group.Key, Quantidade = group.Count() });
 
 
-            foreach (var gc in listGC)
+            foreach (var gc in tubosExternos)
             {
-                var guardaCorpo = new GuardaCorpoVertical(settings.Altura, gc.Comprimento, new Point2d(X, Y));
+                double comprimento = ( gc.Comprimento / 1000f )+ ((settings.CantoneiraFolga + settings.CantoneiraEspessura) * 2);
+                var guardaCorpo = new GuardaCorpoVertical(settings.Altura, comprimento, new Point2d(X, Y));
                 GeraGuardaCorpo(guardaCorpo);
-                X = X + gc.Comprimento + distanciaEntreGuardaCorpos;
+
+                var descricao = string.Concat("GUARDA CORPO - " + ( comprimento * 1000).ToString("N2") + " X +", (settings.Altura * 1000).ToString("N2"), " - ", gc.QtdeColuna, " UNIDADES");
+
+                var pontoTexto = new Point3d(X, Y - settings.Altura - distanciaEntreGuardaCorpos, 0);
+
+                Helpers.AddTexto(Application.DocumentManager.MdiActiveDocument, pontoTexto, descricao, ColorIndex.Branco);
+
+                X = X + comprimento + distanciaEntreGuardaCorpos;
             }
         }
 

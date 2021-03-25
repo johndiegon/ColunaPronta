@@ -1,5 +1,6 @@
 ﻿using Autodesk.AutoCAD.Geometry;
 using System.Collections.Generic;
+using ColunaPronta.Model;
 
 namespace ColunaPronta.Model
 {
@@ -45,7 +46,7 @@ namespace ColunaPronta.Model
 
             SetPontosCantoneiraL(posicaoCantoneira, pontoInicialdoELe, lado, espessura);
 
-            this.Retangulo = new Retangulo(Settings.CantoneiraLargura, Settings.CantoneiraComprimento, pontoInicialCantoneira, GetPosicaoRetangulo());
+            this.Retangulo = new Retangulo(Settings.CantoneiraLargura, Settings.CantoneiraComprimento, pontoInicialCantoneira, GetPosicaoRetangulo(), Model.Layer.Cantoneira);
 
             AddParafuso();
             SetLinha();
@@ -119,7 +120,7 @@ namespace ColunaPronta.Model
         private void SetCantoneira38MM()
         {
             Linha = new Point2dCollection();
-            this.Retangulo = new Retangulo(Settings.CantoneiraPosteLargura, Settings.CantoneiraPosteComprimento, this.pontoInicial, GetPosicaoRetangulo()) ;
+            this.Retangulo = new Retangulo(Settings.CantoneiraPosteLargura, Settings.CantoneiraPosteComprimento, this.pontoInicial, GetPosicaoRetangulo(), Model.Layer.Cantoneira) ;
 
             AddParafuso();
             SetLinha();

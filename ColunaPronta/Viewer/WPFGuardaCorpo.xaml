@@ -97,6 +97,25 @@
                         </StackPanel>
                     </Grid>
                 </TabItem>
+                <TabItem Header="Layers" BorderBrush="White">
+                    <StackPanel>
+                        <TextBlock x:Name="textBlock_tuboExterno">Tubo Externo Guarda Corpo:</TextBlock>
+                        <ComboBox x:Name="comboBox_tuboExterno"></ComboBox>
+                        <TextBox   x:Name="textBox_tuboExterno" ></TextBox>
+                        <TextBlock x:Name="textBlock_tuboInterno">Tubo Interno Guarda Corpo:</TextBlock>
+                        <ComboBox x:Name="comboBox_tuboInterno"></ComboBox>
+                        <TextBox   x:Name="textBox_tuboInterno" ></TextBox>
+                        <TextBlock x:Name="textBlock_Cantoneira">Cantoneira</TextBlock>
+                        <ComboBox x:Name="comboBox_Cantoneira"></ComboBox>
+                        <TextBox   x:Name="textBox_Cantoneira" ></TextBox>
+                        <TextBlock x:Name="textBlock_CantoneiraL">Cantoneira L</TextBlock>
+                        <ComboBox x:Name="comboBox_CantoneiraL"></ComboBox>
+                        <TextBox   x:Name="textBox_CantoneiraL" ></TextBox>
+                        <TextBlock x:Name="textBlock_PosteReforco">Poste Reforco</TextBlock>
+                        <ComboBox x:Name="comboBox_PosteReforco"></ComboBox>
+                        <TextBox   x:Name="textBox_PosteReforco" ></TextBox>
+                    </StackPanel>
+                 </TabItem>
             </TabControl>
         </StackPanel>
 

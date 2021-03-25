@@ -1,6 +1,7 @@
 ﻿using ColunaPronta.Commands;
 using ColunaPronta.Model;
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,8 +21,11 @@ namespace ColunaPronta.Viewer
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
             SetSettings();
+            SaveLayers();
+
+            this.Close();
+      
             var bPosteInicial = this.RadioButtonPosteInicioSim.IsChecked == true ? true : false;
             var bPosteFinal = this.RadioButtonPosteFimSim.IsChecked == true ? true : false;
             var posicao = Posicao.VoltadoBaixo;
@@ -48,6 +52,50 @@ namespace ColunaPronta.Viewer
             IntegraGuardaCorpo.Add(posicao, bPosteInicial, bPosteFinal, abertura);
         }
 
+        private void SaveLayers()
+        {
+            var listLayers = new List<EspecificacaoLayer.Detalhe>();
+
+            var detalheCantoneira = new EspecificacaoLayer.Detalhe()
+            {
+                Nome = comboBox_Cantoneira.SelectedValue.ToString(),
+                Objeto = Layer.Cantoneira.ToString(),
+                Perfil = textBox_Cantoneira.Text
+            };
+            listLayers.Add(detalheCantoneira);
+
+            var detalheCantoneiraL = new EspecificacaoLayer.Detalhe()
+            {
+                Nome = comboBox_CantoneiraL.SelectedValue.ToString(),
+                Objeto = Layer.CantoneiraL.ToString(),
+                Perfil = textBox_CantoneiraL.Text
+            };
+            listLayers.Add(detalheCantoneiraL);
+            var detalhePosteReforco = new EspecificacaoLayer.Detalhe()
+            {
+                Nome = comboBox_PosteReforco.SelectedValue.ToString(),
+                Objeto = Layer.PosteReforco.ToString(),
+                Perfil = textBox_PosteReforco.Text
+            };
+            listLayers.Add(detalhePosteReforco);
+            var detalhetuboExterno = new EspecificacaoLayer.Detalhe()
+            {
+                Nome = comboBox_tuboExterno.SelectedValue.ToString(),
+                Objeto = Layer.TuboExterno.ToString(),
+                Perfil = textBox_PosteReforco.Text
+            };
+            listLayers.Add(detalhetuboExterno);
+            var detalhetuboInterno = new EspecificacaoLayer.Detalhe()
+            {
+                Nome = comboBox_tuboInterno.SelectedValue.ToString(),
+                Objeto = Layer.TuboInterno.ToString(),
+                Perfil = textBox_tuboInterno.Text
+            };
+            listLayers.Add(detalhetuboInterno);
+
+            ArquivoCSV.Registra(listLayers);
+        }
+
         private void SetTelaInicial()
         {
             textBox_altura.Text = settings.Altura.ToString() ;
@@ -69,6 +117,9 @@ namespace ColunaPronta.Viewer
             textBox_LarguraTuboInterno.Text      = settings.TuboInternoLargura.ToString();
             textBox_LarguraTuboExterno.Text      = settings.TuboExternoLargura.ToString();
             textBox_DistanciaTuboExterno.Text    = settings.TuboExternoComprimento.ToString();
+
+            SetComboBox();
+        
         }
 
         private void SetSettings()
@@ -93,6 +144,38 @@ namespace ColunaPronta.Viewer
             settings.TuboExternoComprimento = Convert.ToDouble(textBox_DistanciaTuboExterno.Text);
 
             settings.Save();
+
+        }
+
+        private void SetComboBox()
+        {
+            var layers = Helper.Helpers.GetLayers();
+            var especificaolayer = new EspecificacaoLayer();
+            
+            comboBox_Cantoneira.ItemsSource = layers;
+            var detalhe = especificaolayer.GetDetalheLayer(Layer.Cantoneira);
+            comboBox_Cantoneira.SelectedValue = detalhe == null ? "" : detalhe.Nome;
+            textBox_Cantoneira.Text           = detalhe == null ? "" : detalhe.Perfil;
+
+            comboBox_CantoneiraL.ItemsSource = layers;
+            detalhe = especificaolayer.GetDetalheLayer(Layer.CantoneiraL);
+            comboBox_CantoneiraL.SelectedValue = detalhe == null ? "" : detalhe.Nome;
+            textBox_CantoneiraL.Text           = detalhe == null ? "" : detalhe.Perfil;
+
+            comboBox_PosteReforco.ItemsSource = layers;
+            detalhe = especificaolayer.GetDetalheLayer(Layer.PosteReforco);
+            comboBox_PosteReforco.SelectedValue = detalhe == null ? "" : detalhe.Nome;
+            textBox_PosteReforco.Text           = detalhe == null ? "" : detalhe.Perfil;
+
+            comboBox_tuboExterno.ItemsSource = layers;
+            detalhe = especificaolayer.GetDetalheLayer(Layer.TuboExterno);
+            comboBox_tuboExterno.SelectedValue = detalhe == null ? "" : detalhe.Nome;
+            textBox_tuboExterno.Text           = detalhe == null ? "" : detalhe.Perfil;
+
+            comboBox_tuboInterno.ItemsSource = layers;
+            detalhe = especificaolayer.GetDetalheLayer(Layer.TuboInterno);
+            comboBox_tuboInterno.SelectedValue = detalhe == null ? "" : detalhe.Nome;
+            textBox_tuboInterno.Text           = detalhe == null ? "" : detalhe.Perfil;
 
         }
 

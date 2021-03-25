@@ -129,6 +129,12 @@ namespace ColunaPronta
 
         }
 
+        [CommandMethod("geralvgc")]
+        public void GeraListaVerticalGuardaCorpo()
+        {
+            IntegraGuardaCorpoVertical.Integra();
+        }
+
         //[CommandMethod("testevertical")]
         //public void TesteVertical()
         //{

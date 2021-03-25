@@ -37,7 +37,7 @@ namespace ColunaPronta.Model
             var estruturasVerticais = new List<Retangulo>();
 
             #region Estrutura do Inicio
-            var estruturaVerticalInicio = new Retangulo(settings.PosteLargura, settings.Altura, this.pontoInicial, Posicao.Vertical);
+            var estruturaVerticalInicio = new Retangulo(settings.PosteLargura, settings.Altura, this.pontoInicial, Posicao.Vertical, Model.Layer.TuboExterno);
 
             var dimension = new Dimension
             {
@@ -53,7 +53,7 @@ namespace ColunaPronta.Model
             PontoXFinal = pontoInicial.X + comprimento - settings.PosteLargura;
             PontoYFinal = pontoInicial.Y;
 
-            var estruturaVerticalFinal = new Retangulo(settings.PosteLargura, settings.Altura, new Point2d(PontoXFinal, PontoYFinal), Posicao.Vertical);
+            var estruturaVerticalFinal = new Retangulo(settings.PosteLargura, settings.Altura, new Point2d(PontoXFinal, PontoYFinal), Posicao.Vertical, Model.Layer.TuboExterno);
             estruturasVerticais.Add(estruturaVerticalInicio);
             estruturasVerticais.Add(estruturaVerticalFinal);
 
@@ -95,7 +95,7 @@ namespace ColunaPronta.Model
 
             while (alturaRestante > 0)
             {
-                var posteHorizontal = new Retangulo(settings.PosteLargura, comprimentoEH, new Point2d(X, Y), Posicao.Horizontal);
+                var posteHorizontal = new Retangulo(settings.PosteLargura, comprimentoEH, new Point2d(X, Y), Posicao.Horizontal, Model.Layer.TuboExterno);
                 estruturasHorizontais.Add(posteHorizontal);
 
                 double distanciaY = alturaRestante > espacamentoPadrao ? settings.PosteLargura + espacamentoPadrao : alturaRestante;
@@ -126,13 +126,13 @@ namespace ColunaPronta.Model
                 X = X + (comprimento / 2) - (settings.PosteReforcoLargura / 2);
 
                 Y = Y + (folga);
-                this.CoberturaReforco = new Retangulo(settings.PosteLargura, settings.CantoneiraPosteFolga, new Point2d(X, Y), Posicao.Vertical);
+                this.CoberturaReforco = new Retangulo(settings.PosteLargura, settings.CantoneiraPosteFolga, new Point2d(X, Y), Posicao.Vertical, Model.Layer.PosteReforco);
                 
                 Y = Y - (folga) - (folga / 2);
-                this.PosteReforco = new Retangulo(settings.PosteLargura, settings.PosteReforcoAltura, new Point2d(X, Y), Posicao.Vertical);
+                this.PosteReforco = new Retangulo(settings.PosteLargura, settings.PosteReforcoAltura, new Point2d(X, Y), Posicao.Vertical, Model.Layer.PosteReforco);
 
                 Y = Y - settings.PosteReforcoAltura;
-                this.Cantoneira = new Retangulo(settings.PosteLargura, settings.PosteReforcoCantoneira, new Point2d(X, Y), Posicao.Vertical);
+                this.Cantoneira = new Retangulo(settings.PosteLargura, settings.PosteReforcoCantoneira, new Point2d(X, Y), Posicao.Vertical, Model.Layer.PosteReforco);
             }
         }
 

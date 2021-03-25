@@ -22,6 +22,7 @@ namespace ColunaPronta.Model
         public double DiametroParafuso { get; set; }
         public bool bPassante { get; set; }
         public string Descricao { get; set; }
+
         public ItemRelatorio (Polyline poly)
         {
             var points = new Point3dCollection();
