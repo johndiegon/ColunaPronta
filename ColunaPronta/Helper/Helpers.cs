@@ -937,16 +937,22 @@ namespace ColunaPronta.Helper
         {
             Editor editor = Application.DocumentManager.MdiActiveDocument.Editor;
             Document document = Application.DocumentManager.MdiActiveDocument;
-            PromptSelectionResult acSSPrompt = editor.GetSelection();
             var objetos = new ObjetosSelecionados();
 
-            Database acCurDb = document.Database;
-
-            if (acSSPrompt.Status == PromptStatus.OK)
+            //Transaction acTrans = document.TransactionManager.StartTransaction();
+            using (DocumentLock documentLock = document.LockDocument())
             {
-                objetos.Polylines = Helpers.GetPolylines(document, acSSPrompt);
-                objetos.Circles   = Helpers.GetCircles(document, acSSPrompt);
+                PromptSelectionResult acSSPrompt = editor.GetSelection();
+
+
+                if (acSSPrompt.Status == PromptStatus.OK)
+                {
+                    objetos.Polylines = Helpers.GetPolylines(document, acSSPrompt);
+                    objetos.Circles = Helpers.GetCircles(document, acSSPrompt);
+                }
+
             }
+            //acTrans.Commit();
 
             return objetos;
         }
@@ -987,6 +993,8 @@ namespace ColunaPronta.Helper
                         }
                     }
                 }
+
+                acTrans.Dispose();
                 return ListPolylines;
             }
             catch (Exception e)
@@ -1035,6 +1043,8 @@ namespace ColunaPronta.Helper
                         }
                     }
                 }
+
+                acTrans.Dispose();
                 return ListCircles;
 
             }

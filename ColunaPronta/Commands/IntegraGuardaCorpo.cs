@@ -112,7 +112,7 @@ namespace ColunaPronta.Commands
                 }
             };
 
-            //IntegraGuardaCorpoVertical.Integra(guardaCorpo.GuardaCorpoVertical);
+            IntegraGuardaCorpoVertical.Integra(guardaCorpo.GuardaCorpoVertical);
 
         }
 
@@ -153,13 +153,13 @@ namespace ColunaPronta.Commands
 
             if (objetos.Polylines != null)
             {
-                foreach( var poly in objetos.Polylines)
+                foreach (var poly in objetos.Polylines)
                 {
 
                     var layer = layers.GetLayer(poly.Layer.ToString());
-                    switch(layer)
+                    switch (layer)
                     {
-                        
+
                         case Layer.Cantoneira:
 
                             var itemCantoneira = new ItemRelatorio(poly);
@@ -167,7 +167,7 @@ namespace ColunaPronta.Commands
                             listaCantoneira.Add(itemCantoneira);
 
                             break;
-                         
+
                         case Layer.CantoneiraL:
 
                             var itemCantoneiraL = new ItemRelatorio(poly);
@@ -175,7 +175,7 @@ namespace ColunaPronta.Commands
                             listaCantoneiraL.Add(itemCantoneiraL);
 
                             break;
-                        
+
                         case Layer.Tubo:
 
                             var itemRelatorio = new ItemRelatorio(poly);
@@ -183,18 +183,18 @@ namespace ColunaPronta.Commands
                             listaTubo.Add(itemRelatorio);
 
                             break;
-                        
+
                         case Layer.Poste:
-                            
+
                             var itemPoste = new ItemRelatorio(poly);
                             itemPoste.Descricao = layers.GetDescricaoLayer(layer);
                             listaPoste.Add(itemPoste);
 
                             break;
-                        
-                        case Layer.PosteReforco: 
-                        
-                            
+
+                        case Layer.PosteReforco:
+
+
                             break;
                     }
 
@@ -298,8 +298,8 @@ namespace ColunaPronta.Commands
                 var nomeProjeto = Application.DocumentManager.MdiActiveDocument.Window.Text;
                 Helpers.GeraArquivoExcel(arquivoExcel, nomeProjeto, TipoLista.ListaCorteGuardaCorpo);
             }
-  
-           
+
+
 
         }
         #endregion

@@ -30,9 +30,9 @@
                             <RadioButton Name="RadioButtonPosteFimSim" Content="Sim" GroupName="PosteFim" IsChecked="True"/>
                             <RadioButton Name="RadioButtonPosteFimNao" Content="Não" GroupName="PosteFim"/>
                             <TextBlock/>
-                            <TextBlock><Run Text="Gerar poste Configurável?"/></TextBlock>
+                            <TextBlock><Run Text="Gerar poste Regulável?"/></TextBlock>
                             <CheckBox Name="CheckBoxPosteDireita" Content="Com Abertura para Direita"/>
-                            <CheckBox Name="CheckBoxPosteEsquerda" Content="Com Abertura para esquerda"/>
+                            <CheckBox Name="CheckBoxPosteEsquerda" Content="Com Abertura para Esquerda"/>
                             <TextBlock/>
                             <Button Click="Button_Click">Gerar Guarda Corpo</Button>
                         </StackPanel>
@@ -42,7 +42,7 @@
                     </Grid>
 
                 </TabItem>
-                <TabItem Header="Configurável"  BorderBrush="White">
+                <TabItem Header="Regulável"  BorderBrush="White">
                     <StackPanel VerticalAlignment="Top">
 
                         <Image x:Name="image2" HorizontalAlignment="Center" VerticalAlignment="Top"  Source="C:\Autodesk\ColunaPronta\Image\gcorpoConfiguravel.png" Height="119" Width="309"/>
