@@ -11,6 +11,7 @@ namespace ColunaPronta.Model
         const double distanciaDimension = (90 / 1000f);
         public List<Retangulo> EstruturasVerticais { get; set; }
         public List<Retangulo> EstruturasHorizontais { get; set; }
+        public List<Retangulo> EstruturasTUbosInternos { get; set; }
         public Retangulo PosteReforco { get; set; }
         public Retangulo CoberturaReforco { get; set; }
         public Retangulo Cantoneira { get; set; }
@@ -27,10 +28,22 @@ namespace ColunaPronta.Model
             this.Linhas = new List<Point2dCollection>();
 
             SetEstruturasVerticais();
-            SetEstruturasHorizontais();
             SetPosteReforco();
         }
-   
+
+        public GuardaCorpoVertical(double altura, double comprimento, double comprimentoInterno, double comprimentoExterno,  Point2d pontoInicial, Abertura abertura)
+        {
+            this.altura = altura;
+            this.comprimento = comprimento;
+            this.pontoInicial = pontoInicial;
+            this.Dimensions = new List<Dimension>();
+            this.Linhas = new List<Point2dCollection>();
+
+            SetEstruturasVerticais();
+            SetEstruturasHorizontais(abertura, comprimentoInterno, comprimentoExterno);
+            SetPosteReforco();
+        }
+
         private void SetEstruturasVerticais()
         {
             var settings = new Settings(true);
@@ -96,6 +109,7 @@ namespace ColunaPronta.Model
             while (alturaRestante > 0)
             {
                 var posteHorizontal = new Retangulo(settings.PosteLargura, comprimentoEH, new Point2d(X, Y), Posicao.Horizontal, Model.Layer.TuboExterno);
+            
                 estruturasHorizontais.Add(posteHorizontal);
 
                 double distanciaY = alturaRestante > espacamentoPadrao ? settings.PosteLargura + espacamentoPadrao : alturaRestante;
@@ -112,6 +126,53 @@ namespace ColunaPronta.Model
             }
 
             this.EstruturasHorizontais = estruturasHorizontais;
+        }
+
+        private void SetEstruturasHorizontais(Abertura abertura,double comprimentoInterno, double comprimentoExterno)
+        {
+            comprimentoInterno = comprimentoInterno / 1000;
+            comprimentoExterno = comprimentoExterno / 1000;
+            var settings = new Settings(true);
+            var estruturasHorizontais = new List<Retangulo>();
+            var estruturasTUbosInternos = new List<Retangulo>();
+            var alturaRestante = this.altura;
+            var espacamentoPadrao = 170 / 1000f;
+            double X = pontoInicial.X + settings.CantoneiraEspessura + settings.CantoneiraFolga, Y = pontoInicial.Y;
+            double comprimentoEH = this.comprimento - ((settings.CantoneiraEspessura + settings.CantoneiraFolga) * 2);
+
+            var dimensionHorizontal = new Dimension
+            {
+                PontoLinha1 = new Point2d(pontoInicial.X, pontoInicial.Y),
+                PontoLinha2 = new Point2d(pontoInicial.X + this.comprimento, pontoInicial.Y),
+                PontoDimension = new Point2d(pontoInicial.X, pontoInicial.Y + distanciaDimension),
+            };
+
+            this.Dimensions.Add(dimensionHorizontal);
+
+            while (alturaRestante > 0)
+            {
+                var distanciaPosteInterno = ( settings.TuboExternoLargura - settings.TuboInternoLargura) / 2f;
+                var posteHorizontalExterno = new Retangulo(settings.TuboExternoLargura, comprimentoExterno, abertura == Abertura.Direita ? new Point2d(X , Y) : new Point2d(X + (comprimentoEH - comprimentoExterno), Y), Posicao.Horizontal, Model.Layer.TuboExterno);
+                var posteHorizontalInterno = new Retangulo(settings.TuboInternoLargura, comprimentoInterno, abertura == Abertura.Direita ? new Point2d(X + (comprimentoEH - comprimentoInterno), Y - distanciaPosteInterno) : new Point2d(X, Y), Posicao.Horizontal, Model.Layer.TuboInterno);
+
+                estruturasHorizontais.Add(posteHorizontalExterno);
+                estruturasTUbosInternos.Add(posteHorizontalInterno);
+
+                double distanciaY = alturaRestante > espacamentoPadrao ? settings.PosteLargura + espacamentoPadrao : alturaRestante;
+                var dimensionVertical = new Dimension
+                {
+                    PontoLinha1 = new Point2d(X + distanciaDimension, Y - settings.PosteLargura),
+                    PontoLinha2 = new Point2d(X + distanciaDimension, Y - distanciaY),
+                    PontoDimension = new Point2d(X + distanciaDimension, Y - settings.PosteLargura)
+                };
+                this.Dimensions.Add(dimensionVertical);
+
+                alturaRestante = alturaRestante - settings.PosteLargura - espacamentoPadrao;
+                Y = Y - settings.PosteLargura - espacamentoPadrao;
+            }
+
+            this.EstruturasHorizontais = estruturasHorizontais;
+            this.EstruturasTUbosInternos = estruturasTUbosInternos;
         }
         private void SetPosteReforco()
         {

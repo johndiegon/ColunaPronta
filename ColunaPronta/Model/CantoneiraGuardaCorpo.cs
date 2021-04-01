@@ -133,16 +133,16 @@ namespace ColunaPronta.Model
             switch (Posicao)
             {
                 case Posicao.VoltadoBaixo:
-                    posicaoCantoneira = bInicio ? Posicao.CimaEsquerda : Posicao.CimaDireita;
+                    posicaoCantoneira = bInicio ? Posicao.CimEsquerda : Posicao.CimDireita;
                     break;
                 case Posicao.VoltadoDireita:
-                    posicaoCantoneira = bInicio ? Posicao.CimaEsquerda : Posicao.BaixoEsquerda;
+                    posicaoCantoneira = bInicio ? Posicao.CimEsquerda : Posicao.BaixoEsquerda;
                     break;
                 case Posicao.VoltadoCima:
                     posicaoCantoneira = bInicio ? Posicao.BaixoEsquerda : Posicao.BaixoDireita;
                     break;
                 default: // Posicao.Esquerda
-                    posicaoCantoneira = bInicio ? Posicao.CimaDireita : Posicao.BaixoDireita;
+                    posicaoCantoneira = bInicio ? Posicao.CimDireita : Posicao.BaixoDireita;
                     break;
             }
         
@@ -225,7 +225,7 @@ namespace ColunaPronta.Model
                     p5 = new Point2d(X + (espessura), Y - ((lado - espessura)));
                     p6 = new Point2d(X + (espessura), Y);
                     break;
-                case Posicao.CimaDireita:
+                case Posicao.CimDireita:
                     p1 = new Point2d(X, Y);
                     p2 = new Point2d(X + (lado), Y);
                     p3 = new Point2d(X + (lado), Y - (lado));
@@ -233,7 +233,7 @@ namespace ColunaPronta.Model
                     p5 = new Point2d(X + ((lado - espessura)), Y - (espessura));
                     p6 = new Point2d(X, Y - (espessura));
                     break;
-                default: // Posicao.CimaEsquerda
+                default: // Posicao.CimEsquerda
                     p1 = new Point2d(X, Y);
                     p2 = new Point2d(X, Y - (lado));
                     p3 = new Point2d(X + (espessura), Y - (lado));

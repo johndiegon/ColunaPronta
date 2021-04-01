@@ -3,13 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ColunaPronta.Viewer"
              Title="Guarda Corpo"
              mc:Ignorable="d" Height="435.4" Width="494">
-
     <Grid >
         <StackPanel HorizontalAlignment="Left" Height="400"  VerticalAlignment="Top" Width="400" Grid.ColumnSpan="2" Margin="0,0,0,-12" >
-            <TabControl BorderBrush="White" Margin="0,0,-7,0">
+            <TabControl x:Name="tabControlPrincipal" BorderBrush="White" Margin="0,0,-7,0">
                 <TabItem Header="Guarda Corpo" BorderBrush="White">
                     <Grid  >
                         <StackPanel Margin="0,0,0,1"  >
@@ -37,7 +35,7 @@
                             <Button Click="Button_Click">Gerar Guarda Corpo</Button>
                         </StackPanel>
 
-                        <Image x:Name="image" Margin="180,-4,9,221" Source="C:\Autodesk\ColunaPronta\Image\gcorpo.png"/>
+                        <Image x:Name="image" Margin="202,-4,8.6,238.2" Source="C:\Autodesk\ColunaPronta\Image\gcorpo.png"/>
 
                     </Grid>
 
@@ -97,7 +95,7 @@
                         </StackPanel>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Layers" BorderBrush="White">
+                <TabItem x:Name="tabLayerItem" Header="Layers" BorderBrush="White">
                     <StackPanel>
                         <TextBlock x:Name="textBlock_tuboExterno">Tubo Externo Guarda Corpo:</TextBlock>
                         <ComboBox x:Name="comboBox_tuboExterno"></ComboBox>
@@ -114,6 +112,8 @@
                         <TextBlock x:Name="textBlock_PosteReforco">Poste Reforco</TextBlock>
                         <ComboBox x:Name="comboBox_PosteReforco"></ComboBox>
                         <TextBox   x:Name="textBox_PosteReforco" ></TextBox>
+                        <TextBlock x:Name="textBlock_Cotas">Cotas</TextBlock>
+                        <ComboBox x:Name="comboBox_Cotas"></ComboBox>
                     </StackPanel>
                  </TabItem>
             </TabControl>

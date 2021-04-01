@@ -254,7 +254,7 @@ namespace ColunaPronta.Helper
                 Logger.Error(e.ToString());
             }
         }
-        public static void AddDimension(Document document, Point2d point1, Point2d point2, Point2d point3)
+        public static void AddDimension(Document document, Point2d point1, Point2d point2, Point2d point3, Layer layer)
         {
             try
             {
@@ -269,12 +269,25 @@ namespace ColunaPronta.Helper
                     DimStyleTable dst = (DimStyleTable)transaction.GetObject(database.DimStyleTableId, OpenMode.ForWrite);
 
                     AlignedDimension dimension = new AlignedDimension(new Point3d(point1.X, point1.Y, 0), new Point3d(point2.X, point2.Y, 0), new Point3d(point3.X, point3.Y, 0), string.Empty, database.Dimstyle);
+
+                    var especificaolayer = new EspecificacaoLayer();
+                    var nomeLayer = especificaolayer.GetNomeLayer(layer);
+
+                    LayerTable layerTable = transaction.GetObject(database.LayerTableId, OpenMode.ForRead) as LayerTable;
+
+                    if (nomeLayer != "" && layerTable.Has(nomeLayer))
+                    {
+                        dimension.Layer = nomeLayer;
+                    }
+
                     blockTableRecord.AppendEntity(dimension);
                     transaction.AddNewlyCreatedDBObject(dimension, true);
                 }
+
                 // Save the changes and dispose of the transaction
                 transaction.Commit();
-                
+                document.Database.Dispose();
+
             }
             catch (Exception e)
             {
@@ -608,12 +621,14 @@ namespace ColunaPronta.Helper
                         ObjectIdCollection oidCol = new ObjectIdCollection();
                         oidCol.Add(oid);
 
+                        var pattern = "SOLID";
+
                         using (Hatch acHatch = new Hatch())
                         {
                             acBtr.AppendEntity(acHatch);
                             acTrans.AddNewlyCreatedDBObject(acHatch, true);
 
-                            acHatch.SetHatchPattern(HatchPatternType.PreDefined, "SOLID");
+                            acHatch.SetHatchPattern(HatchPatternType.PreDefined, pattern);
                             acHatch.Associative = true;
                             acHatch.AppendLoop(HatchLoopTypes.External, oidCol);
                             acHatch.EvaluateHatch(true);
@@ -626,6 +641,9 @@ namespace ColunaPronta.Helper
                                     break;
                                 case ColorIndex.AzulEscuroPersonalizado:
                                     acHatch.Color = Color.FromRgb(33, 40, 48);
+                                    break;
+                                case ColorIndex.vermelho:
+                                    acHatch.Color = Color.FromRgb(205, 32, 39);
                                     break;
                                 default:
                                     acHatch.ColorIndex = (int)color;

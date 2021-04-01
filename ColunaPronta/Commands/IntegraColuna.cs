@@ -615,7 +615,7 @@ namespace ColunaPronta.Commands
                 (coluna.eleCinza == true && coluna.Posicao == Posicao.Vertical))
             {
                 AddElePolyline(new Point2d(coluna.PointA.X + ((5 + ladoEle) / _escala), coluna.PointA.Y + (ladoEle / _escala)), Posicao.BaixoDireita, ladoEle);
-                AddElePolyline(new Point2d(coluna.PointC.X + (5 / _escala), coluna.PointC.Y), Posicao.CimaDireita, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointC.X + (5 / _escala), coluna.PointC.Y), Posicao.CimDireita, ladoEle);
             }
             if ((coluna.eleAmarelo == true && coluna.Posicao == Posicao.Horizontal) ||
                 (coluna.eleVermelho == true && coluna.Posicao == Posicao.Vertical))
@@ -628,13 +628,13 @@ namespace ColunaPronta.Commands
                (coluna.eleAmarelo == true && coluna.Posicao == Posicao.Vertical))
             {
                 AddElePolyline(new Point2d(coluna.PointB.X - ((5 + ladoEle) / _escala), coluna.PointB.Y + (ladoEle / _escala)), Posicao.BaixoEsquerda, ladoEle);
-                AddElePolyline(new Point2d(coluna.PointD.X - ((5 + ladoEle) / _escala), coluna.PointD.Y), Posicao.CimaEsquerda, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointD.X - ((5 + ladoEle) / _escala), coluna.PointD.Y), Posicao.CimEsquerda, ladoEle);
             }
             if ((coluna.eleCinza == true && coluna.Posicao == Posicao.Horizontal) ||
                (coluna.eleAzul == true && coluna.Posicao == Posicao.Vertical))
             {
-                AddElePolyline(new Point2d(coluna.PointC.X - (ladoEle / _escala), coluna.PointC.Y + ((5 + ladoEle) / _escala)), Posicao.CimaDireita, ladoEle);
-                AddElePolyline(new Point2d(coluna.PointD.X, coluna.PointD.Y + ((5 + ladoEle) / _escala)), Posicao.CimaEsquerda, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointC.X - (ladoEle / _escala), coluna.PointC.Y + ((5 + ladoEle) / _escala)), Posicao.CimDireita, ladoEle);
+                AddElePolyline(new Point2d(coluna.PointD.X, coluna.PointD.Y + ((5 + ladoEle) / _escala)), Posicao.CimEsquerda, ladoEle);
             }
         }
 
@@ -662,7 +662,7 @@ namespace ColunaPronta.Commands
                     p5 = new Point2d(PontoA.X + (2 / _escala), PontoA.Y - ((lado - 2) / _escala));
                     p6 = new Point2d(PontoA.X + (2 / _escala), PontoA.Y);
                     break;
-                case Posicao.CimaDireita:
+                case Posicao.CimDireita:
                     p1 = new Point2d(PontoA.X, PontoA.Y);
                     p2 = new Point2d(PontoA.X + (lado / _escala), PontoA.Y);
                     p3 = new Point2d(PontoA.X + (lado / _escala), PontoA.Y - (lado / _escala));
@@ -670,7 +670,7 @@ namespace ColunaPronta.Commands
                     p5 = new Point2d(PontoA.X + ((lado - 2) / _escala), PontoA.Y - (2 / _escala));
                     p6 = new Point2d(PontoA.X, PontoA.Y - (2 / _escala));
                     break;
-                case Posicao.CimaEsquerda:
+                case Posicao.CimEsquerda:
                     p1 = new Point2d(PontoA.X, PontoA.Y);
                     p2 = new Point2d(PontoA.X, PontoA.Y - (lado / _escala));
                     p3 = new Point2d(PontoA.X + (2 / _escala), PontoA.Y - (lado / _escala));

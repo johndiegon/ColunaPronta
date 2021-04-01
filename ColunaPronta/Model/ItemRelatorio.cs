@@ -1,16 +1,15 @@
 ﻿using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ColunaPronta.Model
 {
     public class ItemRelatorio
     {
         public double Comprimento { get; set; }
+        public double ComprimentoTuboInterno { get; set; }
+        public double ComprimentoTuboExterno { get; set; }
         public double Largura { get; set; }
         public double Enrijecedor { get; set; }
         public double Altura { get; set; }
@@ -22,7 +21,11 @@ namespace ColunaPronta.Model
         public double DiametroParafuso { get; set; }
         public bool bPassante { get; set; }
         public string Descricao { get; set; }
-
+        public Point2d PontoA { get; set; }
+        public Point2d PontoB { get; set; }
+        public Point2d PontoC { get; set; }
+        public Point2d PontoD { get; set; }
+        public Abertura Abertura { get; set; }
         public ItemRelatorio (Polyline poly)
         {
             var points = new Point3dCollection();
@@ -32,7 +35,15 @@ namespace ColunaPronta.Model
                 points.Add(poly.GetPoint3dAt(i));
             }
 
-
+            SetItem(points);
+        }
+        public ItemRelatorio(Point3dCollection points)
+        {
+            SetItem(points);
+        }
+        public ItemRelatorio() { }
+        private void SetItem(Point3dCollection points)
+        {
             List<double> ListaY = new List<double>();
             List<double> ListaX = new List<double>();
             double x;
@@ -47,31 +58,29 @@ namespace ColunaPronta.Model
             // Ponto A
             x = ListaX.Min();
             y = ListaY.Max();
-            var PointA = new Point2d(x, y);
+            this.PontoA = new Point2d(x, y);
 
             // Ponto B
             x = ListaX.Max();
             y = ListaY.Max();
-            var PointB = new Point2d(x, y);
+            this.PontoB = new Point2d(x, y);
 
             // Ponto C
             x = ListaX.Min();
             y = ListaY.Min();
-            var PointC = new Point2d(x, y);
+            this.PontoC = new Point2d(x, y);
 
             // Ponto D
             x = ListaX.Max();
             y = ListaY.Min();
-            var PointD = new Point2d(x, y);
+            this.PontoD = new Point2d(x, y);
 
-            var lado1 = PointA.GetDistanceTo(PointB) * 1000;
-            var lado2 = PointA.GetDistanceTo(PointC) * 1000;
+            var lado1 = this.PontoA.GetDistanceTo(this.PontoB) * 1000;
+            var lado2 = this.PontoA.GetDistanceTo(this.PontoC) * 1000;
 
             Comprimento = lado1 > lado2 ? lado1 : lado2;
             Largura = lado1 > lado2 ? lado2 : lado1;
         }
-
-        public ItemRelatorio() { }
 
     }
 }

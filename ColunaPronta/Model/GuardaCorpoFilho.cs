@@ -89,10 +89,10 @@ namespace ColunaPronta.Model
                 case Posicao.VoltadoBaixo:
                     posicaoRetangulo = Posicao.Horizontal;
                     
-                    tuboExternoX = abertura == Abertura.aEsqueda ? X + settings.TuboExternoDistanciaInicial : X ;
+                    tuboExternoX = abertura == Abertura.Esquerda ? X + settings.TuboExternoDistanciaInicial : X ;
                     tuboExternoY = Y - distanciaCantoneiraGC;
 
-                    tuboInternoX = abertura == Abertura.aEsqueda ? X : X + comprimento - settings.TuboInternoComprimento;
+                    tuboInternoX = abertura == Abertura.Esquerda ? X : X + comprimento - settings.TuboInternoComprimento;
                     tuboInternoY = Y - distanciaCantoneiraGC - distanciaTuboInterno;
                     
                     break;
@@ -100,19 +100,19 @@ namespace ColunaPronta.Model
                     posicaoRetangulo = Posicao.Vertical;
 
                     tuboExternoX = X + distanciaCantoneiraGC;
-                    tuboExternoY = abertura == Abertura.aEsqueda ? Y : Y - settings.TuboExternoDistanciaInicial;
+                    tuboExternoY = abertura == Abertura.Esquerda ? Y : Y - settings.TuboExternoDistanciaInicial;
 
                     tuboInternoX = X + distanciaCantoneiraGC + distanciaTuboInterno;
-                    tuboInternoY = abertura == Abertura.aEsqueda ? Y - comprimento + settings.TuboInternoComprimento : Y ; 
+                    tuboInternoY = abertura == Abertura.Esquerda ? Y - comprimento + settings.TuboInternoComprimento : Y ; 
 
                     break;
                 case Posicao.VoltadoCima:
                     posicaoRetangulo = Posicao.Horizontal;
                     
-                    tuboExternoX = abertura == Abertura.aEsqueda ? X + settings.TuboExternoDistanciaInicial : X; 
+                    tuboExternoX = abertura == Abertura.Esquerda ? X + settings.TuboExternoDistanciaInicial : X; 
                     tuboExternoY = Y - settings.CantoneiraComprimento + settings.Largura + distanciaCantoneiraGC;
 
-                    tuboInternoX = abertura == Abertura.aEsqueda ? X : X + comprimento - settings.TuboInternoComprimento;
+                    tuboInternoX = abertura == Abertura.Esquerda ? X : X + comprimento - settings.TuboInternoComprimento;
                     tuboInternoY = Y - settings.CantoneiraComprimento + settings.Largura + distanciaCantoneiraGC - distanciaTuboInterno;
                     
                     
@@ -122,10 +122,10 @@ namespace ColunaPronta.Model
                     posicaoRetangulo = Posicao.Vertical;
 
                     tuboExternoX = X - distanciaCantoneiraGC - settings.Largura;
-                    tuboExternoY = abertura == Abertura.aEsqueda ? Y - settings.TuboExternoDistanciaInicial : Y;
+                    tuboExternoY = abertura == Abertura.Esquerda ? Y - settings.TuboExternoDistanciaInicial : Y;
 
                     tuboInternoX = X - distanciaCantoneiraGC - settings.Largura + distanciaTuboInterno;
-                    tuboInternoY = abertura == Abertura.aEsqueda ? Y : Y - comprimento + settings.TuboInternoComprimento;
+                    tuboInternoY = abertura == Abertura.Esquerda ? Y : Y - comprimento + settings.TuboInternoComprimento;
 
                     break;
             }

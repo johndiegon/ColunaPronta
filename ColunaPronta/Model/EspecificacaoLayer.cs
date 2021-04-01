@@ -13,7 +13,8 @@ namespace ColunaPronta.Model
         TuboExterno,
         TuboInterno,
         Poste, 
-        PosteReforco
+        PosteReforco,
+        Cotas
     }
     public class EspecificacaoLayer
     {

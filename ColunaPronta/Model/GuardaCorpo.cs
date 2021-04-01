@@ -109,14 +109,14 @@ namespace ColunaPronta.Model
                     switch(this.Abertura)
                     {
                         case Abertura.ambos:
-                            abertura = Abertura.aEsqueda;
-                            this.Abertura = Abertura.aDireita;
+                            abertura = Abertura.Esquerda;
+                            this.Abertura = Abertura.Direita;
                             break;
-                        case Abertura.aEsqueda:
-                            abertura = Abertura.aEsqueda;
+                        case Abertura.Esquerda:
+                            abertura = Abertura.Esquerda;
                             this.Abertura = Abertura.fechado;
                             break;
-                        case Abertura.aDireita:
+                        case Abertura.Direita:
                             abertura = Abertura.fechado;
                             break;
                         default:
@@ -168,15 +168,15 @@ namespace ColunaPronta.Model
                     switch (this.Abertura)
                     {
                         case Abertura.ambos:
-                            abertura = Abertura.aDireita;
+                            abertura = Abertura.Direita;
                             this.Abertura = Abertura.fechado;
                             break;
-                        case Abertura.aEsqueda:
-                            abertura = Abertura.aEsqueda;
+                        case Abertura.Esquerda:
+                            abertura = Abertura.Esquerda;
                             this.Abertura = Abertura.fechado;
                             break;
-                        case Abertura.aDireita:
-                            abertura = Abertura.aDireita;
+                        case Abertura.Direita:
+                            abertura = Abertura.Direita;
                             break;
                         default:
                             break;
@@ -268,8 +268,8 @@ namespace ColunaPronta.Model
 
     public enum Abertura
     {
-        aDireita,
-        aEsqueda,
+        Direita,
+        Esquerda,
         ambos,
         fechado
     }

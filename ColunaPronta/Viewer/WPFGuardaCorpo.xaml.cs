@@ -21,6 +21,8 @@ namespace ColunaPronta.Viewer
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            if (!isValido())
+                return;
             SetSettings();
             SaveLayers();
 
@@ -40,7 +42,7 @@ namespace ColunaPronta.Viewer
             }
             else
             {
-                abertura = this.CheckBoxPosteEsquerda.IsChecked == true ? Abertura.aEsqueda : Abertura.aDireita;
+                abertura = this.CheckBoxPosteEsquerda.IsChecked == true ? Abertura.Esquerda : Abertura.Direita;
             }
 
 
@@ -50,6 +52,24 @@ namespace ColunaPronta.Viewer
             if (RadioButtonLadoD.IsChecked == true) { posicao = Posicao.VoltadoDireita; }
 
             IntegraGuardaCorpo.Add(posicao, bPosteInicial, bPosteFinal, abertura);
+        }
+
+        private bool isValido()
+        {
+            if ( comboBox_Cantoneira.SelectedItem == null ||
+                 comboBox_CantoneiraL.SelectedItem == null ||
+                 comboBox_PosteReforco.SelectedItem == null ||
+                 comboBox_tuboExterno.SelectedItem == null ||
+                 comboBox_tuboInterno.SelectedItem == null ||
+                 comboBox_Cotas.SelectedItem == null 
+                )
+            {
+                this.tabControlPrincipal.SelectedItem = this.tabLayerItem;
+                MessageBox.Show("É necessário informar todos os layers!", "Guarda Corpo", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                return false;
+            }
+            return true;
         }
 
         private void SaveLayers()
@@ -85,6 +105,7 @@ namespace ColunaPronta.Viewer
                 Perfil = textBox_PosteReforco.Text
             };
             listLayers.Add(detalhetuboExterno);
+
             var detalhetuboInterno = new EspecificacaoLayer.Detalhe()
             {
                 Nome = comboBox_tuboInterno.SelectedValue.ToString(),
@@ -92,6 +113,14 @@ namespace ColunaPronta.Viewer
                 Perfil = textBox_tuboInterno.Text
             };
             listLayers.Add(detalhetuboInterno);
+
+            var detalheCota = new EspecificacaoLayer.Detalhe()
+            {
+                Nome = comboBox_Cotas.SelectedValue.ToString(),
+                Objeto = Layer.Cotas.ToString(),
+                Perfil = ""
+            };
+            listLayers.Add(detalheCota);
 
             ArquivoCSV.Registra(listLayers);
         }
@@ -112,7 +141,7 @@ namespace ColunaPronta.Viewer
             textbox_reforcoLargura.Text = settings.PosteReforcoLargura.ToString();          
             textbox_reforcoComprimento.Text = settings.PosteReforcoComprimento.ToString();
 
-            textBox_ComprimentoGCInicio.Text = settings.TuboExternoComprimentoInicial.ToString() ;
+            textBox_ComprimentoGCInicio.Text     = settings.TuboExternoComprimentoInicial.ToString() ;
             textBox_ComprimentoTuboInterno.Text  = settings.TuboInternoComprimento.ToString();
             textBox_LarguraTuboInterno.Text      = settings.TuboInternoLargura.ToString();
             textBox_LarguraTuboExterno.Text      = settings.TuboExternoLargura.ToString();
@@ -176,6 +205,10 @@ namespace ColunaPronta.Viewer
             detalhe = especificaolayer.GetDetalheLayer(Layer.TuboInterno);
             comboBox_tuboInterno.SelectedValue = detalhe == null ? "" : detalhe.Nome;
             textBox_tuboInterno.Text           = detalhe == null ? "" : detalhe.Perfil;
+
+            comboBox_Cotas.ItemsSource = layers;
+            detalhe = especificaolayer.GetDetalheLayer(Layer.Cotas);
+            comboBox_Cotas.SelectedValue = detalhe == null ? "" : detalhe.Nome;
 
         }
 
