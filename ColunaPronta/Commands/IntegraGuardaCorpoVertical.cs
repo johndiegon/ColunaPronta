@@ -114,9 +114,13 @@ namespace ColunaPronta.Commands
                 Helpers.AddPolyline(document, ent.Pontos, Layer.Poste, ColorIndex.AzulEscuroPersonalizado);
             }
 
-            foreach (var ent in guardaCorpo.EstruturasTUbosInternos)
+            if (guardaCorpo.EstruturasTubosInternos != null)
             {
-                Helpers.AddPolylineHatch(document, ent.Pontos, Layer.Poste, ColorIndex.vermelho);
+                foreach (var ent in guardaCorpo.EstruturasTubosInternos)
+                {
+                    Helpers.AddPolylineHatch(document, ent.Pontos, Layer.Poste, ColorIndex.vermelho);
+                }
+
             }
 
             foreach (var ent in guardaCorpo.Dimensions)

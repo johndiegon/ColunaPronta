@@ -11,7 +11,7 @@ namespace ColunaPronta.Model
         const double distanciaDimension = (90 / 1000f);
         public List<Retangulo> EstruturasVerticais { get; set; }
         public List<Retangulo> EstruturasHorizontais { get; set; }
-        public List<Retangulo> EstruturasTUbosInternos { get; set; }
+        public List<Retangulo> EstruturasTubosInternos { get; set; }
         public Retangulo PosteReforco { get; set; }
         public Retangulo CoberturaReforco { get; set; }
         public Retangulo Cantoneira { get; set; }
@@ -28,6 +28,7 @@ namespace ColunaPronta.Model
             this.Linhas = new List<Point2dCollection>();
 
             SetEstruturasVerticais();
+            SetEstruturasHorizontais(); 
             SetPosteReforco();
         }
 
@@ -172,7 +173,7 @@ namespace ColunaPronta.Model
             }
 
             this.EstruturasHorizontais = estruturasHorizontais;
-            this.EstruturasTUbosInternos = estruturasTUbosInternos;
+            this.EstruturasTubosInternos = estruturasTUbosInternos;
         }
         private void SetPosteReforco()
         {

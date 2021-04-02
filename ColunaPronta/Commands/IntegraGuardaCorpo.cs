@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.ApplicationServices;
 using System.Linq;
+using System;
+using NLog.Config;
 
 namespace ColunaPronta.Commands
 {
@@ -60,58 +62,68 @@ namespace ColunaPronta.Commands
         #region >> Métodos
         private static void Integra(GuardaCorpo guardaCorpo)
         {
-            var document = Application.DocumentManager.MdiActiveDocument;
-            
-            foreach (Poste poste in guardaCorpo.Postes)
+            try
             {
-                Helpers.AddPolyline(document, poste.PosteRetangulo.Pontos, Layer.Poste);
-                
-                foreach(var cantoneira in poste.Cantoneiras)
+                var document = Application.DocumentManager.MdiActiveDocument;
+
+                foreach (Poste poste in guardaCorpo.Postes)
                 {
-                    Helpers.AddPolyline(document, cantoneira.Retangulo.Pontos, cantoneira.Retangulo.Layer);
-                    if (cantoneira.Linha.Count == 2)
-                    {
-                        Point3d pnt1 = new Point3d(cantoneira.Linha[0].X, cantoneira.Linha[0].Y, 0);
-                        Point3d pnt2 = new Point3d(cantoneira.Linha[1].X, cantoneira.Linha[1].Y, 0);
+                    Helpers.AddPolyline(document, poste.PosteRetangulo.Pontos, Layer.Poste);
 
-                        Helpers.AddLinha(document, pnt1, pnt2, cantoneira.Retangulo.Layer);
-                    }
-
-                    if(cantoneira.Parafusos != null)
+                    foreach (var cantoneira in poste.Cantoneiras)
                     {
-                        foreach (var parafuso in cantoneira.Parafusos)
+                        Helpers.AddPolyline(document, cantoneira.Retangulo.Pontos, cantoneira.Retangulo.Layer);
+                        if (cantoneira.Linha.Count == 2)
                         {
-                            Helpers.AddCircle(document, parafuso.Point, parafuso.Raio, cantoneira.Retangulo.Layer);
+                            Point3d pnt1 = new Point3d(cantoneira.Linha[0].X, cantoneira.Linha[0].Y, 0);
+                            Point3d pnt2 = new Point3d(cantoneira.Linha[1].X, cantoneira.Linha[1].Y, 0);
+
+                            Helpers.AddLinha(document, pnt1, pnt2, cantoneira.Retangulo.Layer);
+                        }
+
+                        if (cantoneira.Parafusos != null)
+                        {
+                            foreach (var parafuso in cantoneira.Parafusos)
+                            {
+                                Helpers.AddCircle(document, parafuso.Point, parafuso.Raio, cantoneira.Retangulo.Layer);
+                            }
                         }
                     }
                 }
-            }
 
-            foreach (GuardaCorpoFilho gc in guardaCorpo.GuardaCorpos)
-            {
-                foreach (var tubo in gc.Tubos)
+                foreach (GuardaCorpoFilho gc in guardaCorpo.GuardaCorpos)
                 {
-                    Helpers.AddPolyline(document, tubo.Pontos, tubo.Layer);
-                }
-
-                if (gc.PosteReforco != null)
-                {
-                    foreach (var poste in gc.PosteReforco.Poste)
+                    foreach (var tubo in gc.Tubos)
                     {
-                        Helpers.AddPolyline(document, poste.Pontos, poste.Layer);
+                        Helpers.AddPolyline(document, tubo.Pontos, tubo.Layer);
                     }
 
-                    foreach (CantoneiraGuardaCorpo cantoneira in gc.PosteReforco.Cantoneiras)
+                    if (gc.PosteReforco != null)
+                    {
+                        foreach (var poste in gc.PosteReforco.Poste)
+                        {
+                            Helpers.AddPolyline(document, poste.Pontos, poste.Layer);
+                        }
+
+                        foreach (CantoneiraGuardaCorpo cantoneira in gc.PosteReforco.Cantoneiras)
+                        {
+                            IntegraGuardaCorpoFilho(document, cantoneira);
+                        }
+                    }
+
+                    foreach (CantoneiraGuardaCorpo cantoneira in gc.Cantoneiras)
                     {
                         IntegraGuardaCorpoFilho(document, cantoneira);
                     }
-                }
-
-                foreach (CantoneiraGuardaCorpo cantoneira in gc.Cantoneiras)
-                {
-                    IntegraGuardaCorpoFilho(document, cantoneira);
-                }
-            };
+                };
+            }
+            catch (Exception e)
+            {
+                NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+                NLog.LogManager.Configuration = new XmlLoggingConfiguration(@"C:\Autodesk\ColunaPronta\NLog.config");
+                Logger.Error(e.ToString());
+            }
+         
 
         }
 
