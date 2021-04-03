@@ -82,9 +82,9 @@
                             <TextBox   x:Name="textbox_larguraPoste" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
                             <TextBlock x:Name="textBlock_cantoneiraLargura" PreviewTextInput="TextBox_PreviewTextInput">Largura da Cantoneira:</TextBlock>
                             <TextBox   x:Name="textbox_cantoneiraLargura" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
-                            <TextBlock x:Name="textBlock_cantoneiraComprimento">Comprimento (mm) da Cantoneira</TextBlock>
+                            <TextBlock x:Name="textBlock_cantoneiraComprimento">Comprimento (mm) da Cantoneira:</TextBlock>
                             <TextBox   x:Name="textbox_cantoneiraComprimento" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
-                            <TextBlock x:Name="textBlock_cantoneiraFolga">Folga (mm) da Cantoneira</TextBlock>
+                            <TextBlock x:Name="textBlock_cantoneiraFolga">Folga (mm) da Cantoneira:</TextBlock>
                             <TextBox   x:Name="textBox_cantoneiraFolga" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
                             <TextBlock x:Name="textBlock_cantoneiraEspessura">Espessura (mm) da Cantoneira:</TextBlock>
                             <TextBox   x:Name="textBox_cantoneiraEspessura" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
@@ -103,16 +103,16 @@
                         <TextBlock x:Name="textBlock_tuboInterno">Tubo Interno Guarda Corpo:</TextBlock>
                         <ComboBox x:Name="comboBox_tuboInterno"></ComboBox>
                         <TextBox   x:Name="textBox_tuboInterno" ></TextBox>
-                        <TextBlock x:Name="textBlock_Cantoneira">Cantoneira</TextBlock>
+                        <TextBlock x:Name="textBlock_Cantoneira">Cantoneira:</TextBlock>
                         <ComboBox x:Name="comboBox_Cantoneira"></ComboBox>
                         <TextBox   x:Name="textBox_Cantoneira" ></TextBox>
-                        <TextBlock x:Name="textBlock_CantoneiraL">Cantoneira L</TextBlock>
+                        <TextBlock x:Name="textBlock_CantoneiraL">Cantoneira L:</TextBlock>
                         <ComboBox x:Name="comboBox_CantoneiraL"></ComboBox>
                         <TextBox   x:Name="textBox_CantoneiraL" ></TextBox>
-                        <TextBlock x:Name="textBlock_PosteReforco">Poste Reforco</TextBlock>
+                        <TextBlock x:Name="textBlock_PosteReforco">Poste Reforco:</TextBlock>
                         <ComboBox x:Name="comboBox_PosteReforco"></ComboBox>
                         <TextBox   x:Name="textBox_PosteReforco" ></TextBox>
-                        <TextBlock x:Name="textBlock_Cotas">Cotas</TextBlock>
+                        <TextBlock x:Name="textBlock_Cotas">Cotas:</TextBlock>
                         <ComboBox x:Name="comboBox_Cotas"></ComboBox>
                     </StackPanel>
                  </TabItem>
