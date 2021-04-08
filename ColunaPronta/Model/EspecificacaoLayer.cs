@@ -14,7 +14,8 @@ namespace ColunaPronta.Model
         TuboInterno,
         Poste, 
         PosteReforco,
-        Cotas
+        Cotas,
+        Indefinido
     }
     public class EspecificacaoLayer
     {
@@ -119,7 +120,7 @@ namespace ColunaPronta.Model
                              select detalhe.Objeto
                              ).FirstOrDefault();
 
-            Layer layer = (Layer)Enum.Parse(typeof(Layer), nomeLayer, true);
+            Layer layer = (Layer)Enum.Parse(typeof(Layer), nomeLayer ==null ? "Indefinido" : nomeLayer, true);
 
             return layer;
         }
