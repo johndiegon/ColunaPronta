@@ -2,6 +2,7 @@
 using ColunaPronta.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,7 +25,9 @@ namespace ColunaPronta.Viewer
             if (!isValido())
                 return;
             SetSettings();
-            SaveLayers();
+
+            if (!SaveLayers())
+                return;
 
             this.Close();
       
@@ -59,6 +62,7 @@ namespace ColunaPronta.Viewer
             if ( comboBox_Cantoneira.SelectedItem == null ||
                  comboBox_CantoneiraL.SelectedItem == null ||
                  comboBox_PosteReforco.SelectedItem == null ||
+                 comboBox_Poste.SelectedItem == null ||
                  comboBox_tuboExterno.SelectedItem == null ||
                  comboBox_tuboInterno.SelectedItem == null ||
                  comboBox_Cotas.SelectedItem == null 
@@ -72,7 +76,7 @@ namespace ColunaPronta.Viewer
             return true;
         }
 
-        private void SaveLayers()
+        private bool SaveLayers()
         {
             var listLayers = new List<EspecificacaoLayer.Detalhe>();
 
@@ -98,11 +102,18 @@ namespace ColunaPronta.Viewer
                 Perfil = textBox_PosteReforco.Text
             };
             listLayers.Add(detalhePosteReforco);
+            var detalhePoste = new EspecificacaoLayer.Detalhe()
+            {
+                Nome = comboBox_Poste.SelectedValue.ToString(),
+                Objeto = Layer.Poste.ToString(),
+                Perfil = textBox_Poste.Text
+            };
+            listLayers.Add(detalhePoste);
             var detalhetuboExterno = new EspecificacaoLayer.Detalhe()
             {
                 Nome = comboBox_tuboExterno.SelectedValue.ToString(),
                 Objeto = Layer.TuboExterno.ToString(),
-                Perfil = textBox_PosteReforco.Text
+                Perfil = textBox_tuboExterno.Text
             };
             listLayers.Add(detalhetuboExterno);
 
@@ -122,7 +133,21 @@ namespace ColunaPronta.Viewer
             };
             listLayers.Add(detalheCota);
 
+            var validaLayers = (from layer in listLayers
+                                group layer by layer.Nome into qt
+                                where qt.Count() > 1
+                                select qt.Key
+                                );
+
+            if(validaLayers.Count() > 0)
+            {
+                this.tabControlPrincipal.SelectedItem = this.tabLayerItem;
+                MessageBox.Show("Os layers selecionados não podem ser repetidos", "Guarda Corpo", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
             ArquivoCSV.Registra(listLayers);
+            return true;
         }
 
         private void SetTelaInicial()
@@ -140,6 +165,7 @@ namespace ColunaPronta.Viewer
             textBox_cantoneiraEspessura.Text = settings.CantoneiraEspessura.ToString();     
             textbox_reforcoLargura.Text = settings.PosteReforcoLargura.ToString();          
             textbox_reforcoComprimento.Text = settings.PosteReforcoComprimento.ToString();
+            textbox_reforcoAltura.Text = settings.PosteReforcoAltura.ToString();
 
             textBox_ComprimentoGCInicio.Text     = settings.TuboExternoComprimentoInicial.ToString() ;
             textBox_ComprimentoTuboInterno.Text  = settings.TuboInternoComprimento.ToString();
@@ -166,6 +192,7 @@ namespace ColunaPronta.Viewer
             settings.CantoneiraEspessura = Convert.ToDouble(textBox_cantoneiraEspessura.Text);
             settings.PosteReforcoLargura = Convert.ToDouble(textbox_reforcoLargura.Text);
             settings.PosteReforcoComprimento = Convert.ToDouble(textbox_reforcoComprimento.Text);
+            settings.PosteReforcoAltura = Convert.ToDouble(textbox_reforcoAltura.Text);
             settings.TuboExternoComprimentoInicial = Convert.ToDouble(textBox_ComprimentoGCInicio.Text);
             settings.TuboInternoComprimento = Convert.ToDouble(textBox_ComprimentoTuboInterno.Text);
             settings.TuboInternoLargura = Convert.ToDouble(textBox_LarguraTuboInterno.Text);
@@ -195,6 +222,11 @@ namespace ColunaPronta.Viewer
             detalhe = especificaolayer.GetDetalheLayer(Layer.PosteReforco);
             comboBox_PosteReforco.SelectedValue = detalhe == null ? "" : detalhe.Nome;
             textBox_PosteReforco.Text           = detalhe == null ? "" : detalhe.Perfil;
+
+            comboBox_Poste.ItemsSource = layers;
+            detalhe = especificaolayer.GetDetalheLayer(Layer.Poste);
+            comboBox_Poste.SelectedValue = detalhe == null ? "" : detalhe.Nome;
+            textBox_Poste.Text = detalhe == null ? "" : detalhe.Perfil;
 
             comboBox_tuboExterno.ItemsSource = layers;
             detalhe = especificaolayer.GetDetalheLayer(Layer.TuboExterno);

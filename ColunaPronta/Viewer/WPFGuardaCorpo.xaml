@@ -92,10 +92,12 @@
                             <TextBox   x:Name="textbox_reforcoLargura" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
                             <TextBlock x:Name="textBlock_reforcoComprimento">Comprimento (mm) do Poste de Reforço:</TextBlock>
                             <TextBox   x:Name="textbox_reforcoComprimento" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
+                            <TextBlock x:Name="textBlock_reforcoAltura">Altura (mm) do Poste de Reforço:</TextBlock>
+                            <TextBox   x:Name="textbox_reforcoAltura" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
                         </StackPanel>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tabLayerItem" Header="Layers" BorderBrush="White">
+                <TabItem x:Name="tabLayerItem" Header="Layers" BorderBrush="White" Height="28" Margin="0,0,-0.4,0" VerticalAlignment="Bottom">
                     <StackPanel>
                         <TextBlock x:Name="textBlock_tuboExterno">Tubo Externo Guarda Corpo:</TextBlock>
                         <ComboBox x:Name="comboBox_tuboExterno"></ComboBox>
@@ -109,6 +111,9 @@
                         <TextBlock x:Name="textBlock_CantoneiraL">Cantoneira L:</TextBlock>
                         <ComboBox x:Name="comboBox_CantoneiraL"></ComboBox>
                         <TextBox   x:Name="textBox_CantoneiraL" ></TextBox>
+                        <TextBlock x:Name="textBlock_Poste">Poste:</TextBlock>
+                        <ComboBox x:Name="comboBox_Poste"></ComboBox>
+                        <TextBox   x:Name="textBox_Poste" ></TextBox>
                         <TextBlock x:Name="textBlock_PosteReforco">Poste Reforco:</TextBlock>
                         <ComboBox x:Name="comboBox_PosteReforco"></ComboBox>
                         <TextBox   x:Name="textBox_PosteReforco" ></TextBox>
