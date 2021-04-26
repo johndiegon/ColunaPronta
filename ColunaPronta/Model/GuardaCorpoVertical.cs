@@ -8,7 +8,7 @@ namespace ColunaPronta.Model
         private double altura;
         private double comprimento;
         private Point2d pontoInicial;
-        const double distanciaDimension = (350 / 1000f);
+        const double distanciaDimension = (150 / 1000f);
         public List<Retangulo> EstruturasVerticais { get; set; }
         public List<Retangulo> EstruturasHorizontais { get; set; }
         public List<Retangulo> EstruturasTubosInternos { get; set; }

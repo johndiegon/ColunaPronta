@@ -308,7 +308,7 @@ namespace ColunaPronta.Viewer
                     if (button.CommandParameter.ToString() == "geragc")
                     {
                         WPFGuardaCorpo window = new WPFGuardaCorpo();
-                        window.MaxHeight = 430;
+                        window.MaxHeight = 500;
                         window.MaxWidth = 430;
                         window.Show();
                     }
