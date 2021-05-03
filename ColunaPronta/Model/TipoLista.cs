@@ -10,6 +10,7 @@ namespace ColunaPronta.Model
     {
         ListaEntregaColuna,
         ListaCorteColuna, 
-        ListaCorteGuardaCorpo
+        ListaCorteGuardaCorpo,
+        ListaEntregaGuardaCorpo
     }
 }

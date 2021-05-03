@@ -28,7 +28,7 @@
                             <RadioButton Name="RadioButtonPosteFimSim" Content="Sim" GroupName="PosteFim" IsChecked="True"/>
                             <RadioButton Name="RadioButtonPosteFimNao" Content="Não" GroupName="PosteFim"/>
                             <TextBlock/>
-                            <TextBlock><Run Text="Gerar poste Regulável?" FontWeight="Bold"/></TextBlock>
+                            <TextBlock><Run Text="Gerar guarda corpo regulável?" FontWeight="Bold"/></TextBlock>
                             <CheckBox Name="CheckBoxPosteDireita" Content="Com Abertura para Direita"/>
                             <CheckBox Name="CheckBoxPosteEsquerda" Content="Com Abertura para Esquerda"/>
                             <TextBlock/>
@@ -62,15 +62,15 @@
                 </TabItem>
                 <TabItem Header="Configurações" BorderBrush="White">
                     <StackPanel>
-                        <TextBlock  x:Name="TextBlock_altura" FontWeight="Bold">Altura (m):</TextBlock>
+                        <TextBlock  x:Name="TextBlock_altura" FontWeight="Bold">Altura(m) do Guarda Corpo:</TextBlock>
                         <TextBox x:Name="textBox_altura" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
-                        <TextBlock x:Name="TextBlock_largura" FontWeight="Bold">Largura (mm) do Guarda Corpo:</TextBlock>
+                        <TextBlock x:Name="TextBlock_largura" FontWeight="Bold">Largura (mm) do banzo/ corrimão do Guarda Corpo:</TextBlock>
                         <TextBox x:Name="textbox_largura" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
-                        <TextBlock x:Name="TextBlock_comprimentoPadrao" FontWeight="Bold">Comprimento (mm) Padrão do Guarda Corpo:</TextBlock>
+                        <TextBlock x:Name="TextBlock_comprimentoPadrao" FontWeight="Bold">Comprimento (mm) padrão do painel do Guarda Corpo:</TextBlock>
                         <TextBox x:Name="textbox_comprimentoPadrao" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
-                        <TextBlock x:Name="TextBlock_comprimentoMaximo" FontWeight="Bold">Comprimento (mm) Maximo do Guarda Corpo:</TextBlock>
+                        <TextBlock x:Name="TextBlock_comprimentoMaximo" FontWeight="Bold">Comprimento (mm) máximo painel do Guarda Corpo:</TextBlock>
                         <TextBox   x:Name="TextBox_comprimentoMaximo" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
-                        <TextBlock x:Name="textBlock_comprimentoMinimoReforco" FontWeight="Bold">Comprimento (mm) Minimo do Guarda Corpo para Reforço:</TextBlock>
+                        <TextBlock x:Name="textBlock_comprimentoMinimoReforco" FontWeight="Bold">Comprimento (mm) minimo do painel do Guarda <LineBreak /> Corpo para existir tubo de reforço central:</TextBlock>
                         <TextBox   x:Name="textbox_comprimentoMinimoReforco" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
                     </StackPanel>
 
@@ -78,23 +78,23 @@
                 <TabItem Header="Poste e Cantoneira" BorderBrush="White">
                     <Grid>
                         <StackPanel>
-                            <TextBlock x:Name="textBlock_comprimentoPoste" FontWeight="Bold">Comprimento (mm) do Poste:</TextBlock>
+                            <TextBlock x:Name="textBlock_comprimentoPoste" FontWeight="Bold">Comprimento (mm) do Perfil da Coluneta:</TextBlock>
                             <TextBox   x:Name="textbox_comprimentoPoste" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
-                            <TextBlock x:Name="textBlock_larguraPoste" FontWeight="Bold">Largura (mm) do Poste:</TextBlock>
+                            <TextBlock x:Name="textBlock_larguraPoste" FontWeight="Bold">Largura (mm) do Perfil da Coluneta:</TextBlock>
                             <TextBox   x:Name="textbox_larguraPoste" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
-                            <TextBlock x:Name="textBlock_cantoneiraLargura" PreviewTextInput="TextBox_PreviewTextInput" FontWeight="Bold">Largura da Cantoneira:</TextBlock>
+                            <TextBlock x:Name="textBlock_cantoneiraLargura" PreviewTextInput="TextBox_PreviewTextInput" FontWeight="Bold">Largura (mm) da Sapata das Colunetas:</TextBlock>
                             <TextBox   x:Name="textbox_cantoneiraLargura" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
-                            <TextBlock x:Name="textBlock_cantoneiraComprimento" FontWeight="Bold">Comprimento (mm) da Cantoneira:</TextBlock>
+                            <TextBlock x:Name="textBlock_cantoneiraComprimento" FontWeight="Bold">Comprimento (mm) da Sapata das Colunetas:</TextBlock>
                             <TextBox   x:Name="textbox_cantoneiraComprimento" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
-                            <TextBlock x:Name="textBlock_cantoneiraFolga" FontWeight="Bold">Folga (mm) da Cantoneira:</TextBlock>
+                            <TextBlock x:Name="textBlock_cantoneiraFolga" FontWeight="Bold">Folga (mm) entre o Painel e a Coluneta:</TextBlock>
                             <TextBox   x:Name="textBox_cantoneiraFolga" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
                             <TextBlock x:Name="textBlock_cantoneiraEspessura" FontWeight="Bold">Espessura (mm) da Cantoneira:</TextBlock>
                             <TextBox   x:Name="textBox_cantoneiraEspessura" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
-                            <TextBlock x:Name="textBlock_reforcoLargura" FontWeight="Bold">Largura (mm) do Poste de Reforço:</TextBlock>
+                            <TextBlock x:Name="textBlock_reforcoLargura" FontWeight="Bold">Largura (mm) do Tubo de Reforço Central:</TextBlock>
                             <TextBox   x:Name="textbox_reforcoLargura" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
-                            <TextBlock x:Name="textBlock_reforcoComprimento" FontWeight="Bold">Comprimento (mm) do Poste de Reforço:</TextBlock>
+                            <TextBlock x:Name="textBlock_reforcoComprimento" FontWeight="Bold">Comprimento (mm) do Tubo de Reforço Central:</TextBlock>
                             <TextBox   x:Name="textbox_reforcoComprimento" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
-                            <TextBlock x:Name="textBlock_reforcoAltura" FontWeight="Bold">Altura (mm) do Poste de Reforço:</TextBlock>
+                            <TextBlock x:Name="textBlock_reforcoAltura" FontWeight="Bold">Altura (mm) do Painel:</TextBlock>
                             <TextBox   x:Name="textbox_reforcoAltura" PreviewTextInput="TextBox_PreviewTextInput"></TextBox>
                         </StackPanel>
                     </Grid>

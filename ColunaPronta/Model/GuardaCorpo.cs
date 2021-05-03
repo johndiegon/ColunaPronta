@@ -212,11 +212,14 @@ namespace ColunaPronta.Model
         {
             Double X = pontoInicial.X, Y = pontoInicial.Y;
             var guardaCorpo = new GuardaCorpoFilho();
-
+            var cantoneiras = new List<CantoneiraGuardaCorpo>();
+            
             #region >> Cantoneira Inicial
 
-            var cantoneiraInicial = new CantoneiraGuardaCorpo( new Point2d(X,Y), this.Posicao, TipoCantoneira.NormalInicio );
-
+            
+            var cantoneiraInicial = new CantoneiraGuardaCorpo(new Point2d(X, Y), this.Posicao, TipoCantoneira.NormalInicio, bPosteInicial);
+            cantoneiras.Add(cantoneiraInicial);
+            
             comprimento = comprimento - ((this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga)*2);
 
             if (bVertical)
@@ -252,12 +255,13 @@ namespace ColunaPronta.Model
                 X = X + ( comprimento - this.Settings.CantoneiraLargura + this.Settings.CantoneiraEspessura + this.Settings.CantoneiraFolga ) ;
             }
 
-            var cantoneiraFinal = new CantoneiraGuardaCorpo(new Point2d(X, Y), this.Posicao, TipoCantoneira.NormalFim);
-
-            #endregion
-            var cantoneiras = new List<CantoneiraGuardaCorpo>();
-            cantoneiras.Add(cantoneiraInicial);
+         
+            var cantoneiraFinal = new CantoneiraGuardaCorpo(new Point2d(X, Y), this.Posicao, TipoCantoneira.NormalFim, bPosteFinal);
             cantoneiras.Add(cantoneiraFinal);
+         
+            #endregion
+
+       
             guardaCorpo.Cantoneiras= cantoneiras;
             this.GuardaCorpos.Add(guardaCorpo);
         }

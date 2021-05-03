@@ -186,6 +186,26 @@ namespace ColunaPronta.Viewer
 
                 buttons.Add(GeraListaCorte);
 
+                // Botão para gerar coluna identificada
+                uriImage = new Uri(@"C:\Autodesk\ColunaPronta\Icones\listaentrega.png");
+                uriImage2 = new Uri(@"C:\Autodesk\ColunaPronta\Icones\listaentrega.png");
+
+                image = new BitmapImage(uriImage);
+                largeImage = new BitmapImage(uriImage2);
+
+                Autodesk.Windows.RibbonButton GeraListaEntrega = new RibbonButton()
+                {
+                    Text = "Lista de Entrega",
+                    Size = RibbonItemSize.Large,
+                    Image = image,
+                    LargeImage = largeImage,
+                    ShowText = true,
+                    CommandParameter = "GeraListaEntregaGC",
+                    CommandHandler = new SimpleButtonCmdHandler()
+                };
+
+                buttons.Add(GeraListaEntrega);
+
                 // Botão para Lista de corte
                 uriImage = new Uri(@"C:\Autodesk\ColunaPronta\Icones\listacorte.png");
                 uriImage2 = new Uri(@"C:\Autodesk\ColunaPronta\Icones\listacorte.png");
@@ -203,6 +223,7 @@ namespace ColunaPronta.Viewer
                     CommandParameter = "geralvgc",
                     CommandHandler = new SimpleButtonCmdHandler()
                 };
+
 
                 buttons.Add(GeraListaVisual);
 
@@ -375,9 +396,10 @@ namespace ColunaPronta.Viewer
                        IntegraColuna.GeraRelatorioExcel(TipoLista.ListaEntregaColuna);
                     }
 
-                    if (button.CommandParameter.ToString() == "geralcgc")
+                  
+                    if (button.CommandParameter.ToString() == "GeraListaEntregaGC")
                     {
-                        IntegraGuardaCorpo.GeraListaCorte();
+                        IntegraGuardaCorpoVertical.GeraListaEntrega();
                     }
 
                     if (button.CommandParameter.ToString() == "geralvgc")

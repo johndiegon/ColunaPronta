@@ -109,6 +109,8 @@ namespace ColunaPronta
         {
             IntegraColuna.GeraRelatorioExcel(TipoLista.ListaEntregaColuna);
         }
+
+    
         #endregion
 
         #region >> Integra Guarda Corpo 
@@ -125,8 +127,14 @@ namespace ColunaPronta
         [CommandMethod("geralcgc")]
         public void GeraListaCorteGuardaCorpo()
         {
-            IntegraGuardaCorpo.GeraListaCorte();
+            IntegraGuardaCorpo.GeraListaCorte(TipoLista.ListaCorteGuardaCorpo);
 
+        }
+
+        [CommandMethod("GeraListaEntregaGC")]
+        public void GeraListaEntregaGC()
+        {
+            IntegraGuardaCorpoVertical.GeraListaEntrega();
         }
 
         [CommandMethod("geralvgc")]

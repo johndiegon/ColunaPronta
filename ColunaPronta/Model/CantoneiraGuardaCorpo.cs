@@ -14,12 +14,14 @@ namespace ColunaPronta.Model
         public Retangulo Retangulo { get; set; }
         public Point2dCollection Linha { get; set; }
         public List<Circulo> Parafusos { get; set; } 
-        public CantoneiraGuardaCorpo(Point2d pontoInicial, Posicao posicao, TipoCantoneira tipo)
+        public bool bPoste { get; set; }
+        public CantoneiraGuardaCorpo(Point2d pontoInicial, Posicao posicao, TipoCantoneira tipo, bool bPoste = true)
         {
             this.tipoCantoneira = tipo;
             this.Posicao = posicao;
             this.pontoInicial = pontoInicial;
             this.Settings = new Settings(true);
+            this.bPoste = bPoste;
 
             switch(tipo)
             {
@@ -46,10 +48,12 @@ namespace ColunaPronta.Model
 
             SetPontosCantoneiraL(posicaoCantoneira, pontoInicialdoELe, lado, espessura);
 
-            this.Retangulo = new Retangulo(Settings.CantoneiraLargura, Settings.CantoneiraComprimento, pontoInicialCantoneira, GetPosicaoRetangulo(), Model.Layer.Cantoneira);
-
-            AddParafuso();
-            SetLinha();
+            if(bPoste)
+            {
+                this.Retangulo = new Retangulo(Settings.CantoneiraLargura, Settings.CantoneiraComprimento, pontoInicialCantoneira, GetPosicaoRetangulo(), Model.Layer.Cantoneira);
+                AddParafuso();
+                SetLinha();
+            }
         }
         private void AddParafuso()
         {

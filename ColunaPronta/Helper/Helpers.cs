@@ -1127,13 +1127,21 @@ namespace ColunaPronta.Helper
                     }
                     File.Copy(@"C:\Autodesk\ColunaPronta\Template\ListaDeCorte.xlsx", path);
                     break;
-                default: //ListaCorteGuardaCOrpo
+                case TipoLista.ListaCorteGuardaCorpo: 
                     path = string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\ListaCorte", nomeProjeto, System.Guid.NewGuid().ToString(), ".xlsx");
                     if (File.Exists(path))
                     {
                         File.Delete(path);
                     }
                     File.Copy(@"C:\Autodesk\ColunaPronta\Template\ListaDeCorteGuardaCorpo.xlsx", path);
+                    break;
+                default: //TipoLista.ListaEntrega:
+                    path = string.Concat(@"C:\Autodesk\ColunaPronta\ListaExcel\ListaEntrega", nomeProjeto, System.Guid.NewGuid().ToString(), ".xlsx");
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+                    File.Copy(@"C:\Autodesk\ColunaPronta\Template\ListaDeEntregaGuardaCorpo.xlsx", path);
                     break;
             }   
 
@@ -1198,7 +1206,7 @@ namespace ColunaPronta.Helper
                     }
 
                     break;
-                default: //ListaCorteGuardaCOrpo
+                case TipoLista.ListaCorteGuardaCorpo:
                     row = 11;
                     foreach (var linha in arquivoExcel)
                     {
@@ -1209,10 +1217,20 @@ namespace ColunaPronta.Helper
                        row++;
                     }
                     break;
+                default: //ListaEntregaGuardaCOrpo
+                    row = 17;
+                    foreach (var linha in arquivoExcel)
+                    {
+                        workSheet.Cells[row, "A"] = linha.Item.ToUpper();
+                        workSheet.Cells[row, "D"] = linha.Especificao;
+                        workSheet.Cells[row, "F"] = linha.Comprimento;
+                        workSheet.Cells[row, "G"] = linha.Quantidade;
+                        workSheet.Cells[row, "H"] = linha.Observacao;
+                        row++;
+                    }
+                    break;
             }
-  
-
-        }
+         }
 
         public static List<ItemRelatorio> GetTubos(ObjetosSelecionados objetos, Layer layer)
         {

@@ -4,7 +4,6 @@ using Autodesk.AutoCAD.Geometry;
 using ColunaPronta.Helper;
 using ColunaPronta.Model;
 using System.Collections.Generic;
-using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.ApplicationServices;
 using System.Linq;
 using System;
@@ -48,12 +47,13 @@ namespace ColunaPronta.Commands
 
             Integra(guardaCorpo);
         }
-        public static void GeraListaCorte()
+        public static void GeraListaCorte(TipoLista tipoLista)
         {
             var objetos = Helpers.GetObjetos();
-            GeraArquivoListaCorte(objetos);
+            GeraArquivoLista(objetos, tipoLista);
 
-        }     
+        }
+
 
         #endregion
 
@@ -129,7 +129,8 @@ namespace ColunaPronta.Commands
             try
             {
 
-                Helpers.AddPolyline(document, cantoneira.Retangulo.Pontos, cantoneira.Retangulo.Layer);
+                if(cantoneira.Retangulo != null)
+                    Helpers.AddPolyline(document, cantoneira.Retangulo.Pontos, cantoneira.Retangulo.Layer);
 
                 if (cantoneira.Linha.Count == 2)
                 {
@@ -158,14 +159,13 @@ namespace ColunaPronta.Commands
                 Logger.Error(e.ToString());
             }
         }
-        private static void GeraArquivoListaCorte(ObjetosSelecionados objetos )
+        private static void GeraArquivoLista(ObjetosSelecionados objetos, TipoLista tipoLista)
         {
             try
             {
 
                 var arquivoExcel = new List<Planilha>();
                 var layers = new EspecificacaoLayer();
-
                 var listaTubo = new List<ItemRelatorio>();
                 var listaCantoneiraL = new List<ItemRelatorio>();
                 var listaPoste = new List<ItemRelatorio>();
@@ -294,7 +294,7 @@ namespace ColunaPronta.Commands
                                           {
                                               Descricao = c.Key.Descricao,
                                               Largura = c.Key.Largura,
-                                              Comprimento = ( settings.Altura * 1000 ) ,
+                                              Comprimento = (settings.Altura * 1000),
                                               QtdeColuna = c.Count()
                                           }).ToList();
 
@@ -308,56 +308,118 @@ namespace ColunaPronta.Commands
                     }
 
                     var relatorioPosteReforco = (from item in listaPosteReforco
-                                          group item by new
-                                          {
-                                              item.Comprimento,
-                                              item.Largura,
-                                              item.Descricao
-                                          } into c
-                                          select new ItemRelatorio
-                                          {
-                                              Descricao = c.Key.Descricao,
-                                              Largura = c.Key.Largura,
-                                              Comprimento = ( settings.PosteReforcoAltura * 1000 ),
-                                              QtdeColuna = c.Count()
-                                          }).ToList();
+                                                 group item by new
+                                                 {
+                                                     item.Comprimento,
+                                                     item.Largura,
+                                                     item.Descricao
+                                                 } into c
+                                                 select new ItemRelatorio
+                                                 {
+                                                     Descricao = c.Key.Descricao,
+                                                     Largura = c.Key.Largura,
+                                                     Comprimento = (settings.PosteReforcoAltura * 1000),
+                                                     QtdeColuna = c.Count()
+                                                 }).ToList();
 
-                    foreach (var item in relatorioPosteReforco)
+                    if (objetos.Polylines != null)
                     {
-                        var linha = new Planilha();
-                        linha.Comprimento = item.Comprimento.ToString();
-                        linha.Especificao = item.Descricao.ToString();
-                        linha.Quantidade = item.QtdeColuna;
-                        arquivoExcel.Add(linha);
+                        foreach (var poly in objetos.Polylines)
+                        {
+
+                            var layer = layers.GetLayer(poly.Layer.ToString());
+                            switch (layer)
+                            {
+
+                                case Layer.Cantoneira:
+
+                                    var itemCantoneira = new ItemRelatorio(poly);
+                                    itemCantoneira.Descricao = layers.GetDescricaoLayer(layer);
+                                    listaCantoneira.Add(itemCantoneira);
+
+                                    break;
+
+                                case Layer.CantoneiraL:
+
+                                    var itemCantoneiraL = new ItemRelatorio(poly);
+                                    itemCantoneiraL.Descricao = layers.GetDescricaoLayer(layer);
+                                    listaCantoneiraL.Add(itemCantoneiraL);
+
+                                    break;
+
+                                case Layer.TuboExterno:
+
+                                    var itemRelatorio = new ItemRelatorio(poly);
+                                    itemRelatorio.Descricao = layers.GetDescricaoLayer(layer);
+                                    listaTubo.Add(itemRelatorio);
+
+                                    break;
+
+                                case Layer.TuboInterno:
+
+                                    var itemTuboInterno = new ItemRelatorio(poly);
+                                    itemTuboInterno.Descricao = layers.GetDescricaoLayer(layer);
+                                    listaTubo.Add(itemTuboInterno);
+
+                                    break;
+
+                                case Layer.Poste:
+
+                                    var itemPoste = new ItemRelatorio(poly);
+                                    itemPoste.Descricao = layers.GetDescricaoLayer(layer);
+                                    listaPoste.Add(itemPoste);
+
+                                    break;
+
+                                case Layer.PosteReforco:
+
+                                    var itemPosteReforco = new ItemRelatorio(poly);
+                                    itemPosteReforco.Descricao = layers.GetDescricaoLayer(layer);
+                                    listaPosteReforco.Add(itemPosteReforco);
+
+                                    break;
+                            }
+
+                        }
+
+
+                        foreach (var item in relatorioPosteReforco)
+                        {
+                            var linha = new Planilha();
+                            linha.Comprimento = item.Comprimento.ToString();
+                            linha.Especificao = item.Descricao.ToString();
+                            linha.Quantidade = item.QtdeColuna;
+                            arquivoExcel.Add(linha);
+                        }
+
+
+                        var relatorioCantoneira = (from item in listaCantoneira
+                                                   group item by new
+                                                   {
+                                                       item.Comprimento,
+                                                       item.Largura,
+                                                       item.Descricao
+                                                   } into c
+                                                   select new ItemRelatorio
+                                                   {
+                                                       Descricao = c.Key.Descricao,
+                                                       Largura = c.Key.Largura,
+                                                       Comprimento = c.Key.Comprimento,
+                                                       QtdeColuna = c.Count()
+                                                   }).ToList();
+
+                        foreach (var item in relatorioCantoneira)
+                        {
+                            var linha = new Planilha();
+                            linha.Comprimento = item.Comprimento.ToString();
+                            linha.Especificao = item.Descricao.ToString();
+                            linha.Quantidade = item.QtdeColuna;
+                            arquivoExcel.Add(linha);
+                        }
+
+                        var nomeProjeto = Application.DocumentManager.MdiActiveDocument.Window.Text;
+                        Helpers.GeraArquivoExcel(arquivoExcel, nomeProjeto, tipoLista);
                     }
-
-
-                    var relatorioCantoneira = (from item in listaCantoneira
-                                               group item by new
-                                               {
-                                                   item.Comprimento,
-                                                   item.Largura,
-                                                   item.Descricao
-                                               } into c
-                                               select new ItemRelatorio
-                                               {
-                                                   Descricao = c.Key.Descricao,
-                                                   Largura = c.Key.Largura,
-                                                   Comprimento = c.Key.Comprimento,
-                                                   QtdeColuna = c.Count()
-                                               }).ToList();
-
-                    foreach (var item in relatorioCantoneira)
-                    {
-                        var linha = new Planilha();
-                        linha.Comprimento = item.Comprimento.ToString();
-                        linha.Especificao = item.Descricao.ToString();
-                        linha.Quantidade = item.QtdeColuna;
-                        arquivoExcel.Add(linha);
-                    }
-
-                    var nomeProjeto = Application.DocumentManager.MdiActiveDocument.Window.Text;
-                    Helpers.GeraArquivoExcel(arquivoExcel, nomeProjeto, TipoLista.ListaCorteGuardaCorpo);
                 }
             }
             catch (Exception e)
@@ -368,7 +430,7 @@ namespace ColunaPronta.Commands
             }
         }
    
-            
+        
         #endregion
     }
 }
