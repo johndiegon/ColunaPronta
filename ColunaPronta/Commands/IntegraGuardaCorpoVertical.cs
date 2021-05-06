@@ -408,7 +408,7 @@ namespace ColunaPronta.Commands
                     var ponteira = new ItemRelatorio
                     {
                         Descricao = "PONTEIRA",
-                        QtdeColuna = item.QtdeColuna * 5
+                        QtdeColuna = item.QtdeColuna
                     };
                     ponteiras.Add(ponteira);
                 }
@@ -429,31 +429,45 @@ namespace ColunaPronta.Commands
                     var ponteira = new ItemRelatorio
                     {
                         Descricao = "PONTEIRA",
-                        QtdeColuna = item.QtdeColuna * 5
+                        QtdeColuna = item.QtdeColuna 
                     };
                     ponteiras.Add(ponteira);
                 }
             }
 
-            double qtdePonteiras = ponteiras.Select(x => x.QtdeColuna).Sum();
-
+            double qtdePonteiras30 = ponteiras.Select(x => x.QtdeColuna).Sum();
+           
             var linhaPonteira30 = new Planilha
             {
                 Item = "PONTEIRA 30 X 30",
                 Especificao = "30 x 30",
-                Quantidade = qtdePonteiras
+                Quantidade = qtdePonteiras30
             };
             
             arquivoExcel.Add(linhaPonteira30);
-            
+
+            double qtdePonteiras50 = relatorioPoste.Select(x => x.QtdeColuna).Sum();
+
             var linhaPonteira50 = new Planilha
             {
                 Item = "PONTEIRA 50 X 50",
                 Especificao = "50 x 50",
-                Quantidade = qtdePonteiras
+                Quantidade = qtdePonteiras50
             };
 
             arquivoExcel.Add(linhaPonteira50);
+
+            double qtdeGcRegulavel = gcRegulavel.Select(x => x.QtdeColuna).Sum();
+            double qtdeGcNormal    = gcNormal.Select(x => x.QtdeColuna).Sum();
+
+            var brocante = new Planilha
+            {
+                Item = "AUTO BROCANTE",
+                Especificao = "5,5 X 2 1/2'' X 5/16''",
+                Quantidade = qtdeGcRegulavel + qtdeGcNormal
+            };
+
+            arquivoExcel.Add(brocante);
 
             var nomeProjeto = Application.DocumentManager.MdiActiveDocument.Window.Text;
             Helpers.GeraArquivoExcel(arquivoExcel, nomeProjeto, TipoLista.ListaEntregaGuardaCorpo);
