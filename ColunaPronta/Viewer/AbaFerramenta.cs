@@ -406,6 +406,11 @@ namespace ColunaPronta.Viewer
                     {
                         IntegraGuardaCorpoVertical.Integra();
                     }
+
+                    if(button.CommandParameter.ToString() == "geralcgc")
+                    {
+                        IntegraGuardaCorpo.GeraListaCorte(TipoLista.ListaCorteGuardaCorpo);
+                    }
                     
                 }
             }

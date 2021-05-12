@@ -274,7 +274,6 @@ namespace ColunaPronta.Commands
             }
         }
 
-
         public static void GeraListaEntrega()
         {
             var objetos = Helpers.GetObjetos();
@@ -287,7 +286,7 @@ namespace ColunaPronta.Commands
             var listaTubo = new List<ItemRelatorio>();
             var listaPoste = new List<ItemRelatorio>();
             var listaPosteReforco = new List<ItemRelatorio>();
-
+            var listaCantoneiraL = new List<ItemRelatorio>(); 
 
             var gcNormal = (from item in itemRelatorio
                             where item.ComprimentoTuboExterno == 0
@@ -301,7 +300,7 @@ namespace ColunaPronta.Commands
                             {
                                 Descricao = c.Key.Descricao,
                                 Largura = c.Key.Largura,
-                                Comprimento = c.Key.Comprimento,
+                                Comprimento =((c.Key.Comprimento ) + ((settings.CantoneiraFolga + settings.CantoneiraEspessura) * 2)* 1000f),
                                 Altura = altura,
                                 QtdeColuna = c.Count()
                             }).ToList();
@@ -320,7 +319,7 @@ namespace ColunaPronta.Commands
                                {
                                    Descricao = c.Key.Descricao,
                                    Largura = c.Key.Largura,
-                                   Comprimento = c.Key.Comprimento,
+                                   Comprimento = ((c.Key.Comprimento) + ((settings.CantoneiraFolga + settings.CantoneiraEspessura) * 2) * 1000f),
                                    Altura = altura,
                                    ComprimentoTuboExterno = c.Key.ComprimentoTuboExterno,
                                    ComprimentoTuboInterno = c.Key.ComprimentoTuboInterno,
@@ -335,35 +334,30 @@ namespace ColunaPronta.Commands
                     var layer = layers.GetLayer(poly.Layer.ToString());
                     switch (layer)
                     {
-
-
                         case Layer.TuboInterno:
-
                             var itemTuboInterno = new ItemRelatorio(poly);
                             itemTuboInterno.Descricao = layers.GetDescricaoLayer(layer);
                             listaTubo.Add(itemTuboInterno);
-
                             break;
 
                         case Layer.Poste:
-
                             var itemPoste = new ItemRelatorio(poly);
                             itemPoste.Descricao = layers.GetDescricaoLayer(layer);
                             listaPoste.Add(itemPoste);
-
-
-
                             break;
 
                         case Layer.PosteReforco:
-
                             var itemPosteReforco = new ItemRelatorio(poly);
                             itemPosteReforco.Descricao = layers.GetDescricaoLayer(layer);
                             listaPosteReforco.Add(itemPosteReforco);
+                            break;
 
+                        case Layer.CantoneiraL:
+                            var itemCantoneiraL = new ItemRelatorio(poly);
+                            itemCantoneiraL.Descricao = layers.GetDescricaoLayer(layer);
+                            listaCantoneiraL.Add(itemCantoneiraL);
                             break;
                     }
-
                 }
             }
 
@@ -378,7 +372,8 @@ namespace ColunaPronta.Commands
                                   {
                                       Descricao = c.Key.Descricao,
                                       Largura = c.Key.Largura,
-                                      Comprimento = (settings.Altura * 1000),
+                                      Comprimento = c.Key.Comprimento,
+                                      Altura = (settings.Altura * 1000),
                                       QtdeColuna = c.Count()
                                   }).ToList();
 
@@ -386,88 +381,85 @@ namespace ColunaPronta.Commands
             {
                 var linha = new Planilha();
                 linha.Item = "COLUNETAS";
-                linha.Comprimento = item.Comprimento.ToString();
+                linha.Comprimento = item.Altura.ToString("N0");
                 linha.Especificao = item.Descricao.ToString();
                 linha.Quantidade = item.QtdeColuna;
                 arquivoExcel.Add(linha);
             }
 
-            var ponteiras = new List<ItemRelatorio>();
+            foreach (var item in relatorioPoste)
+            {
+                var linha = new Planilha();
+                linha.Item = "PONTEIRA " + item.Comprimento.ToString("N0") + " X " + item.Largura.ToString("N0");
+                linha.Especificao = item.Comprimento.ToString("N0") + " X " + item.Largura.ToString("N0");
+                linha.Quantidade = item.QtdeColuna;
+                arquivoExcel.Add(linha);
+            }
 
             foreach (var item in gcNormal)
             {
                 var linha = new Planilha();
                 linha.Item = "GUARDA CORPO";
-                linha.Comprimento = item.Comprimento.ToString();
-                linha.Especificao = item.Altura.ToString();
+                linha.Comprimento = item.Comprimento.ToString("N0");
+                linha.Especificao = item.Altura.ToString("N0");
                 linha.Quantidade = item.QtdeColuna;
                 arquivoExcel.Add(linha);
-            
-                if (item.Comprimento > settings.ComprimentoMinimoReforco)
-                {
-                    var ponteira = new ItemRelatorio
-                    {
-                        Descricao = "PONTEIRA",
-                        QtdeColuna = item.QtdeColuna
-                    };
-                    ponteiras.Add(ponteira);
-                }
             }
 
             foreach (var item in gcRegulavel)
             {
                 var linha = new Planilha();
                 linha.Item = "GUARDA CORPO";
-                linha.Comprimento = item.Comprimento.ToString();
-                linha.Especificao = item.Altura.ToString();
+                linha.Comprimento = item.Comprimento.ToString("N0");
+                linha.Especificao = item.Altura.ToString("N0");
                 linha.Quantidade = item.QtdeColuna;
                 linha.Observacao = "REGULÁVEL";
                 arquivoExcel.Add(linha);
-
-                if (item.Comprimento > settings.ComprimentoMinimoReforco)
-                {
-                    var ponteira = new ItemRelatorio
-                    {
-                        Descricao = "PONTEIRA",
-                        QtdeColuna = item.QtdeColuna 
-                    };
-                    ponteiras.Add(ponteira);
-                }
             }
 
-            double qtdePonteiras30 = ponteiras.Select(x => x.QtdeColuna).Sum();
-           
-            var linhaPonteira30 = new Planilha
+            var relatorioReforco = (from item in listaPosteReforco
+                                    group item by new
+                                    {
+                                        item.Comprimento,
+                                        item.Largura,
+                                        item.Descricao
+                                    } into c
+                                    select new ItemRelatorio
+                                    {
+                                        Descricao = c.Key.Descricao,
+                                        Largura = c.Key.Largura,
+                                        Comprimento = c.Key.Comprimento,
+                                        QtdeColuna = c.Count()
+                                    }).ToList();
+
+            foreach (var item in relatorioReforco)
             {
-                Item = "PONTEIRA 30 X 30",
-                Especificao = "30 x 30",
-                Quantidade = qtdePonteiras30
-            };
+                var linha = new Planilha();
+                linha.Item = "PONTEIRA "+ item.Comprimento.ToString("N0")+ " X " + item.Largura.ToString("N0");
+                linha.Especificao = item.Comprimento.ToString("N0") + " X " + item.Largura.ToString("N0");
+                linha.Quantidade = item.QtdeColuna;
+                arquivoExcel.Add(linha);
+            }
             
-            arquivoExcel.Add(linhaPonteira30);
-
-            double qtdePonteiras50 = relatorioPoste.Select(x => x.QtdeColuna).Sum();
-
-            var linhaPonteira50 = new Planilha
-            {
-                Item = "PONTEIRA 50 X 50",
-                Especificao = "50 x 50",
-                Quantidade = qtdePonteiras50
-            };
-
-            arquivoExcel.Add(linhaPonteira50);
-
-            double qtdeGcRegulavel = gcRegulavel.Select(x => x.QtdeColuna).Sum();
-            double qtdeGcNormal    = gcNormal.Select(x => x.QtdeColuna).Sum();
-
-            var brocante = new Planilha
+            var linhaautoBrocanteCL = new Planilha
             {
                 Item = "AUTO BROCANTE",
                 Especificao = "5,5 X 2 1/2'' X 5/16''",
-                Quantidade = qtdeGcRegulavel + qtdeGcNormal
+                Quantidade = listaCantoneiraL.Count * 3
             };
+            arquivoExcel.Add(linhaautoBrocanteCL);
 
-            arquivoExcel.Add(brocante);
+            if(objetos.Circles.Count > 0 )
+            {
+                var linhaautoBrocante = new Planilha
+                {
+                    Item = "AUTO BROCANTE",
+                    Especificao = "1 / 4'' X 1'' X 3 / 8''",
+                    Quantidade = objetos.Circles.Count
+                };
+
+                arquivoExcel.Add(linhaautoBrocante);
+            }
 
             var nomeProjeto = Application.DocumentManager.MdiActiveDocument.Window.Text;
             Helpers.GeraArquivoExcel(arquivoExcel, nomeProjeto, TipoLista.ListaEntregaGuardaCorpo);
