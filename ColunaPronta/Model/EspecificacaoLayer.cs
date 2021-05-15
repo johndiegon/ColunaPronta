@@ -15,7 +15,13 @@ namespace ColunaPronta.Model
         Poste, 
         PosteReforco,
         Cotas,
-        Indefinido
+        Indefinido,
+        Parafuso,
+        Sapata,
+        Passante,
+        CantoneiraPassante,
+        Cantoneira3Furos,
+        Coluna
     }
     public class EspecificacaoLayer
     {

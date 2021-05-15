@@ -384,12 +384,14 @@ namespace ColunaPronta.Helper
             AddCircle(document, pointCircle, 10);
 
         }
-        public static void AddPolyline(Document document, Point2d point1, Point2d point2, Point2d point3, Point2d point4, int iColor = 0)
+        public static void AddPolyline(Document document, Point2d point1, Point2d point2, Point2d point3, Point2d point4, int iColor = 0, Layer layer = Layer.Coluna)
         {
             try
             {
                 Database database = document.Database;
                 Transaction transaction = document.TransactionManager.StartTransaction();
+                var especificaolayer = new EspecificacaoLayer();
+                var nomeLayer = especificaolayer.GetNomeLayer(layer);
 
                 using (DocumentLock documentLock = document.LockDocument())
                 {
@@ -416,6 +418,14 @@ namespace ColunaPronta.Helper
                     {
                         polyline.ColorIndex = iColor;
                     }
+
+                    LayerTable layerTable = transaction.GetObject(database.LayerTableId, OpenMode.ForRead) as LayerTable;
+
+                    if (nomeLayer != "" && layerTable.Has(nomeLayer))
+                    {
+                        polyline.Layer = nomeLayer;
+                    }
+
                     blockTableRecord.AppendEntity(polyline);
                     transaction.AddNewlyCreatedDBObject(polyline, true);
 
@@ -483,6 +493,7 @@ namespace ColunaPronta.Helper
                 Transaction transaction = document.TransactionManager.StartTransaction();
                 var especificaolayer = new EspecificacaoLayer();
                 var nomeLayer = especificaolayer.GetNomeLayer(layer);
+
                 // polyline do fundo de Viga
                 using (DocumentLock documentLock = document.LockDocument())
                 {

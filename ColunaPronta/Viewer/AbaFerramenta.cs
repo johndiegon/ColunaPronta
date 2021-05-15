@@ -318,6 +318,8 @@ namespace ColunaPronta.Viewer
                         if (coluna != null)
                         {
                             WPFColunaPronta window = new WPFColunaPronta(coluna);
+                            window.MaxHeight = 515;
+                            window.MaxWidth = 800;
                             window.Show();
                         }
                         else

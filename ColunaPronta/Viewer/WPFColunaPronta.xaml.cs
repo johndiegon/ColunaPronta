@@ -2,6 +2,7 @@
 using ColunaPronta.Helper;
 using ColunaPronta.Model;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -154,6 +155,7 @@ namespace ColunaPronta
             {
                 StackPanel_SelecionaColunaNormal.Visibility = Visibility.Visible;
                 StackPanel_SelecionaColunapassante.Visibility = Visibility.Hidden;
+                StackPanel_Layers.Visibility = Visibility.Hidden;
                 this.textBlock_qtParafuso.Visibility = Visibility.Visible;
                 this.textBox_qtdeParafuso.Visibility = Visibility.Visible;
 
@@ -168,6 +170,7 @@ namespace ColunaPronta
             {
                 StackPanel_SelecionaColunaNormal.Visibility = Visibility.Hidden;
                 StackPanel_SelecionaColunapassante.Visibility = Visibility.Visible;
+                StackPanel_Layers.Visibility = Visibility.Hidden;
                 this.textBlock_qtParafuso.Visibility = Visibility.Hidden;
                 this.textBox_qtdeParafuso.Visibility = Visibility.Hidden;
                 this.textBox_qtdeParafuso.Text = "0";
@@ -191,6 +194,7 @@ namespace ColunaPronta
             StackPanel_TelaInicial.Visibility = Visibility.Visible;
             StackPanel_SelecionaColunaNormal.Visibility = Visibility.Hidden;
             StackPanel_SelecionaColunapassante.Visibility = Visibility.Hidden;
+            StackPanel_Layers.Visibility = Visibility.Hidden;
             Grid_Inputs.Visibility = Visibility.Hidden;
 
             var ultimaColuna = IntegraLayout.GetUltimaColuna(_coluna.NomeArquivo);
@@ -280,6 +284,71 @@ namespace ColunaPronta
             this.textBox_altura.Text = "";
         }
 
+        private bool SaveLayers()
+        {
+            var listLayers = new List<EspecificacaoLayer.Detalhe>();
+
+            var detalheParafuso = new EspecificacaoLayer.Detalhe()
+            {
+                Nome = comboBox_Parafuso.SelectedValue.ToString(),
+                Objeto = Layer.Parafuso.ToString(),
+            };
+            listLayers.Add(detalheParafuso);
+
+            var detalheSapata = new EspecificacaoLayer.Detalhe()
+            {
+                Nome = comboBox_Sapata.SelectedValue.ToString(),
+                Objeto = Layer.Sapata.ToString(),
+            };
+            listLayers.Add(detalheSapata);
+
+            var detalhePassante = new EspecificacaoLayer.Detalhe()
+            {
+                Nome = comboBox_CantoneiraPassante.SelectedValue.ToString(),
+                Objeto = Layer.Passante.ToString(),
+            };
+            listLayers.Add(detalhePassante);
+
+            var detalheCantoneira3Furos = new EspecificacaoLayer.Detalhe()
+            {
+                Nome = comboBox_Cantoneira3Furos.SelectedValue.ToString(),
+                Objeto = Layer.Cantoneira3Furos.ToString(),
+            };
+            listLayers.Add(detalheCantoneira3Furos);
+
+            var detalheColuna = new EspecificacaoLayer.Detalhe()
+            {
+                Nome = comboBox_Coluna.SelectedValue.ToString(),
+                Objeto = Layer.Coluna.ToString(),
+            };
+            listLayers.Add(detalheColuna);
+
+            var validaLayers = (from layer in listLayers
+                                group layer by layer.Nome into qt
+                                where qt.Count() > 1
+                                select qt.Key
+                                );
+
+            if (validaLayers.Count() > 0)
+            {
+                ExibirTelaLayers();
+                MessageBox.Show("Os layers selecionados não podem ser repetidos", "Coluna", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            ArquivoCSV.Registra(listLayers);
+            return true;
+        }
+
+        public void ExibirTelaLayers()
+        {
+            StackPanel_TelaInicial.Visibility = Visibility.Hidden;
+            StackPanel_SelecionaColunaNormal.Visibility = Visibility.Hidden;
+            StackPanel_SelecionaColunapassante.Visibility = Visibility.Hidden;
+            StackPanel_Layers.Visibility = Visibility.Visible;
+            Grid_Inputs.Visibility = Visibility.Hidden;
+
+        }
 
     }
 }

@@ -458,14 +458,14 @@ namespace ColunaPronta.Commands
                     p3 = new Point2d(p1.X + (20 / _escala), p1.Y - (10 / _escala));
                     p4 = new Point2d(p1.X, p1.Y - (10 / _escala));
 
-                    Helpers.AddPolyline(document, p1, p2, p3, p4, 3);
+                    Helpers.AddPolyline(document, p1, p2, p3, p4, 3, Layer.Parafuso);
 
                     p2v1 = new Point2d(p1.X + (5 / _escala), p1.Y);
                     p2v2 = new Point2d(p2v1.X, p2v1.Y - (50 / _escala));
                     p2v3 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y - (50 / _escala));
                     p2v4 = new Point2d(p2v1.X + (10 / _escala), p2v1.Y);
 
-                    Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, 3);
+                    Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, 3, Layer.Parafuso);
 
                     for (int i = 1; i < iLinhasParafuso; i++)
                     {
@@ -478,14 +478,14 @@ namespace ColunaPronta.Commands
                     p3 = new Point2d(p1.X + (10 / _escala), p1.Y - (20 / _escala));
                     p4 = new Point2d(p1.X, p1.Y - (20 / _escala));
 
-                    Helpers.AddPolyline(document, p1, p2, p3, p4, 3);
+                    Helpers.AddPolyline(document, p1, p2, p3, p4, 3, Layer.Parafuso);
 
                     p2v1 = new Point2d(p2.X, p2.Y - (5 / _escala));
                     p2v2 = new Point2d(p2v1.X, p2v1.Y - (10 / _escala));
                     p2v3 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y - (10 / _escala));
                     p2v4 = new Point2d(p2v1.X - (50 / _escala), p2v1.Y);
 
-                    Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, 3);
+                    Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, 3, Layer.Parafuso);
 
                     for (int i = 1; i < iLinhasParafuso; i++)
                     {
@@ -498,14 +498,14 @@ namespace ColunaPronta.Commands
                     p3 = new Point2d(p1.X - (20 / _escala), p1.Y - (10 / _escala));
                     p4 = new Point2d(p1.X - (20 / _escala), p1.Y);
 
-                    Helpers.AddPolyline(document, p1, p2, p3, p4, 3);
+                    Helpers.AddPolyline(document, p1, p2, p3, p4, 3, Layer.Parafuso);
 
                     p2v1 = new Point2d(p1.X - (5 / _escala), p2.Y);
                     p2v2 = new Point2d(p2v1.X, p2v1.Y + (50 / _escala));
                     p2v3 = new Point2d(p2v1.X - (10 / _escala), p2v1.Y + (50 / _escala));
                     p2v4 = new Point2d(p2v1.X - (10 / _escala), p2v1.Y);
 
-                    Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, 3);
+                    Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, 3, Layer.Parafuso);
 
                     for (int i = 1; i < iLinhasParafuso; i++)
                     {
@@ -519,14 +519,14 @@ namespace ColunaPronta.Commands
                     p3 = new Point2d(p1.X + (10 / _escala), p1.Y - (20 / _escala));
                     p4 = new Point2d(p1.X, p1.Y - (20 / _escala));
 
-                    Helpers.AddPolyline(document, p1, p2, p3, p4, 3);
+                    Helpers.AddPolyline(document, p1, p2, p3, p4, 3, Layer.Parafuso);
 
                     p2v1 = new Point2d(p1.X, p1.Y - (5 / _escala));
                     p2v2 = new Point2d(p2v1.X + (50 / _escala), p2v1.Y);
                     p2v3 = new Point2d(p2v1.X + (50 / _escala), p2v1.Y - (10 / _escala));
                     p2v4 = new Point2d(p2v1.X, p2v1.Y - (10 / _escala));
 
-                    Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, 3);
+                    Helpers.AddPolyline(document, p2v1, p2v2, p2v3, p2v4, 3, Layer.Parafuso);
 
                     for (int i = 1; i < iLinhasParafuso; i++)
                     {
