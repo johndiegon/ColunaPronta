@@ -29,7 +29,7 @@
                     <ColumnDefinition Width="705*"/>
                     <ColumnDefinition Width="89*"/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="button_Layer" Content="Layers"  HorizontalAlignment="Right" VerticalAlignment="Top" Width="75"  Height="24" Margin="0,-23,32.6,0" Grid.ColumnSpan="2"/>
+                <Button x:Name="button_Layer" Content="Layers"   Click="button_Layer_Click" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75"  Height="24" Margin="0,-23,32.6,0" Grid.ColumnSpan="2"/>
             </Grid>
         </StackPanel>
 
@@ -154,8 +154,10 @@
             <ComboBox x:Name="comboBox_Cantoneira3Furos" Grid.Row="1" ></ComboBox>
             <TextBlock x:Name="textBlock_Coluna" FontWeight="Bold">Coluna:</TextBlock>
             <ComboBox x:Name="comboBox_Coluna" Grid.Row="1" ></ComboBox>
-            <Separator Height="50" Margin="0,2,0.4,2"></Separator>
-            <Button>Salvar as Configurações</Button>
+            <Slider></Slider>
+            <Button x:Name="BtnSalvarLayers" Click="BtnSalvarLayers_Click">Salvar as Configurações</Button>
+            <Slider></Slider>
+            <Button x:Name="TelaInicial" Click="TelaInicial_Click">Tela Inicial</Button>
         </StackPanel>
 
     </Grid>

@@ -78,8 +78,44 @@ namespace ColunaPronta.Commands
 
                 string nomeArquivo = "C:\\Autodesk\\ColunaPronta\\Settings\\especificaolayers.csv";
 
+                var novoslayers = new List<EspecificacaoLayer.Detalhe>();
+                var especificaolayer = new EspecificacaoLayer();
+
                 if (File.Exists(nomeArquivo))
                 {
+                    
+                    if (especificaolayer.Detalhes.Count >0 )
+                    {
+
+                        foreach (var item in especificaolayer.Detalhes)
+                        {
+                            var layer = (from l in layers
+                                         where l.Objeto == item.Objeto
+                                         select l
+                                        ).FirstOrDefault();
+                            if (layer != null)
+                            {
+                                novoslayers.Add(layer);
+                            }
+                            else
+                            {
+                                novoslayers.Add(item);
+                            }
+                        }
+
+                        foreach( var item in layers)
+                        {
+                            
+                            if (!novoslayers.Contains(item))
+                            {
+                                novoslayers.Add(item);
+                            }
+
+                        }
+
+                        layers = novoslayers;
+
+                    }
                     File.Delete(nomeArquivo);
                     writer = File.AppendText(nomeArquivo);
                     writer.WriteLine("objeto;nome;perfil");
@@ -90,12 +126,13 @@ namespace ColunaPronta.Commands
                     writer.WriteLine("objeto;nome;perfil");
                 }
 
+
+
                 foreach (var layer in layers)
                 {
-
                     var linhaColuna = string.Concat(layer.Objeto.ToString(), ";"
                                                    , layer.Nome.ToString(), ";"
-                                                   , layer.Perfil.ToString(),";"
+                                                   , layer.Perfil == null ? "" : layer.Perfil.ToString(),";"
                                                    );
                     writer.WriteLine(linhaColuna);
                 }

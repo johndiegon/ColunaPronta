@@ -27,10 +27,13 @@ namespace ColunaPronta
             
             SetTelaInicial();
             SetVisualizacao(coluna.Posicao);
+            SetComboBox();
         }
 
         private void Btn_gerarcoluna_Click(object sender, RoutedEventArgs e)
         {
+            if (!SaveLayers())
+                return;
 
             //Diametro do Chumbador
             if (diametroChumbadorObrigatorio == true && textBox_diametro.Text.ToString() == "")
@@ -305,7 +308,7 @@ namespace ColunaPronta
             var detalhePassante = new EspecificacaoLayer.Detalhe()
             {
                 Nome = comboBox_CantoneiraPassante.SelectedValue.ToString(),
-                Objeto = Layer.Passante.ToString(),
+                Objeto = Layer.CantoneiraPassante.ToString(),
             };
             listLayers.Add(detalhePassante);
 
@@ -350,5 +353,45 @@ namespace ColunaPronta
 
         }
 
+        private void button_Layer_Click(object sender, RoutedEventArgs e)
+        {
+            ExibirTelaLayers();
+        }
+
+        private void BtnSalvarLayers_Click(object sender, RoutedEventArgs e)
+        {
+            SaveLayers();
+        }
+
+        private void SetComboBox()
+        {
+            var layers = Helper.Helpers.GetLayers();
+            var especificaolayer = new EspecificacaoLayer();
+
+            comboBox_Parafuso.ItemsSource = layers;
+            var detalhe = especificaolayer.GetDetalheLayer(Layer.Parafuso);
+            comboBox_Parafuso.SelectedValue = detalhe == null ? "" : detalhe.Nome;
+
+            comboBox_Sapata.ItemsSource = layers;
+            detalhe = especificaolayer.GetDetalheLayer(Layer.Sapata);
+            comboBox_Sapata.SelectedValue = detalhe == null ? "" : detalhe.Nome;
+
+            comboBox_CantoneiraPassante.ItemsSource = layers;
+            detalhe = especificaolayer.GetDetalheLayer(Layer.CantoneiraPassante);
+            comboBox_CantoneiraPassante.SelectedValue = detalhe == null ? "" : detalhe.Nome;
+
+            comboBox_Cantoneira3Furos.ItemsSource = layers;
+            detalhe = especificaolayer.GetDetalheLayer(Layer.Cantoneira3Furos);
+            comboBox_Cantoneira3Furos.SelectedValue = detalhe == null ? "" : detalhe.Nome;
+
+            comboBox_Coluna.ItemsSource = layers;
+            detalhe = especificaolayer.GetDetalheLayer(Layer.Coluna);
+            comboBox_Coluna.SelectedValue = detalhe == null ? "" : detalhe.Nome;
+        }
+
+        private void TelaInicial_Click(object sender, RoutedEventArgs e)
+        {
+            SetTelaInicial();
+        }
     }
 }
